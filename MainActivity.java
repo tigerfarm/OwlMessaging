@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.asynchronousGet:
                 try {
-                    String phoneNumTo = "+16504837603";
+                    String phoneNumTo = "+17778887890";
                     textString.setText("+ SMS send message to: " + phoneNumTo);
                     URL_REQUEST.setSmsSend(phoneNumTo,"Hello from Android app");
                     sendSms();
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // URL_REQUEST.setUrlHello();
                     // textString.setText("+ GET Hello World text file: "+URL_REQUEST.getRequestUrl());
                     // getRequest();
-                    String phoneNumber = "+16504837603";
+                    String phoneNumber = "+17778887890";
                     textString.setText("+ Get messages sent to: "+ phoneNumber);
 
                     URL_REQUEST.setSmsRequestTo(phoneNumber);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.asynchronousPost:
                 try {
-                    String phoneNumber = "+16504837603";
+                    String phoneNumber = "+17778887890";
                     textString.setText("+ Remove messages to: " + phoneNumber);
                     getMessagesToDelete();
                 } catch (IOException e) {
