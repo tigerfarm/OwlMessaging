@@ -20,14 +20,14 @@ public class AccountCredentials implements Interceptor {
     private static final String TAG = "ERR:AccountCredentials";
     // ---------------------------------------------------------------------------------------------
     // Account SID and Token
-    private final String AUTH_TOKEN = "d396d26bc92ad7562763410a1ad1c89d";
-    private final String AccountSid = "ACae0e356ccba96d16d8d4f6f9518684a3";
+    private final String AUTH_TOKEN = "your_account_token";
+    private final String AccountSid = "your_account_SID";
     public String getAccountSid() {
         return AccountSid;
     }
 
     // Twilio account phone number for sending and receiving messages:
-    private final String TwilioPhoneNumber = "+18182103863";
+    private final String TwilioPhoneNumber = "+12223331234";
     public String getTwilioPhoneNumber() {
         return TwilioPhoneNumber;
     }
@@ -106,7 +106,7 @@ public class AccountCredentials implements Interceptor {
     // NOT used in the SMS version.
     // ---------------------------------------------------------------------------------------------
     // Twilio Authy Application entry API Key:
-    private final String AppApiKey = "QPeXt9OFxlwGnu1B6fPDPRpHaYotW42i";
+    private final String AppApiKey = "your_app_key";
     public String getAppApiKey() {
         return AppApiKey;
     }
