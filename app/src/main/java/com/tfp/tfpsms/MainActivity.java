@@ -11,8 +11,8 @@ package com.tfp.tfpsms;
     <application ...
  */
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -28,12 +28,13 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TwSms URL_REQUEST = new TwSms();
+    private AccountCredentials accountCredentials;
+    private TwSms URL_REQUEST;
 
     // https://developer.android.com/reference/android/widget/TextView.html
-    TextView textString;
-    TextView textScrollBox;
-    Button asynchronousGet, synchronousGet, asynchronousPOST;
+    private TextView textString;
+    private TextView textScrollBox;
+    private Button asynchronousGet, synchronousGet, asynchronousPOST;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +54,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textScrollBox = (TextView) findViewById(R.id.scrollBox);
         textScrollBox.setMovementMethod(new ScrollingMovementMethod());
         // textScrollBox.setText(aString);
+
+        accountCredentials = new AccountCredentials(this);
+        URL_REQUEST = new TwSms(accountCredentials);
     }
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
         String requestUrl;
+        String phoneNumber = "+19173063880";
         switch (view.getId()) {
             case R.id.asynchronousGet:
                 try {
-                    String phoneNumTo = "+17778887890";
-                    textString.setText("+ SMS send message to: " + phoneNumTo);
-                    URL_REQUEST.setSmsSend(phoneNumTo,"Hello from Android app");
+                    textString.setText("+ SMS send message to: " + phoneNumber);
+                    URL_REQUEST.setSmsSend(phoneNumber, "Hello from Android app");
                     sendSms();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -76,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // URL_REQUEST.setUrlHello();
                     // textString.setText("+ GET Hello World text file: "+URL_REQUEST.getRequestUrl());
                     // getRequest();
-                    String phoneNumber = "+17778887890";
                     textString.setText("+ Get messages sent to: "+ phoneNumber);
 
                     URL_REQUEST.setSmsRequestTo(phoneNumber);
@@ -90,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.asynchronousPost:
                 try {
-                    String phoneNumber = "+17778887890";
                     textString.setText("+ Remove messages to: " + phoneNumber);
                     getMessagesToDelete();
                 } catch (IOException e) {
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // ---------------------------------------------------------------------------------------------
     void getMessagesToDelete() throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AccountCredentials())
+                .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
                 .url(URL_REQUEST.getRequestUrl())
@@ -164,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     void deleteOneMessage(final String aMessageId ) throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AccountCredentials())
+                .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
                 .url(URL_REQUEST.rmSmsMessages(aMessageId))
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // ---------------------------------------------------------------------------------------------
     void getMessageList() throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AccountCredentials())
+                .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
                 .url(URL_REQUEST.getRequestUrl())
@@ -257,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // ---------------------------------------------------------------------------------------------
     void sendSms() throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AccountCredentials())
+                .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
                 .url(URL_REQUEST.getRequestUrl())
