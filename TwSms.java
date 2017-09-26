@@ -13,7 +13,7 @@ public class TwSms {
     private AccountCredentials TWILIO_ACCOUNT = new AccountCredentials();
     private final String TwilioPhoneNumber = TWILIO_ACCOUNT.getTwilioPhoneNumber();
 
-    // private final String ACCOUNT_SID = "ACae0e356ccba96d16d8d4f6f9518684a3";
+    // private final String ACCOUNT_SID = "your_account_SID";
     AccountCredentials Acc = new AccountCredentials();
     private final String ACCOUNT_SID = Acc.getAccountSid();
     private String setSmsRequest = "https://api.twilio.com/2010-04-01/Accounts/" + ACCOUNT_SID + "/Messages.json";
@@ -51,7 +51,7 @@ public class TwSms {
     }
 
     public String rmSmsMessages(String messageSid) throws Exception {
-        // https://api.twilio.com/2010-04-01/Accounts/ACae0e356ccba96d16d8d4f6f9518684a3/Messages/SM1cacf80fb168403da49512ee7aa3ca16.json'
+        // https://api.twilio.com/2010-04-01/Accounts/your_account_SID/Messages/SM1cacf80fb168403da49512ee7aa3ca16.json'
         String deleteUrl = "https://api.twilio.com/2010-04-01/Accounts/" + ACCOUNT_SID + "/Messages/" + messageSid + ".json";
         return deleteUrl;
     }
@@ -81,12 +81,12 @@ public class TwSms {
         requestUrl = PhoneVerSend;
     }
                     /*
-                    URL_REQUEST.setPhoneVerificationSend("sms", "1", "6504837603");
+                    URL_REQUEST.setPhoneVerificationSend("sms", "1", "2223331234");
                     textString.setText("+ POST Phone Verification: "+URL_REQUEST.getRequestUrl());
                     postRequest();
                     */
                     /*
-                    String AuthyId = "40023285";   // Mine
+                    String AuthyId = "12312312";   // Mine
                     String AskForApproval = "Lunch at 1pm, the usual place.";
                     String seconds_to_expire = "120";
                     URL_REQUEST.setPushAuthentication(AuthyId, AskForApproval, seconds_to_expire);
