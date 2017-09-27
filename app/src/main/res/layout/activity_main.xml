@@ -16,24 +16,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="SMS Send"/>
+        android:text="Send"/>
 
     <Button
         android:id="@+id/synchronousGet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/asynchronousGet"
-        android:text="SMS Get Messages"/>
+        android:layout_toRightOf="@+id/asynchronousGet"
+        android:text="Get"/>
 
     <Button
         android:id="@+id/asynchronousPost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/synchronousGet"
-        android:text="Remove Messages"/>
+        android:layout_toRightOf="@+id/synchronousGet"
+        android:text="Remove"/>
 
     <TextView
         android:id="@+id/textString"
