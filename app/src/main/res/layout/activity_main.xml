@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Ask for Approval"/>
+        android:text="SMS Send"/>
 
     <Button
         android:id="@+id/synchronousGet"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/synchronousGet"
-        android:text="SMS Send Message"/>
+        android:text="Remove Messages"/>
 
     <TextView
         android:id="@+id/textString"

@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ei = jsonList.indexOf(endValue, si);
             //  123456                   123456
             // :Tue, 26 Sep 2017 00:49:31 +0000:
-            theList = theList + jsonList.substring(si + theDateSent.length() + 2 + 5, ei - 6);
+            theList = theList + localDateTime( jsonList.substring(si + theDateSent.length() + 2 + 5, ei - 6) );
 
             si = jsonList.indexOf(theBody, ei);
             if (si > 0) {
@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ei = jsonList.indexOf(endValue, si);
             //  123456                   123456
             // :Tue, 26 Sep 2017 00:49:31 +0000:
-            theStatusResult = theStatusResult + jsonList.substring(si + theDateUpdated.length() + 2 + 5, ei - 6);
+            theStatusResult = theStatusResult + localDateTime( jsonList.substring(si + theDateUpdated.length() + 2 + 5, ei - 6) );
         }
         si = jsonList.indexOf(theStatus, 0);
         if (si > 0) {
@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
         Date gmtDate = new Date();
         try {
-            gmtDate = readDateFormatter.parse("27 Sep 2017 00:32:47");
+            gmtDate = readDateFormatter.parse(theGmtDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
