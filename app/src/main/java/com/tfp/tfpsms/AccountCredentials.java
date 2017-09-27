@@ -1,5 +1,6 @@
 package com.tfp.tfpsms;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.DataInputStream;
@@ -7,7 +8,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Properties;
 
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -17,29 +20,33 @@ import okhttp3.Response;
 public class AccountCredentials implements Interceptor {
 
     //                                 12345678901234567890123 (max 23 char)
-    private static final String TAG = "ERR:AccountCredentials";
-    // ---------------------------------------------------------------------------------------------
-    // Account SID and Token
-    private final String AUTH_TOKEN = "your_account_token";
-    private final String AccountSid = "your_account_SID";
-    public String getAccountSid() {
-        return AccountSid;
-    }
+    private static final String TAG = "AccountCredentials";
 
-    // Twilio account phone number for sending and receiving messages:
-    private final String TwilioPhoneNumber = "+12223331234";
-    public String getTwilioPhoneNumber() {
-        return TwilioPhoneNumber;
-    }
-
-    // ---------------------------------------------------------------------------------------------
+    private Context mContext;
+    private String accountSid;
+    private String authToken;
+    private String phoneNumber;
     private String credentials;
-    public AccountCredentials() {
-        this.credentials = Credentials.basic(AccountSid, AUTH_TOKEN);
-    }
+    // Twilio Authy Application entry API Key:
+    private String appApiKey;
 
-    public AccountCredentials(String user, String password) {
-        this.credentials = Credentials.basic(user, password);
+    public AccountCredentials(Context context) {
+        this.mContext = context;
+        try {
+            InputStream open = context.getAssets().open("twilio.properties");
+            Properties properties = new Properties();
+            properties.load(open);
+
+            accountSid = properties.getProperty("twilio.account.sid");
+            authToken = properties.getProperty("twilio.auth.token");
+            phoneNumber = properties.getProperty("twilio.phone.number");
+            appApiKey = properties.getProperty("authy.app.api.key");
+
+            this.credentials = Credentials.basic(accountSid, authToken);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to open twilio.properties");
+            throw new RuntimeException("Failed to open twilio.properties");
+        }
     }
 
     @Override
@@ -48,6 +55,14 @@ public class AccountCredentials implements Interceptor {
         Request authenticatedRequest = request.newBuilder()
                 .header("Authorization", credentials).build();
         return chain.proceed(authenticatedRequest);
+    }
+
+    public String getAccountSid() {
+        return accountSid;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -105,10 +120,9 @@ public class AccountCredentials implements Interceptor {
     // ---------------------------------------------------------------------------------------------
     // NOT used in the SMS version.
     // ---------------------------------------------------------------------------------------------
-    // Twilio Authy Application entry API Key:
-    private final String AppApiKey = "your_app_key";
+
     public String getAppApiKey() {
-        return AppApiKey;
+        return appApiKey;
     }
 
 }

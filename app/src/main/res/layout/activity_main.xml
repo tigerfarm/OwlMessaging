@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    tools:context="com.tfp.tfpsms.MainActivity">
+
+
+    <Button
+        android:id="@+id/asynchronousGet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Ask for Approval"/>
+
+    <Button
+        android:id="@+id/synchronousGet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/asynchronousGet"
+        android:text="SMS Get Messages"/>
+
+    <Button
+        android:id="@+id/asynchronousPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/synchronousGet"
+        android:text="SMS Send Message"/>
+
+    <TextView
+        android:id="@+id/textString"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/asynchronousPost"
+        android:text="Responses show here"/>
+
+    <TextView
+        android:id="@+id/scrollBox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textString"
+        android:background="@drawable/borders"
+        android:scrollbars = "vertical"
+        android:text="Scrolling text area." >
+    </TextView>
+
+</RelativeLayout>
