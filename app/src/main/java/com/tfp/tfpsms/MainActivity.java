@@ -41,17 +41,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // https://developer.android.com/reference/android/widget/TextView.html
     private TextView textString;
     private TextView textScrollBox;
-    private Button asynchronousGet, synchronousGet, asynchronousPOST;
+    private Button listPhoneNumbers, asynchronousGet, synchronousGet, asynchronousPOST;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        listPhoneNumbers = (Button) findViewById(R.id.listPhoneNumbers);
         asynchronousGet = (Button) findViewById(R.id.asynchronousGet);
         synchronousGet = (Button) findViewById(R.id.synchronousGet);
         asynchronousPOST = (Button) findViewById(R.id.asynchronousPost);
 
+        listPhoneNumbers.setOnClickListener(this);
         asynchronousGet.setOnClickListener(this);
         synchronousGet.setOnClickListener(this);
         asynchronousPOST.setOnClickListener(this);
@@ -71,6 +73,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String requestUrl;
         String phoneNumber = "+16504837603";
         switch (view.getId()) {
+            case R.id.listPhoneNumbers:
+                try {
+                    textString.setText("+ Phone Number List");
+                    textScrollBox.setText("+ List not available, yet.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.asynchronousGet:
                 try {
                     textString.setText("+ SMS send message to: " + phoneNumber);

@@ -12,10 +12,17 @@
 
 
     <Button
-        android:id="@+id/asynchronousGet"
+        android:id="@+id/listPhoneNumbers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:text="List"/>
+
+    <Button
+        android:id="@+id/asynchronousGet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/listPhoneNumbers"
         android:text="Send"/>
 
     <Button
@@ -36,7 +43,6 @@
         android:id="@+id/textString"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/asynchronousPost"
         android:text="Responses show here"/>
 
