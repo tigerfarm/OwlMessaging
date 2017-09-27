@@ -19,6 +19,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -61,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.asynchronousGet:
                 try {
-                    String phoneNumTo = "+17778887890";
+                    String phoneNumTo = "+16504837603";
                     textString.setText("+ SMS send message to: " + phoneNumTo);
                     URL_REQUEST.setSmsSend(phoneNumTo,"Hello from Android app");
                     sendSms();
@@ -76,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // URL_REQUEST.setUrlHello();
                     // textString.setText("+ GET Hello World text file: "+URL_REQUEST.getRequestUrl());
                     // getRequest();
-                    String phoneNumber = "+17778887890";
+                    String phoneNumber = "+16504837603";
                     textString.setText("+ Get messages sent to: "+ phoneNumber);
 
                     URL_REQUEST.setSmsRequestTo(phoneNumber);
@@ -90,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.asynchronousPost:
                 try {
-                    String phoneNumber = "+17778887890";
+                    String phoneNumber = "+16504837603";
                     textString.setText("+ Remove messages to: " + phoneNumber);
                     getMessagesToDelete();
                 } catch (IOException e) {
@@ -121,26 +128,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        String aMessageId = getDeleteMessageList(myResponse);
+                        List<String> messageList = getDeleteMessageList(myResponse);
+                        int aCounter = 0;
                         try {
-                            deleteOneMessage( aMessageId );
+                            String aMessageId;
+                            for (Iterator<String> iter = messageList.iterator(); iter.hasNext();) {
+                                aMessageId = iter.next();
+                                deleteOneMessage( aMessageId );
+                                aCounter++;
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        textScrollBox.setText("+ Messages deleted = 1");
+                        textScrollBox.setText("+ Messages deleted = " + aCounter);
                     }
                 });
             }
         });
     }
 
-    String getDeleteMessageList(String jsonList) {
-        String theList = "";
+    List<String> getDeleteMessageList(String jsonList) {
+
+        List<String> listSids = new ArrayList<String>();
 
         // Check if there is no messages.
         String mtMessages = "\"messages\": []";
         if (jsonList.indexOf(mtMessages, 0)>0) {
-            return theList;
+            return listSids;
         }
 
         // Message SID:
@@ -150,16 +164,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int si = jsonList.indexOf(theSid, 0);
         int ei = 0;
-        // while (si > 0) {
+        while (si > 0) {
             ei = jsonList.indexOf(endValue, si);
             if (si > 0) {
                 ei = jsonList.indexOf(endValue, si);
-                theList = theList + jsonList.substring(si + theSid.length() + 2, ei);
+                String aSid = jsonList.substring(si + theSid.length() + 2, ei);
+                listSids.add(aSid);
             }
             si = jsonList.indexOf(theSid, ei);
-        // }
+        }
 
-        return theList;
+        return listSids;
     }
 
     void deleteOneMessage(final String aMessageId ) throws Exception {
@@ -182,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         try {
-                            textScrollBox.setText("+ deleteOneMessage " + myResponse);
+                            // textScrollBox.setText("+ deleteOneMessage " + myResponse);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -274,11 +289,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textScrollBox.setText(myResponse);
+                        textScrollBox.setText(responseStatus(myResponse));
                     }
                 });
             }
         });
+    }
+
+    String responseStatus(String jsonList) {
+        String theStatusResult = "+ Response status: ";
+
+        // List the date sent and the message body:
+        // "body": "Hello from Android app",
+        // "date_sent": "Mon, 25 Sep 2017 19:55:18 +0000",
+        String theDateUpdated = "\"date_updated\":";
+        String theBody = "\"body\":";
+        String theStatus = "\"status\":";
+        String endValue = "\",";
+
+        int si = jsonList.indexOf(theDateUpdated, 0);
+        int ei = 0;
+        if (si > 0) {
+            ei = jsonList.indexOf(endValue, si);
+            //  123456                   123456
+            // :Tue, 26 Sep 2017 00:49:31 +0000:
+            theStatusResult = theStatusResult + jsonList.substring(si + theDateUpdated.length() + 2 + 5, ei - 6);
+        }
+        si = jsonList.indexOf(theStatus, 0);
+        if (si > 0) {
+            ei = jsonList.indexOf(endValue, si);
+            theStatusResult = theStatusResult + ", " + jsonList.substring(si + theStatus.length() + 2, ei) + "\n";
+        }
+        si = jsonList.indexOf(theBody, 0);
+        if (si > 0) {
+            ei = jsonList.indexOf(endValue, si);
+            theStatusResult = theStatusResult + "+ Message: " + jsonList.substring(si + theStatus.length(), ei) + "\n";
+        }
+
+        return theStatusResult;
+    }
+
+    String localDateTime(String theGmtDate) {
+        //                                                        "27 Sep 2017 00:32:47"
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
+        Date gmtDate = new Date();
+        try {
+            gmtDate = readDateFormatter.parse("27 Sep 2017 00:32:47");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(gmtDate);
+        cal.add(Calendar.HOUR, -7); // from GMT to PST
+
+        SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
+        return writeDateformatter.format(cal.getTime());
     }
 
     // ---------------------------------------------------------------------------------------------
