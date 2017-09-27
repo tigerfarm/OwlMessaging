@@ -1,6 +1,8 @@
 package com.tfp.tfpsms;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.DataInputStream;
@@ -25,28 +27,16 @@ public class AccountCredentials implements Interceptor {
     private Context mContext;
     private String accountSid;
     private String authToken;
-    private String phoneNumber;
     private String credentials;
     // Twilio Authy Application entry API Key:
     private String appApiKey;
 
     public AccountCredentials(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.mContext = context;
-        try {
-            InputStream open = context.getAssets().open("twilio.properties");
-            Properties properties = new Properties();
-            properties.load(open);
-
-            accountSid = properties.getProperty("twilio.account.sid");
-            authToken = properties.getProperty("twilio.auth.token");
-            phoneNumber = properties.getProperty("twilio.phone.number");
-            appApiKey = properties.getProperty("authy.app.api.key");
-
-            this.credentials = Credentials.basic(accountSid, authToken);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to open twilio.properties");
-            throw new RuntimeException("Failed to open twilio.properties");
-        }
+        this.accountSid = sharedPreferences.getString("account_sid", "");
+        this.authToken = sharedPreferences.getString("auth_token", "");
+        this.credentials = Credentials.basic(accountSid, authToken);
     }
 
     @Override
@@ -61,8 +51,12 @@ public class AccountCredentials implements Interceptor {
         return accountSid;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    // ---------------------------------------------------------------------------------------------
+    // NOT used in the SMS version.
+    // ---------------------------------------------------------------------------------------------
+
+    public String getAppApiKey() {
+        return appApiKey;
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -115,14 +109,6 @@ public class AccountCredentials implements Interceptor {
         } catch (IOException e) {
             Log.d(TAG, "writeStringAsFile");
         }
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    // NOT used in the SMS version.
-    // ---------------------------------------------------------------------------------------------
-
-    public String getAppApiKey() {
-        return appApiKey;
     }
 
 }

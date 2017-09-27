@@ -26,31 +26,31 @@ public class TwSms {
     }
 
     private String requestUrl;
-    public String getRequestUrl() throws Exception {
+    public String getRequestUrl() {
         return requestUrl;
     }
 
-    public void setSmsRequest() throws Exception {
+    public void setSmsRequest() {
         requestUrl = setSmsRequest;
     }
 
-    public void setSmsRequestFrom(String phoneNumber) throws Exception {
-        requestUrl = setSmsRequest + "?From="+phoneNumber + "&To="+accountCredentials.getPhoneNumber();
+    public void setSmsRequestFrom(String phoneNumber, String twilioNumber) {
+        requestUrl = setSmsRequest + "?From="+phoneNumber + "&To="+twilioNumber;
     }
-    public void setSmsRequestTo(String phoneNumber) throws Exception {
-        requestUrl = setSmsRequest + "?To="+phoneNumber + "&From="+accountCredentials.getPhoneNumber();
+    public void setSmsRequestTo(String phoneNumber, String twilioNumber) {
+        requestUrl = setSmsRequest + "?To="+phoneNumber + "&From="+twilioNumber;
     }
 
-    public void setSmsSend( String phoneNumTo, String theMessage ) throws Exception {
+    public void setSmsSend(String phoneNumTo, String twilioNumber, String theMessage) {
         postParams = new FormBody.Builder()
-                .add("From", accountCredentials.getPhoneNumber())
+                .add("From", twilioNumber)
                 .add("To", phoneNumTo)
                 .add("Body", theMessage)
                 .build();
         requestUrl = setSmsRequest;
     }
 
-    public String rmSmsMessages(String messageSid) throws Exception {
+    public String rmSmsMessages(String messageSid) {
         // https://api.twilio.com/2010-04-01/Accounts/your_account_SID/Messages/SM1cacf80fb168403da49512ee7aa3ca16.json'
         return String.format("https://api.twilio.com/2010-04-01/Accounts/%s/Messages/%s.json", accountCredentials.getAccountSid(), messageSid);
     }
