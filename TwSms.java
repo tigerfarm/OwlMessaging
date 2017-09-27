@@ -13,7 +13,6 @@ public class TwSms {
     private AccountCredentials TWILIO_ACCOUNT = new AccountCredentials();
     private final String TwilioPhoneNumber = TWILIO_ACCOUNT.getTwilioPhoneNumber();
 
-    // private final String ACCOUNT_SID = "your_account_SID";
     AccountCredentials Acc = new AccountCredentials();
     private final String ACCOUNT_SID = Acc.getAccountSid();
     private String setSmsRequest = "https://api.twilio.com/2010-04-01/Accounts/" + ACCOUNT_SID + "/Messages.json";
