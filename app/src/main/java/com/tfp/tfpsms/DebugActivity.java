@@ -12,12 +12,17 @@ package com.tfp.tfpsms;
  */
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,61 +175,36 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 DebugActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        List<String> theList = getAccPhoneNumberList(myResponse);
-                        int aCounter = 0;
-                        String aPrintList = "";
-                        try {
-                            String aItem;
-                            for (Iterator<String> iter = theList.iterator(); iter.hasNext();) {
-                                aItem = iter.next();
-                                aPrintList = aPrintList + aItem + "\n";
-                                aCounter++;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        textScrollBox.setText(aPrintList);
+                        textScrollBox.setText(accPhoneNumberPrintList(myResponse));
                     }
                 });
             }
         });
     }
 
-    List<String> getAccPhoneNumberList(String jsonList) {
-
-        List<String> theList = new ArrayList<String>();
-
-        // Check if empty list.
-        String mtMessages = "\"incoming_phone_numbers\": []";
-        if (jsonList.indexOf(mtMessages, 0)>0) {
-            return theList;
+    String accPhoneNumberPrintList(String jsonList) {
+        String aPrintList = "";
+        final JSONObject responseJson;
+        try {
+            responseJson = new JSONObject(jsonList);
+        } catch (JSONException e) {
+            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+            return aPrintList;
         }
-
-        // When multiple attributes, order is important.
-        String aAttribute = "\"friendly_name\":";
-        String bAttribute = "\"phone_number\":";
-        String endValue = "\",";
-
-        int si = jsonList.indexOf(aAttribute, 0);
-        int ei = 0;
-        while (si > 0) {
-            String aParam = "";
-            ei = jsonList.indexOf(endValue, si);
-            if (si > 0) {
-                ei = jsonList.indexOf(endValue, si);
-                aParam = jsonList.substring(si + aAttribute.length() + 2, ei);
+        try {
+            JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
+            for (int i = 0; i < jList.length(); i++) {
+                aPrintList = aPrintList
+                        + jList.getJSONObject(i).getString("phone_number")
+                        + " : "
+                        + jList.getJSONObject(i).getString("friendly_name")
+                        + "\n";
             }
-            String bParam = "";
-            si = jsonList.indexOf(bAttribute, ei);
-            if (si > 0) {
-                ei = jsonList.indexOf(endValue, si);
-                bParam = jsonList.substring(si + bAttribute.length() + 2, ei);
-                theList.add(bParam + " : " + aParam);
-            }
-            si = jsonList.indexOf(aAttribute, ei);
+        } catch (JSONException e) {
+            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
+            return aPrintList;
         }
-
-        return theList;
+        return aPrintList;
     }
 
     // ---------------------------------------------------------------------------------------------
