@@ -42,9 +42,10 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     private TwSms URL_REQUEST;
 
     // https://developer.android.com/reference/android/widget/TextView.html
-    private TextView textString;
+    private TextView textString, msgString;
     private TextView textScrollBox;
     private Button listPhoneNumbers, asynchronousGet, synchronousGet, asynchronousPOST;
+    private Button accPhoneNumbers;
 
     private String twilioNumber;
     private String phoneNumber;
@@ -54,17 +55,20 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_debug);
 
+        accPhoneNumbers = (Button) findViewById(R.id.accPhoneNumbers);
         listPhoneNumbers = (Button) findViewById(R.id.listPhoneNumbers);
         asynchronousGet = (Button) findViewById(R.id.asynchronousGet);
         synchronousGet = (Button) findViewById(R.id.synchronousGet);
         asynchronousPOST = (Button) findViewById(R.id.asynchronousPost);
 
+        accPhoneNumbers.setOnClickListener(this);
         listPhoneNumbers.setOnClickListener(this);
         asynchronousGet.setOnClickListener(this);
         synchronousGet.setOnClickListener(this);
         asynchronousPOST.setOnClickListener(this);
 
         textString = (TextView) findViewById(R.id.textString);
+        msgString = (TextView) findViewById(R.id.msgString);
 
         textScrollBox = (TextView) findViewById(R.id.scrollBox);
         textScrollBox.setMovementMethod(new ScrollingMovementMethod());
@@ -89,9 +93,21 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.accPhoneNumbers:
+                try {
+                    textString.setText("+ Account Phone Number List");
+                    URL_REQUEST.setAccPhoneNumbers();
+                    // msgString.setText("+ Request: " + URL_REQUEST.getRequestUrl());
+                    getAccPhoneNumbers();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.listPhoneNumbers:
                 try {
-                    textString.setText("+ Phone Number List");
+                    textString.setText("+ Phone Number Exchange List");
                     textScrollBox.setText("+ List not available, yet.");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -133,6 +149,82 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 }
                 break;
         }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    void getAccPhoneNumbers() throws Exception {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(URL_REQUEST.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                DebugActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<String> theList = getAccPhoneNumberList(myResponse);
+                        int aCounter = 0;
+                        String aPrintList = "";
+                        try {
+                            String aItem;
+                            for (Iterator<String> iter = theList.iterator(); iter.hasNext();) {
+                                aItem = iter.next();
+                                aPrintList = aPrintList + aItem + "\n";
+                                aCounter++;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        textScrollBox.setText(aPrintList);
+                    }
+                });
+            }
+        });
+    }
+
+    List<String> getAccPhoneNumberList(String jsonList) {
+
+        List<String> theList = new ArrayList<String>();
+
+        // Check if empty list.
+        String mtMessages = "\"incoming_phone_numbers\": []";
+        if (jsonList.indexOf(mtMessages, 0)>0) {
+            return theList;
+        }
+
+        // When multiple attributes, order is important.
+        String aAttribute = "\"friendly_name\":";
+        String bAttribute = "\"phone_number\":";
+        String endValue = "\",";
+
+        int si = jsonList.indexOf(aAttribute, 0);
+        int ei = 0;
+        while (si > 0) {
+            String aParam = "";
+            ei = jsonList.indexOf(endValue, si);
+            if (si > 0) {
+                ei = jsonList.indexOf(endValue, si);
+                aParam = jsonList.substring(si + aAttribute.length() + 2, ei);
+            }
+            String bParam = "";
+            si = jsonList.indexOf(bAttribute, ei);
+            if (si > 0) {
+                ei = jsonList.indexOf(endValue, si);
+                bParam = jsonList.substring(si + bAttribute.length() + 2, ei);
+                theList.add(bParam + " : " + aParam);
+            }
+            si = jsonList.indexOf(aAttribute, ei);
+        }
+
+        return theList;
     }
 
     // ---------------------------------------------------------------------------------------------

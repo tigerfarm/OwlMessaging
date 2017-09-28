@@ -55,6 +55,11 @@ public class TwSms {
         return String.format("https://api.twilio.com/2010-04-01/Accounts/%s/Messages/%s.json", accountCredentials.getAccountSid(), messageSid);
     }
 
+    public void setAccPhoneNumbers() {
+        // https://api.twilio.com/2010-04-01/Accounts/your_account_SID/IncomingPhoneNumbers.json
+        requestUrl =  String.format("https://api.twilio.com/2010-04-01/Accounts/%s/IncomingPhoneNumbers.json", accountCredentials.getAccountSid());
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Not used in the SMS version
     // ---------------------------------------------------------------------------------------------

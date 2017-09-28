@@ -10,7 +10,6 @@
     android:paddingTop="16dp"
     tools:context="com.tfp.tfpsms.DebugActivity">
 
-
     <Button
         android:id="@+id/listPhoneNumbers"
         android:layout_width="wrap_content"
@@ -39,18 +38,32 @@
         android:layout_toRightOf="@+id/synchronousGet"
         android:text="Remove"/>
 
+    <Button
+        android:id="@+id/accPhoneNumbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/listPhoneNumbers"
+        android:text="Account Phone numbers"/>
+
     <TextView
         android:id="@+id/textString"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/asynchronousPost"
+        android:layout_below="@+id/accPhoneNumbers"
         android:text="Responses show here"/>
+
+    <TextView
+        android:id="@+id/msgString"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textString"
+        android:text=""/>
 
     <TextView
         android:id="@+id/scrollBox"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/textString"
+        android:layout_below="@+id/msgString"
         android:background="@drawable/borders"
         android:scrollbars = "vertical"
         android:text="Scrolling text area." >
