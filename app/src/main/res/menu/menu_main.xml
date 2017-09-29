@@ -22,9 +22,15 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_sendsms"
+        android:orderInCategory="100"
+        android:title="Send Message"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_debug"
         android:orderInCategory="100"
-        android:title="Debug"
+        android:title="Development"
         app:showAsAction="never" />
 
 </menu>

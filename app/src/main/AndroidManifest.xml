@@ -27,6 +27,8 @@
         </activity>
         <activity android:name="com.tfp.tfpsms.DebugActivity">
         </activity>
+        <activity android:name="com.tfp.tfpsms.SendSmsActivity">
+        </activity>
     </application>
 
 </manifest>
