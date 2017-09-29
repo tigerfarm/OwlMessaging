@@ -46,8 +46,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
     private String twilioNumber;
     private String phoneNumber;
+    Properties properties = new Properties();
 
-    private Button sendButton;
+
+    private Button sendButton, setButton;
     private EditText sendToPhoneNumber;
     private EditText textMessage;
 
@@ -62,6 +64,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_sendsms);
 
         // Send message form objects:
+        setButton = (Button) findViewById(R.id.setButton);
         sendButton = (Button) findViewById(R.id.sendButton);
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
         textMessage = (EditText)findViewById(R.id.textMessage);
@@ -72,7 +75,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
         try {
             InputStream open = getAssets().open("twilio.properties");
-            Properties properties = new Properties();
+            // Properties properties = new Properties();
             properties.load(open);
             twilioNumber = properties.getProperty("twilio.phone.number");
             phoneNumber = properties.getProperty("phone.number");
@@ -101,24 +104,43 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+        populateMessageList();
         sendButton.setOnClickListener(this);
+        setButton.setOnClickListener(this);
     }
 
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
-        try {
-            String theSendToPhoneNumber = sendToPhoneNumber.getText().toString();
-            String theTextMessage = textMessage.getText().toString();
-            // textString.setText("+ Send message to: " + theSendToPhoneNumber);
-            URL_REQUEST.setSmsSend(theSendToPhoneNumber, twilioNumber, theTextMessage);
-            sendSms();
-            populateMessageList();
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
+        switch (view.getId()) {
+            case R.id.sendButton:
+                try {
+                    String theSendToPhoneNumber = sendToPhoneNumber.getText().toString();
+                    String theTextMessage = textMessage.getText().toString();
+                    // textString.setText("+ Send message to: " + theSendToPhoneNumber);
+                    URL_REQUEST.setSmsSend(theSendToPhoneNumber, twilioNumber, theTextMessage);
+                    sendSms();
+                    populateMessageList();
+                    // Intent intent = new Intent(this, MainActivity.class);
+                    // startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.setButton:
+                try {
+                    phoneNumber = sendToPhoneNumber.getText().toString();
+                    properties.setProperty("twilio.phone.number", phoneNumber);
+                    twilioNumber = properties.getProperty("phone.number");
+                    populateMessageList();
+                    // textString.setText("+ Phone Number Exchange List");
+                    // textScrollBox.setText("+ List not available, yet.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
         }
+
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -147,56 +169,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 });
             }
         });
-    }
-
-    String responseStatus(String jsonList) {
-        String theStatusResult = "+ Response status: ";
-
-        // List the date sent and the message body:
-        // "body": "Hello from Android app",
-        // "date_sent": "Mon, 25 Sep 2017 19:55:18 +0000",
-        String theDateUpdated = "\"date_updated\":";
-        String theBody = "\"body\":";
-        String theStatus = "\"status\":";
-        String endValue = "\",";
-
-        int si = jsonList.indexOf(theDateUpdated, 0);
-        int ei = 0;
-        if (si > 0) {
-            ei = jsonList.indexOf(endValue, si);
-            //  123456                   123456
-            // :Tue, 26 Sep 2017 00:49:31 +0000:
-            theStatusResult = theStatusResult + localDateTime( jsonList.substring(si + theDateUpdated.length() + 2 + 5, ei - 6) );
-        }
-        si = jsonList.indexOf(theStatus, 0);
-        if (si > 0) {
-            ei = jsonList.indexOf(endValue, si);
-            theStatusResult = theStatusResult + ", " + jsonList.substring(si + theStatus.length() + 2, ei) + "\n";
-        }
-        si = jsonList.indexOf(theBody, 0);
-        if (si > 0) {
-            ei = jsonList.indexOf(endValue, si);
-            theStatusResult = theStatusResult + "+ Message: " + jsonList.substring(si + theStatus.length(), ei) + "\n";
-        }
-
-        return theStatusResult;
-    }
-
-    String localDateTime(String theGmtDate) {
-        //                                                        "27 Sep 2017 00:32:47"
-        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
-        Date gmtDate = new Date();
-        try {
-            gmtDate = readDateFormatter.parse(theGmtDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(gmtDate);
-        cal.add(Calendar.HOUR, -7); // from GMT to PST
-
-        SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
-        return writeDateformatter.format(cal.getTime());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -283,4 +255,22 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     // ---------------------------------------------------------------------------------------------
+    String localDateTime(String theGmtDate) {
+        //                                                        "27 Sep 2017 00:32:47"
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
+        Date gmtDate = new Date();
+        try {
+            gmtDate = readDateFormatter.parse(theGmtDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(gmtDate);
+        cal.add(Calendar.HOUR, -7); // from GMT to PST
+
+        SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
+        return writeDateformatter.format(cal.getTime());
+    }
+
+
 }

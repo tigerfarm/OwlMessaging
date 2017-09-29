@@ -40,6 +40,9 @@ public class TwSms {
     public void setSmsRequestTo(String phoneNumber, String twilioNumber) {
         requestUrl = setSmsRequest + "?To="+phoneNumber + "&From="+twilioNumber;
     }
+    public void setSmsRequestOnlyTo(String phoneNumber) {
+        requestUrl = setSmsRequest + "?To="+phoneNumber;
+    }
 
     public void setSmsSend(String phoneNumTo, String twilioNumber, String theMessage) {
         postParams = new FormBody.Builder()

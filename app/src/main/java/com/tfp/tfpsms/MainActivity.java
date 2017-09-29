@@ -140,6 +140,9 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SendSmsActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.menu_refresh) {
+            populateMessageList();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void populateMessageList() {
         String selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-        twilioSms.setSmsRequestTo(phoneNumber, selectedTwilioNumber);
+        twilioSms.setSmsRequestOnlyTo(selectedTwilioNumber);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -215,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
             JSONObject messageJson = getItem(position);
 
             try {
-                labelView.setText(messageJson.getString("to"));
+                labelView.setText(messageJson.getString("from"));
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(messageJson.getString("date_sent"));
             } catch (JSONException e) {
