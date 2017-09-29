@@ -130,8 +130,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.setButton:
                 try {
                     phoneNumber = sendToPhoneNumber.getText().toString();
-                    properties.setProperty("twilio.phone.number", phoneNumber);
-                    twilioNumber = properties.getProperty("phone.number");
+                    properties.setProperty("phone.number", phoneNumber);
                     populateMessageList();
                     // textString.setText("+ Phone Number Exchange List");
                     // textScrollBox.setText("+ List not available, yet.");
