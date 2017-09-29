@@ -18,6 +18,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -47,10 +48,15 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     private TwSms URL_REQUEST;
 
     // https://developer.android.com/reference/android/widget/TextView.html
+    // https://developer.android.com/reference/android/widget/RelativeLayout.LayoutParams.html
     private TextView textString, msgString;
     private TextView textScrollBox;
     private Button listPhoneNumbers, asynchronousGet, synchronousGet, asynchronousPOST;
     private Button accPhoneNumbers;
+
+    private Button sendButton;
+    private EditText sendToPhoneNumber;
+    private EditText textMessage;
 
     private String twilioNumber;
     private String phoneNumber;
@@ -66,6 +72,12 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         synchronousGet = (Button) findViewById(R.id.synchronousGet);
         asynchronousPOST = (Button) findViewById(R.id.asynchronousPost);
 
+        // Send message form objects:
+        sendButton = (Button) findViewById(R.id.sendButton);
+        sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
+        textMessage = (EditText)findViewById(R.id.textMessage);
+
+        sendButton.setOnClickListener(this);
         accPhoneNumbers.setOnClickListener(this);
         listPhoneNumbers.setOnClickListener(this);
         asynchronousGet.setOnClickListener(this);
@@ -98,6 +110,19 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.sendButton:
+                try {
+                    String theSendToPhoneNumber = sendToPhoneNumber.getText().toString();
+                    String theTextMessage = textMessage.getText().toString();
+                    textString.setText("+ Send message to: " + theSendToPhoneNumber);
+                    URL_REQUEST.setSmsSend(phoneNumber, twilioNumber, theTextMessage);
+                    sendSms();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.accPhoneNumbers:
                 try {
                     textString.setText("+ Account Phone Number List");
@@ -171,11 +196,11 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String myResponse = response.body().string();
+                final String jsonResponse = response.body().string();
                 DebugActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textScrollBox.setText(accPhoneNumberPrintList(myResponse));
+                        textScrollBox.setText(accPhoneNumberPrintList(jsonResponse));
                     }
                 });
             }
