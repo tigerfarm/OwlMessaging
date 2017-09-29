@@ -1,6 +1,7 @@
 package com.tfp.tfpsms;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -113,10 +114,11 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             URL_REQUEST.setSmsSend(theSendToPhoneNumber, twilioNumber, theTextMessage);
             sendSms();
             populateMessageList();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     // ---------------------------------------------------------------------------------------------
