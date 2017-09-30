@@ -240,12 +240,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             try {
                 labelView.setText(messageJson.getString("to"));
                 hostnameView.setText(messageJson.getString("body"));
-
-                //  012345678901234567890123456789
-                //  123456                   123456
-                // :Tue, 26 Sep 2017 00:49:31 +0000:
-                // String theLocalDateTime = localDateTime( messageJson.getString("date_sent").substring(6, 24) );
-                portsView.setText(messageJson.getString("date_sent").substring(5, 25));
+                portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
 
             } catch (JSONException e) {
                 Log.e("MainActivity", "Failed to parse JSON", e);
@@ -255,24 +250,5 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             return view;
         }
     }
-
-    // ---------------------------------------------------------------------------------------------
-    String localDateTime(String theGmtDate) {
-        //                                                        "27 Sep 2017 00:32:47"
-        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
-        Date gmtDate = new Date();
-        try {
-            gmtDate = readDateFormatter.parse(theGmtDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(gmtDate);
-        cal.add(Calendar.HOUR, -7); // from GMT to PST
-
-        SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
-        return writeDateformatter.format(cal.getTime());
-    }
-
 
 }

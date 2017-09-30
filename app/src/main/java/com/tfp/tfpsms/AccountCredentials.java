@@ -31,6 +31,7 @@ public class AccountCredentials implements Interceptor {
     private String credentials;
     //
     private String toPhoneNumber;
+    private int localTimeOffset;
     //
     // Twilio Authy Application entry API Key:
     private String appApiKey;
@@ -45,6 +46,7 @@ public class AccountCredentials implements Interceptor {
         this.credentials = Credentials.basic(accountSid, authToken);
         //
         this.toPhoneNumber = sharedPreferences.getString("to_phone_number", "");
+        this.localTimeOffset = Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );    // Default: -7 is San Francisco time
     }
 
     @Override
@@ -67,6 +69,17 @@ public class AccountCredentials implements Interceptor {
     }
     public String getToPhoneNumber() {
         return toPhoneNumber;
+    }
+
+    // Needs to be set, in the Settings panel.
+    public void setLocalTimeOffset(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        prefEditor.putString("local_time_offset", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
+    }
+    public int getLocalTimeOffset() {
+        return localTimeOffset;
     }
 
     // ---------------------------------------------------------------------------------------------

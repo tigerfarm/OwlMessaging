@@ -1,5 +1,10 @@
 package com.tfp.tfpsms;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import okhttp3.FormBody;
 import okhttp3.RequestBody;
 
@@ -66,6 +71,27 @@ public class TwSms {
     public String getLookup(String thePhoneNumber) {
         // http://lookups.twilio.com/v1/PhoneNumbers/+12093539979?Type=carrier
         return "https://lookups.twilio.com/v1/PhoneNumbers/+" + thePhoneNumber + "?Type=carrier";
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    String localDateTime(String theGmtDate) {
+        //                                                        "27 Sep 2017 00:32:47"
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
+        Date gmtDate = new Date();
+        try {
+            //  012345678901234567890123456789
+            //  123456                   123456
+            // :Tue, 26 Sep 2017 00:49:31 +0000:
+            gmtDate = readDateFormatter.parse(theGmtDate.substring(5, 25));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(gmtDate);
+        cal.add(Calendar.HOUR, accountCredentials.getLocalTimeOffset()); // from GMT to PST
+
+        SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
+        return writeDateformatter.format(cal.getTime());
     }
 
     // ---------------------------------------------------------------------------------------------

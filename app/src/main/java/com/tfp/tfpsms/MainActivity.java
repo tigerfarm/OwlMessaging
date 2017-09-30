@@ -28,7 +28,11 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 import okhttp3.Call;
@@ -226,7 +230,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 labelView.setText(messageJson.getString("from"));
                 hostnameView.setText(messageJson.getString("body"));
-                portsView.setText(messageJson.getString("date_sent"));
+                portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
+
             } catch (JSONException e) {
                 Log.e("MainActivity", "Failed to parse JSON", e);
                 System.out.println(e);
