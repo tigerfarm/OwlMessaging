@@ -24,7 +24,13 @@
     <item
         android:id="@+id/action_sendsms"
         android:orderInCategory="100"
-        android:title="Send Message"
+        android:title="Send message"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_lookup"
+        android:orderInCategory="100"
+        android:title="Lookup phone number"
         app:showAsAction="never" />
 
     <item

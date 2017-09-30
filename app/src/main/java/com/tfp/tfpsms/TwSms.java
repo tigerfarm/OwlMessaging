@@ -63,6 +63,11 @@ public class TwSms {
         requestUrl =  String.format("https://api.twilio.com/2010-04-01/Accounts/%s/IncomingPhoneNumbers.json", accountCredentials.getAccountSid());
     }
 
+    public String getLookup(String thePhoneNumber) {
+        // http://lookups.twilio.com/v1/PhoneNumbers/+12093539979?Type=carrier
+        return "https://lookups.twilio.com/v1/PhoneNumbers/+" + thePhoneNumber + "?Type=carrier";
+    }
+
     // ---------------------------------------------------------------------------------------------
     // Not used in the SMS version
     // ---------------------------------------------------------------------------------------------

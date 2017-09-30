@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        */
 
         accountCredentials = new AccountCredentials(this);
         twilioSms = new TwSms(accountCredentials);
@@ -138,6 +140,10 @@ public class MainActivity extends AppCompatActivity {
             return true;
         } else if (id == R.id.action_sendsms) {
             Intent intent = new Intent(this, SendSmsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_lookup) {
+            Intent intent = new Intent(this, LookupActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.menu_refresh) {

@@ -45,7 +45,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private TwSms twilioSms;
 
     private String twilioNumber;
-    private String phoneNumber;
     Properties properties = new Properties();
 
 
@@ -53,9 +52,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private EditText sendToPhoneNumber;
     private EditText textMessage;
 
+    private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private MessagesArrayAdapter messagesArrayAdapter;
-    private ListView listView;
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -73,27 +72,14 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         URL_REQUEST = new TwSms(accountCredentials);
         twilioSms = new TwSms(accountCredentials);
 
-        try {
-            InputStream open = getAssets().open("twilio.properties");
-            // Properties properties = new Properties();
-            properties.load(open);
-            twilioNumber = properties.getProperty("twilio.phone.number");
-            phoneNumber = properties.getProperty("phone.number");
-        } catch (IOException e) {
-            Log.e("DebugActivity", "Failed to open twilio.properties");
-            throw new RuntimeException("Failed to open twilio.properties");
-        }
-
         listView = (ListView) findViewById(R.id.list_view);
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
         listView.setAdapter(messagesArrayAdapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
             }
-
         });
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -104,6 +90,16 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+        try {
+            InputStream open = getAssets().open("twilio.properties");
+            properties.load(open);
+            twilioNumber = properties.getProperty("twilio.phone.number");
+            sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
+        } catch (IOException e) {
+            Log.e("DebugActivity", "Failed to open twilio.properties");
+            throw new RuntimeException("Failed to open twilio.properties");
+        }
+
         populateMessageList();
         sendButton.setOnClickListener(this);
         setButton.setOnClickListener(this);
@@ -112,13 +108,15 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
+        String toPhoneNumber = sendToPhoneNumber.getText().toString();
         switch (view.getId()) {
             case R.id.sendButton:
                 try {
-                    String theSendToPhoneNumber = sendToPhoneNumber.getText().toString();
+                    accountCredentials.setToPhoneNumber(toPhoneNumber);
+                    // properties.setProperty("phone.number", toPhoneNumber);
+                    //
                     String theTextMessage = textMessage.getText().toString();
-                    // textString.setText("+ Send message to: " + theSendToPhoneNumber);
-                    URL_REQUEST.setSmsSend(theSendToPhoneNumber, twilioNumber, theTextMessage);
+                    URL_REQUEST.setSmsSend(toPhoneNumber, twilioNumber, theTextMessage);
                     sendSms();
                     populateMessageList();
                     // Intent intent = new Intent(this, MainActivity.class);
@@ -129,11 +127,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.setButton:
                 try {
-                    phoneNumber = sendToPhoneNumber.getText().toString();
-                    properties.setProperty("phone.number", phoneNumber);
+                    accountCredentials.setToPhoneNumber(toPhoneNumber);
+                    // properties.setProperty("phone.number", sendToPhoneNumber.getText().toString());
+                    //
                     populateMessageList();
-                    // textString.setText("+ Phone Number Exchange List");
-                    // textScrollBox.setText("+ List not available, yet.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -173,7 +170,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
 
-        twilioSms.setSmsRequestTo(phoneNumber, twilioNumber);
+        twilioSms.setSmsRequestTo(sendToPhoneNumber.getText().toString(), twilioNumber);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -243,7 +240,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             try {
                 labelView.setText(messageJson.getString("to"));
                 hostnameView.setText(messageJson.getString("body"));
-                portsView.setText(messageJson.getString("date_sent"));
+
+                //  012345678901234567890123456789
+                //  123456                   123456
+                // :Tue, 26 Sep 2017 00:49:31 +0000:
+                // String theLocalDateTime = localDateTime( messageJson.getString("date_sent").substring(6, 24) );
+                portsView.setText(messageJson.getString("date_sent").substring(5, 25));
+
             } catch (JSONException e) {
                 Log.e("MainActivity", "Failed to parse JSON", e);
                 System.out.println(e);

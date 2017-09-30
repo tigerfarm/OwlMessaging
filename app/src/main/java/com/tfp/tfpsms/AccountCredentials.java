@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
+import java.util.Set;
 
 import okhttp3.Credentials;
 import okhttp3.Interceptor;
@@ -28,15 +29,22 @@ public class AccountCredentials implements Interceptor {
     private String accountSid;
     private String authToken;
     private String credentials;
+    //
+    private String toPhoneNumber;
+    //
     // Twilio Authy Application entry API Key:
     private String appApiKey;
+    private SharedPreferences sharedPreferences;
 
     public AccountCredentials(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.mContext = context;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        //
         this.accountSid = sharedPreferences.getString("account_sid", "");
         this.authToken = sharedPreferences.getString("auth_token", "");
         this.credentials = Credentials.basic(accountSid, authToken);
+        //
+        this.toPhoneNumber = sharedPreferences.getString("to_phone_number", "");
     }
 
     @Override
@@ -49,6 +57,16 @@ public class AccountCredentials implements Interceptor {
 
     public String getAccountSid() {
         return accountSid;
+    }
+
+    public void setToPhoneNumber(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        prefEditor.putString("to_phone_number", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
+    }
+    public String getToPhoneNumber() {
+        return toPhoneNumber;
     }
 
     // ---------------------------------------------------------------------------------------------

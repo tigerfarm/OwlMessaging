@@ -25,10 +25,9 @@
             android:name="com.tfp.tfpsms.SettingsActivity"
             android:label="@string/title_activity_settings">
         </activity>
-        <activity android:name="com.tfp.tfpsms.DebugActivity">
-        </activity>
-        <activity android:name="com.tfp.tfpsms.SendSmsActivity">
-        </activity>
+        <activity android:name="com.tfp.tfpsms.DebugActivity"></activity>
+        <activity android:name="com.tfp.tfpsms.SendSmsActivity"></activity>
+        <activity android:name="com.tfp.tfpsms.LookupActivity"></activity>
     </application>
 
 </manifest>
