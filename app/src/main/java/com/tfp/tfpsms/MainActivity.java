@@ -28,11 +28,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Properties;
 
 import okhttp3.Call;
@@ -58,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -74,6 +71,16 @@ public class MainActivity extends AppCompatActivity {
 
         accountCredentials = new AccountCredentials(this);
         twilioSms = new TwSms(accountCredentials);
+        try {
+            InputStream open = getAssets().open("twilio.properties");
+            Properties properties = new Properties();
+            properties.load(open);
+            twilioNumber = properties.getProperty("twilio.phone.number");
+            phoneNumber = properties.getProperty("phone.number");
+        } catch (IOException e) {
+            Log.e("MainActivity", "Failed to open twilio.properties");
+            throw new RuntimeException("Failed to open twilio.properties");
+        }
 
         listView = (ListView) findViewById(R.id.list_view);
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
@@ -96,17 +103,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        try {
-            InputStream open = getAssets().open("twilio.properties");
-            Properties properties = new Properties();
-            properties.load(open);
-
-            twilioNumber = properties.getProperty("twilio.phone.number");
-            phoneNumber = properties.getProperty("phone.number");
-        } catch (IOException e) {
-            Log.e("MainActivity", "Failed to open twilio.properties");
-            throw new RuntimeException("Failed to open twilio.properties");
-        }
     }
 
     @Override

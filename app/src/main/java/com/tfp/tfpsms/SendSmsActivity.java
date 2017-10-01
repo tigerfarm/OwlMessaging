@@ -8,8 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -62,6 +64,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sendsms);
 
+        // To return to MainActivity
+        setupActionBar();
+
         // Send message form objects:
         setButton = (Button) findViewById(R.id.setButton);
         sendButton = (Button) findViewById(R.id.sendButton);
@@ -103,6 +108,26 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         populateMessageList();
         sendButton.setOnClickListener(this);
         setButton.setOnClickListener(this);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Show the Back arrow (Up button) in the action bar.
+    // When clicked, to the MainActivity.
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -11,11 +11,14 @@ package com.tfp.tfpsms;
     <application ...
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,6 +69,9 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_debug);
 
+        // To return to MainActivity
+        setupActionBar();
+
         accPhoneNumbers = (Button) findViewById(R.id.accPhoneNumbers);
         listPhoneNumbers = (Button) findViewById(R.id.listPhoneNumbers);
         asynchronousGet = (Button) findViewById(R.id.asynchronousGet);
@@ -106,6 +112,27 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             throw new RuntimeException("Failed to open twilio.properties");
         }
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Show the Back arrow (Up button) in the action bar.
+    // When clicked, to the MainActivity.
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
