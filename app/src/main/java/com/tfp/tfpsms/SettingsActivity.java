@@ -39,13 +39,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // To return to MainActivity
+        // Display return arrow in the top bar.
         setupActionBar();
     }
 
     // ---------------------------------------------------------------------------------------------
     // Show the Back arrow (Up button) in the action bar.
-    // When clicked, to the MainActivity.
+    // Not working: When clicked, to the MainActivity.
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -64,6 +64,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
+            bindPreferenceSummaryToValue(findPreference("twilio_phone_number"));
+            bindPreferenceSummaryToValue(findPreference("example_text"));
+            bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
         @Override
