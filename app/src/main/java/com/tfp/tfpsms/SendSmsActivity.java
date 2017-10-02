@@ -135,6 +135,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     String theTextMessage = textMessage.getText().toString();
                     URL_REQUEST.setSmsSend(toPhoneNumber, twilioNumber, theTextMessage);
                     sendSms();
+                    // wait(1000);
                     populateMessageList();
                     // Intent intent = new Intent(this, MainActivity.class);
                     // startActivity(intent);
@@ -225,7 +226,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 messagesArrayAdapter.clear();
                                 int im = 0;
                                 for (int i = 0; i < messages.length(); i++) {
-                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
+                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
                                         messagesArrayAdapter.insert(messages.getJSONObject(i), im);
                                         im++;
                                     }

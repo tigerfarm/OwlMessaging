@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                                 messagesArrayAdapter.clear();
                                 int im = 0;
                                 for (int i = 0; i < messages.length(); i++) {
-                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
+                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
                                         messagesArrayAdapter.insert(messages.getJSONObject(i), im);
                                     im++;
                                     }
