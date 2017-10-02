@@ -59,29 +59,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
-
         accountCredentials = new AccountCredentials(this);
+        twilioNumber = accountCredentials.getTwilioPhoneNumber();
+        phoneNumber = accountCredentials.getToPhoneNumber();
+        // Must be after accountCredentials being set, because it uses accountCredentials.
         twilioSms = new TwSms(accountCredentials);
-        try {
-            InputStream open = getAssets().open("twilio.properties");
-            Properties properties = new Properties();
-            properties.load(open);
-            twilioNumber = properties.getProperty("twilio.phone.number");
-            phoneNumber = properties.getProperty("phone.number");
-        } catch (IOException e) {
-            Log.e("MainActivity", "Failed to open twilio.properties");
-            throw new RuntimeException("Failed to open twilio.properties");
-        }
 
         listView = (ListView) findViewById(R.id.list_view);
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);

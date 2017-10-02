@@ -30,6 +30,7 @@ public class AccountCredentials implements Interceptor {
     private String authToken;
     private String credentials;
     //
+    private String twilioPhoneNumber;
     private String toPhoneNumber;
     private int localTimeOffset;
     //
@@ -44,6 +45,8 @@ public class AccountCredentials implements Interceptor {
         this.accountSid = sharedPreferences.getString("account_sid", "");
         this.authToken = sharedPreferences.getString("auth_token", "");
         this.credentials = Credentials.basic(accountSid, authToken);
+        //
+        this.twilioPhoneNumber = sharedPreferences.getString("twilio_phone_number", "");
         //
         this.toPhoneNumber = sharedPreferences.getString("to_phone_number", "");
         this.localTimeOffset = Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );    // Default: -7 is San Francisco time
@@ -61,6 +64,10 @@ public class AccountCredentials implements Interceptor {
         return accountSid;
     }
 
+    public String getTwilioPhoneNumber() {
+        return twilioPhoneNumber;
+    }
+
     public void setToPhoneNumber(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
         prefEditor.putString("to_phone_number", aParam);
@@ -71,7 +78,7 @@ public class AccountCredentials implements Interceptor {
         return toPhoneNumber;
     }
 
-    // Needs to be set, in the Settings panel.
+    // Needs to be set, in the Settings panel. Or calculate difference from GMT to local time.
     public void setLocalTimeOffset(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
         prefEditor.putString("local_time_offset", aParam);
@@ -79,7 +86,7 @@ public class AccountCredentials implements Interceptor {
         prefEditor.commit();
     }
     public int getLocalTimeOffset() {
-        return localTimeOffset;
+        return Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );
     }
 
     // ---------------------------------------------------------------------------------------------

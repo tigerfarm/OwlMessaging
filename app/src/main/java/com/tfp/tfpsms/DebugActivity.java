@@ -110,17 +110,8 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         accountCredentials = new AccountCredentials(this);
         URL_REQUEST = new TwSms(accountCredentials);
 
-        try {
-            InputStream open = getAssets().open("twilio.properties");
-            Properties properties = new Properties();
-            properties.load(open);
-
-            twilioNumber = properties.getProperty("twilio.phone.number");
-            phoneNumber = properties.getProperty("phone.number");
-        } catch (IOException e) {
-            Log.e("DebugActivity", "Failed to open twilio.properties");
-            throw new RuntimeException("Failed to open twilio.properties");
-        }
+        twilioNumber = accountCredentials.getTwilioPhoneNumber();
+        phoneNumber = accountCredentials.getToPhoneNumber();
     }
 
     // ---------------------------------------------------------------------------------------------

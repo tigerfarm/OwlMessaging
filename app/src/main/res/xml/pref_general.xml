@@ -23,7 +23,7 @@
         android:defaultValue="@string/pref_default_twilio_phone_number" />
 
     <ListPreference
-        android:key="example_list"
+        android:key="local_time_offset"
         android:title="@string/pref_title_gmt_offset"
         android:defaultValue="-7"
         android:entries="@array/pref_gmt_offset_list_titles"

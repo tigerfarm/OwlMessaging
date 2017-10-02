@@ -49,7 +49,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private String twilioNumber;
     Properties properties = new Properties();
 
-
     private Button sendButton, setButton;
     private EditText sendToPhoneNumber;
     private EditText textMessage;
@@ -95,15 +94,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        try {
-            InputStream open = getAssets().open("twilio.properties");
-            properties.load(open);
-            twilioNumber = properties.getProperty("twilio.phone.number");
-            sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
-        } catch (IOException e) {
-            Log.e("DebugActivity", "Failed to open twilio.properties");
-            throw new RuntimeException("Failed to open twilio.properties");
-        }
+        twilioNumber = accountCredentials.getTwilioPhoneNumber();
+        sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
 
         populateMessageList();
         sendButton.setOnClickListener(this);
