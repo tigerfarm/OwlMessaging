@@ -175,8 +175,12 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 JSONArray messages = responseJson.getJSONArray("messages");
                                 messagesArrayAdapter.clear();
+                                int im = 0;
                                 for (int i = 0; i < messages.length(); i++) {
-                                    messagesArrayAdapter.insert(messages.getJSONObject(i), i);
+                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
+                                        messagesArrayAdapter.insert(messages.getJSONObject(i), im);
+                                    im++;
+                                    }
                                 }
                             } catch (JSONException e) {
                                 Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
@@ -209,8 +213,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 labelView.setText(messageJson.getString("from"));
                 hostnameView.setText(messageJson.getString("body"));
-                portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
-
+                portsView.setText(twilioSms.localDateTime(messageJson.getString("date_sent")));
             } catch (JSONException e) {
                 Log.e("MainActivity", "Failed to parse JSON", e);
                 System.out.println(e);
