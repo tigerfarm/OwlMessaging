@@ -38,20 +38,28 @@
         android:layout_toRightOf="@+id/synchronousGet"
         android:text="Del"/>
 
+    <!-- Next row -->
     <Button
         android:id="@+id/accPhoneNumbers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/listPhoneNumbers"
-        android:text="Account Phone numbers"/>
+        android:text="Acc Phones"/>
 
+    <Button
+        android:id="@+id/buttonEncDec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/accPhoneNumbers"
+        android:layout_below="@+id/asynchronousPost"
+        android:text="EncDec"/>
+
+    <!-- ================================================ -->
     <EditText
         android:id="@+id/sendToPhoneNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/accPhoneNumbers"
-        android:layout_alignEnd="@+id/accPhoneNumbers"
-        android:layout_toEndOf="@+id/msgString"
         android:text="16504837603"/>
 
     <Button
@@ -62,11 +70,13 @@
         android:layout_alignParentRight="true"
         android:text="Send MSG"/>
 
+    <!-- ================================================ -->
     <EditText
         android:id="@+id/textMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/sendToPhoneNumber"/>
+        android:layout_below="@+id/sendToPhoneNumber"
+        android:text="Message to encrypt and decrypt."/>
 
     <TextView
         android:id="@+id/textString"
@@ -82,6 +92,7 @@
         android:layout_below="@+id/textString"
         android:text=""/>
 
+    <!-- ================================================ -->
     <TextView
         android:id="@+id/scrollBox"
         android:layout_width="match_parent"

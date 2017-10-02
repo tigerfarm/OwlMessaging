@@ -30,6 +30,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +66,9 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     private String twilioNumber;
     private String phoneNumber;
 
+    private EncDecString doEncDecString;
+    private Button buttonEncDec;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +87,11 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         sendButton = (Button) findViewById(R.id.sendButton);
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
         textMessage = (EditText)findViewById(R.id.textMessage);
+        //
+        // Encrypt - decrypt:
+        doEncDecString = new EncDecString();
+        buttonEncDec = (Button) findViewById(R.id.buttonEncDec);
+        buttonEncDec.setOnClickListener(this);
 
         sendButton.setOnClickListener(this);
         accPhoneNumbers.setOnClickListener(this);
@@ -137,6 +147,31 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.buttonEncDec:
+                try {
+                    String themessage = textMessage.getText().toString();
+                    String encString = "abc";
+                    String decString = "def";
+                    try {
+                        encString = doEncDecString.encryptBase64String(themessage);
+                        decString = doEncDecString.decryptBase64String(encString);
+                    } catch (InvalidKeyException e) {
+                        e.printStackTrace();
+                    } catch (InvalidAlgorithmParameterException e) {
+                        e.printStackTrace();
+                    }
+                    textString.setText("+ textString, encrypted and decrypted.");
+                    // msgString.setText("+ msgString, decrypted :" + decString +":");
+                    textScrollBox.setText(
+                            "+ textString \n:" + themessage +":\n\n"
+                            + "+ textString, encrypted \n:" + encString.trim() +":\n\n"
+                            + "+ textString, decrypted \n:" + decString +":\n"
+                    );
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.sendButton:
                 try {
                     String theSendToPhoneNumber = sendToPhoneNumber.getText().toString();
