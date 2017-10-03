@@ -12,37 +12,33 @@
 
     <item
         android:id="@+id/menu_refresh"
-        android:title="Refresh"
+        android:title="@string/title_activity_refresh"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-
     <item
         android:id="@+id/action_sendsms"
         android:orderInCategory="100"
-        android:title="Send message"
+        android:title="@string/title_activity_sendmessage"
         app:showAsAction="never" />
-
     <item
         android:id="@+id/action_lookup"
         android:orderInCategory="100"
         android:title="Lookup phone number"
         app:showAsAction="never" />
-
     <item
         android:id="@+id/action_accsec"
         android:orderInCategory="100"
         android:title="@string/title_activity_accsec"
         app:showAsAction="never" />
-
     <item
         android:id="@+id/action_debug"
         android:orderInCategory="100"
-        android:title="Development"
+        android:title="@string/title_activity_debug"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/title_activity_settings"
+        app:showAsAction="never" />
+
 
 </menu>

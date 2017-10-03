@@ -29,9 +29,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tfp.tfpsms.MainActivity" />
         </activity>
-        <activity android:name="com.tfp.tfpsms.DebugActivity"></activity>
         <activity android:name="com.tfp.tfpsms.SendSmsActivity"></activity>
         <activity android:name="com.tfp.tfpsms.LookupActivity"></activity>
+        <activity
+            android:name=".DebugActivity"
+            android:label="@string/title_activity_debug"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tfp.tfpsms.MainActivity" />
+        </activity>
         <activity
             android:name=".AccSecActivity"
             android:label="@string/title_activity_accsec"

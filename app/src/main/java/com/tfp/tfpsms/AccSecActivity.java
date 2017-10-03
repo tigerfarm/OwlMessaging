@@ -99,4 +99,30 @@ public class AccSecActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Not used.
+    // ---------------------------------------------------------------------------------------------
+    void getRequest() throws Exception {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(twilioAccSec.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                AccSecActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textScrollBox.setText(myResponse);
+                    }
+                });
+            }
+        });
+    }
+
 }

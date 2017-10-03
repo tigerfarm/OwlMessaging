@@ -13,11 +13,10 @@ package com.tfp.tfpsms;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.text.ParseException;
@@ -39,7 +37,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -50,21 +47,19 @@ import okhttp3.Response;
 public class DebugActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AccountCredentials accountCredentials;
-    private TwSms URL_REQUEST;
+    private TwSms TwilioSms;
+    private String twilioNumber;
 
     // https://developer.android.com/reference/android/widget/TextView.html
     // https://developer.android.com/reference/android/widget/RelativeLayout.LayoutParams.html
     private TextView textString, msgString;
     private TextView textScrollBox;
-    private Button listPhoneNumbers, asynchronousGet, synchronousGet, asynchronousPOST;
+    private Button listPhoneNumbers, buttonGet, buttonDelete;
     private Button accPhoneNumbers;
 
-    private Button sendButton;
-    private EditText sendToPhoneNumber;
+    private Button buttonSend;
+    private EditText formPhoneNumber;
     private EditText textMessage;
-
-    private String twilioNumber;
-    private String phoneNumber;
 
     private EncDecString doEncDecString;
     private Button buttonEncDec;
@@ -74,18 +69,28 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_debug);
 
-        // To return to MainActivity
-        setupActionBar();
+        // Top bar with: return to MainActivity.
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // -----------------------------------------------------------------------------------------
+        listPhoneNumbers = (Button) findViewById(R.id.listPhoneNumbers);
+        listPhoneNumbers.setOnClickListener(this);
+
+        buttonGet = (Button) findViewById(R.id.buttonGet);
+        buttonGet.setOnClickListener(this);
+
+        buttonDelete = (Button) findViewById(R.id.buttonDelete);
+        buttonDelete.setOnClickListener(this);
 
         accPhoneNumbers = (Button) findViewById(R.id.accPhoneNumbers);
-        listPhoneNumbers = (Button) findViewById(R.id.listPhoneNumbers);
-        asynchronousGet = (Button) findViewById(R.id.asynchronousGet);
-        synchronousGet = (Button) findViewById(R.id.synchronousGet);
-        asynchronousPOST = (Button) findViewById(R.id.asynchronousPost);
-
+        accPhoneNumbers.setOnClickListener(this);
+        //
         // Send message form objects:
-        sendButton = (Button) findViewById(R.id.sendButton);
-        sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
+        buttonSend = (Button) findViewById(R.id.buttonSend);
+        buttonSend.setOnClickListener(this);
+        formPhoneNumber = (EditText)findViewById(R.id.formPhoneNumber);
         textMessage = (EditText)findViewById(R.id.textMessage);
         //
         // Encrypt - decrypt:
@@ -93,51 +98,79 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         buttonEncDec = (Button) findViewById(R.id.buttonEncDec);
         buttonEncDec.setOnClickListener(this);
 
-        sendButton.setOnClickListener(this);
-        accPhoneNumbers.setOnClickListener(this);
-        listPhoneNumbers.setOnClickListener(this);
-        asynchronousGet.setOnClickListener(this);
-        synchronousGet.setOnClickListener(this);
-        asynchronousPOST.setOnClickListener(this);
-
         textString = (TextView) findViewById(R.id.textString);
         msgString = (TextView) findViewById(R.id.msgString);
 
         textScrollBox = (TextView) findViewById(R.id.scrollBox);
         textScrollBox.setMovementMethod(new ScrollingMovementMethod());
-        // textScrollBox.setText(aString);
 
+        // -----------------------------------------------------------------------------------------
         accountCredentials = new AccountCredentials(this);
-        URL_REQUEST = new TwSms(accountCredentials);
-
+        TwilioSms = new TwSms(accountCredentials);
         twilioNumber = accountCredentials.getTwilioPhoneNumber();
-        phoneNumber = accountCredentials.getToPhoneNumber();
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    // Show the Back arrow (Up button) in the action bar.
-    // When clicked, to the MainActivity.
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            startActivity(new Intent(this, MainActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        formPhoneNumber.setText( accountCredentials.getToPhoneNumber() );
     }
 
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
+        String theFormPhoneNumber = formPhoneNumber.getText().toString();
         switch (view.getId()) {
+            case R.id.buttonSend:
+                try {
+                    String theTextMessage = textMessage.getText().toString();
+                    textString.setText("+ Send message to: " + theFormPhoneNumber);
+                    TwilioSms.setSmsSend(theFormPhoneNumber, twilioNumber, theTextMessage);
+                    sendSms();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.buttonGet:
+                try {
+                    // TwilioSms.setUrlHello();
+                    // textString.setText("+ GET Hello World text file: "+TwilioSms.getRequestUrl());
+                    // getRequest();
+                    textString.setText("+ Get messages sent to: "+ theFormPhoneNumber);
+                    getMessageList(theFormPhoneNumber, twilioNumber);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.buttonDelete:
+                try {
+                    textString.setText("+ Remove messages to: " + theFormPhoneNumber);
+                    getMessagesToDelete();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.accPhoneNumbers:
+                try {
+                    textString.setText("+ Account Phone Number List");
+                    TwilioSms.setAccPhoneNumbers();
+                    // msgString.setText("+ Request: " + TwilioSms.getRequestUrl());
+                    getAccPhoneNumbers();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.listPhoneNumbers:
+                try {
+                    textString.setText("+ Phone Number Exchange List");
+                    textScrollBox.setText("+ List not available, yet.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.buttonEncDec:
                 try {
                     String themessage = textMessage.getText().toString();
@@ -155,78 +188,10 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                     // msgString.setText("+ msgString, decrypted :" + decString +":");
                     textScrollBox.setText(
                             "+ textString \n:" + themessage +":\n\n"
-                            + "+ textString, encrypted \n:" + encString.trim() +":\n\n"
-                            + "+ textString, decrypted \n:" + decString +":\n"
+                                    + "+ textString, encrypted \n:" + encString.trim() +":\n\n"
+                                    + "+ textString, decrypted \n:" + decString +":\n"
                     );
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.sendButton:
-                try {
-                    String theSendToPhoneNumber = sendToPhoneNumber.getText().toString();
-                    String theTextMessage = textMessage.getText().toString();
-                    textString.setText("+ Send message to: " + theSendToPhoneNumber);
-                    URL_REQUEST.setSmsSend(phoneNumber, twilioNumber, theTextMessage);
-                    sendSms();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.accPhoneNumbers:
-                try {
-                    textString.setText("+ Account Phone Number List");
-                    URL_REQUEST.setAccPhoneNumbers();
-                    // msgString.setText("+ Request: " + URL_REQUEST.getRequestUrl());
-                    getAccPhoneNumbers();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.listPhoneNumbers:
-                try {
-                    textString.setText("+ Phone Number Exchange List");
-                    textScrollBox.setText("+ List not available, yet.");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.asynchronousGet:
-                try {
-                    textString.setText("+ SMS send message to: " + phoneNumber);
-                    URL_REQUEST.setSmsSend(phoneNumber, twilioNumber, "Hello from Android app");
-                    sendSms();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.synchronousGet:
-                try {
-                    // URL_REQUEST.setUrlHello();
-                    // textString.setText("+ GET Hello World text file: "+URL_REQUEST.getRequestUrl());
-                    // getRequest();
-                    textString.setText("+ Get messages sent to: "+ phoneNumber);
-                    URL_REQUEST.setSmsRequestTo(phoneNumber, twilioNumber);
-                    getMessageList();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.asynchronousPost:
-                try {
-                    textString.setText("+ Remove messages to: " + phoneNumber);
-                    getMessagesToDelete();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -240,7 +205,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
+                .url(TwilioSms.getRequestUrl())
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -291,7 +256,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
+                .url(TwilioSms.getRequestUrl())
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -358,7 +323,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.rmSmsMessages(aMessageId))
+                .url(TwilioSms.rmSmsMessages(aMessageId))
                 .delete()
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -384,12 +349,15 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // ---------------------------------------------------------------------------------------------
-    void getMessageList() throws Exception {
+    void getMessageList(String theFormPhoneNumber, String twilioNumber) throws Exception {
+
+        TwilioSms.setSmsRequestTo(theFormPhoneNumber, twilioNumber);
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
+                .url(TwilioSms.getRequestUrl())
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -451,8 +419,8 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
-                .post(URL_REQUEST.getPostParams())
+                .url(TwilioSms.getRequestUrl())
+                .post(TwilioSms.getPostParams())
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -520,57 +488,6 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
 
         SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
         return writeDateformatter.format(cal.getTime());
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    // Not used.
-    // ---------------------------------------------------------------------------------------------
-    void getRequest() throws Exception {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String myResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textScrollBox.setText(myResponse);
-                    }
-                });
-            }
-        });
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    void postRequest() throws Exception {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
-                .post(URL_REQUEST.getPostParams())
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String myResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textScrollBox.setText(myResponse);
-                    }
-                });
-            }
-        });
     }
 
     // ---------------------------------------------------------------------------------------------

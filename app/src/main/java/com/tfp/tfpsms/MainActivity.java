@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void populateMessageList() {
+
         String selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         twilioSms.setSmsRequestOnlyTo(selectedTwilioNumber);
 

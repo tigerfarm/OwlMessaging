@@ -36,6 +36,11 @@
 
             <include layout="@layout/content_main" />
 
+            <TextView
+                android:id="@+id/textString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""/>
         </FrameLayout>
 
         <FrameLayout

@@ -43,11 +43,8 @@ import okhttp3.Response;
 public class SendSmsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AccountCredentials accountCredentials;
-    private TwSms URL_REQUEST;
     private TwSms twilioSms;
-
     private String twilioNumber;
-    Properties properties = new Properties();
 
     private Button sendButton, setButton;
     private EditText sendToPhoneNumber;
@@ -56,6 +53,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private MessagesArrayAdapter messagesArrayAdapter;
+
+    // For testing
+    private TextView textString;
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -68,13 +68,17 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
         // Send message form objects:
         setButton = (Button) findViewById(R.id.setButton);
+        setButton.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.sendButton);
+        sendButton.setOnClickListener(this);
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
         textMessage = (EditText)findViewById(R.id.textMessage);
+        textString = (TextView) findViewById(R.id.textString);
 
         accountCredentials = new AccountCredentials(this);
-        URL_REQUEST = new TwSms(accountCredentials);
         twilioSms = new TwSms(accountCredentials);
+        twilioNumber = accountCredentials.getTwilioPhoneNumber();
+        sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
 
         listView = (ListView) findViewById(R.id.list_view);
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
@@ -94,12 +98,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        twilioNumber = accountCredentials.getTwilioPhoneNumber();
-        sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
-
         populateMessageList();
-        sendButton.setOnClickListener(this);
-        setButton.setOnClickListener(this);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -133,7 +132,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     // properties.setProperty("phone.number", toPhoneNumber);
                     //
                     String theTextMessage = textMessage.getText().toString();
-                    URL_REQUEST.setSmsSend(toPhoneNumber, twilioNumber, theTextMessage);
+                    twilioSms.setSmsSend(toPhoneNumber, twilioNumber, theTextMessage);
                     sendSms();
                     // wait(1000);
                     populateMessageList();
@@ -146,8 +145,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.setButton:
                 try {
                     accountCredentials.setToPhoneNumber(toPhoneNumber);
-                    // properties.setProperty("phone.number", sendToPhoneNumber.getText().toString());
-                    //
+                    // textString.setText("+ setButton, Send message to: " + toPhoneNumber);
                     populateMessageList();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -163,8 +161,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.getRequestUrl())
-                .post(URL_REQUEST.getPostParams())
+                .url(twilioSms.getRequestUrl())
+                .post(twilioSms.getPostParams())
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -188,6 +186,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
 
+        // twilioSms.setSmsRequestOnlyTo(twilioNumber);
         twilioSms.setSmsRequestTo(sendToPhoneNumber.getText().toString(), twilioNumber);
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -196,6 +195,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         Request request = new Request.Builder()
                 .url(twilioSms.getRequestUrl())
                 .build();
+        // textString.setText("+ getRequestUrl: " + twilioSms.getRequestUrl());
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -207,7 +207,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseContent = response.body().string();
-
                 final JSONObject responseJson;
                 try {
                     responseJson = new JSONObject(responseContent);
@@ -226,7 +225,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 messagesArrayAdapter.clear();
                                 int im = 0;
                                 for (int i = 0; i < messages.length(); i++) {
-                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
+                                    // messagesArrayAdapter.insert(messages.getJSONObject(i), i);
+                                    if ( !messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
+                                        // Not if status is received, to remove the case of sending to one of your other account phone numbers.
                                         messagesArrayAdapter.insert(messages.getJSONObject(i), im);
                                         im++;
                                     }
@@ -260,7 +261,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             JSONObject messageJson = getItem(position);
 
             try {
-                labelView.setText(messageJson.getString("to"));
+                labelView.setText(messageJson.getString("to") + " status: " + messageJson.getString("status"));
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
             } catch (JSONException e) {
