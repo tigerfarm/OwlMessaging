@@ -34,6 +34,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_accsec"
+        android:orderInCategory="100"
+        android:title="@string/title_activity_accsec"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_debug"
         android:orderInCategory="100"
         android:title="Development"

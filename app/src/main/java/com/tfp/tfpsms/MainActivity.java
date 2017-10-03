@@ -129,6 +129,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LookupActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_accsec) {
+            Intent intent = new Intent(this, AccSecActivity.class);
+            startActivity(intent);
+            return true;
         } else if (id == R.id.menu_refresh) {
             populateMessageList();
             return true;
