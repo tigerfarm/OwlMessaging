@@ -95,12 +95,13 @@ public class TwSms {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Not used in the SMS version
-    // ---------------------------------------------------------------------------------------------
     // Twilio Account Security API Requests (Sample API for testing: POST without credentials)
 
-    private String seconds_to_expire = "120";
+    private String default_seconds_to_expire = "120";
 
+    public void setPushAuthentication( String authyId, String AskForApproval ) throws Exception {
+        setPushAuthentication(authyId, AskForApproval, default_seconds_to_expire);
+    }
     public void setPushAuthentication( String AuthyId, String AskForApproval, String seconds_to_expire ) throws Exception {
         postParams = new FormBody.Builder()
                 .add("message", AskForApproval)
@@ -117,19 +118,6 @@ public class TwSms {
                 .build();
         requestUrl = "https://api.authy.com/protected/json/phones/verification/start" + "?api_key=" + accountCredentials.getAppApiKey();
     }
-                    /*
-                    URL_REQUEST.setPhoneVerificationSend("sms", "1", "2223331234");
-                    textString.setText("+ POST Phone Verification: "+URL_REQUEST.getRequestUrl());
-                    postRequest();
-                    */
-                    /*
-                    String AuthyId = "12312312";   // Mine
-                    String AskForApproval = "Lunch at 1pm, the usual place.";
-                    String seconds_to_expire = "120";
-                    URL_REQUEST.setPushAuthentication(AuthyId, AskForApproval, seconds_to_expire);
-                    textString.setText("+ Approval Request: " + AskForApproval);
-                    postRequest();
-                    */
 
     // ---------------------------------------------------------------------------------------------
     // GET Hello World (for testing)

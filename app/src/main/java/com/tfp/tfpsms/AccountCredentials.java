@@ -35,7 +35,7 @@ public class AccountCredentials implements Interceptor {
     private int localTimeOffset;
     //
     // Twilio Authy Application entry API Key:
-    private String appApiKey;
+    private String appApiKey = "Vye28fVRU1Bo85BISTENwp1klE5a7tir";  // Owl Publishing
     private SharedPreferences sharedPreferences;
 
     public AccountCredentials(Context context) {

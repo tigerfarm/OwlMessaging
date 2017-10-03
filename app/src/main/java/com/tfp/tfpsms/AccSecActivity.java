@@ -22,8 +22,8 @@ public class AccSecActivity extends AppCompatActivity implements View.OnClickLis
     private AccountCredentials accountCredentials;
     private TwSms twilioAccSec;
 
-    private Button theButton;
-    private EditText editMessage;
+    private Button buttonSendVerification, buttonApprovalRequest;
+    private EditText editNumber, editMessage;
     private TextView textString, msgString;
     private TextView textScrollBox;
 
@@ -40,9 +40,12 @@ public class AccSecActivity extends AppCompatActivity implements View.OnClickLis
         accountCredentials = new AccountCredentials(this);
         twilioAccSec = new TwSms(accountCredentials);
         //
-        theButton = (Button) findViewById(R.id.theButton);
-        theButton.setOnClickListener(this);
+        buttonSendVerification = (Button) findViewById(R.id.buttonSendVerification);
+        buttonSendVerification.setOnClickListener(this);
+        buttonApprovalRequest = (Button) findViewById(R.id.buttonApprovalRequest);
+        buttonApprovalRequest.setOnClickListener(this);
         //
+        editNumber = (EditText)findViewById(R.id.editNumber);
         editMessage = (EditText)findViewById(R.id.editMessage);
         //
         textString = (TextView) findViewById(R.id.textString);
@@ -53,23 +56,29 @@ public class AccSecActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
+        String theNumber = editNumber.getText().toString();
+        String theMessage = editMessage.getText().toString();
         switch (view.getId()) {
-            case R.id.theButton:
-                String themessage = editMessage.getText().toString();
-
+            case R.id.buttonSendVerification:
+                String countryCode = "1";
+                textString.setText("+ SMS to: (" + countryCode + ")" + theNumber);
                 try {
-                    twilioAccSec.setPhoneVerificationSend("sms", "1", "2223331234");
-                    textString.setText("+ POST Phone Verification: "+twilioAccSec.getRequestUrl());
+                    twilioAccSec.setPhoneVerificationSend("sms", countryCode, theNumber);
+                    textString.setText("+ Send Phone Verification: "+twilioAccSec.getRequestUrl());
                     postRequest();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                /*
-                textString.setText("+ textString, encrypted :" + encString.trim() +":");
-                msgString.setText("+ msgString, decrypted :" + decString +":");
-                */
-
-                textScrollBox.setText("+ textScrollBox");
+                break;
+            case R.id.buttonApprovalRequest:
+                textString.setText("+ Approval to AuthyID: " + theNumber);
+                try {
+                    twilioAccSec.setPushAuthentication(theNumber, theMessage);
+                    textString.setText("+ Approval Request: "+twilioAccSec.getRequestUrl());
+                    postRequest();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

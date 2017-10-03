@@ -27,25 +27,33 @@
         android:id="@+id/theForm"
         android:background="@drawable/borders_top"
         android:layout_width="match_parent"
-        android:layout_height="102dp">
+        android:layout_height="141dp">
         <Button
-            android:id="@+id/theButtonSendVerification"
+            android:id="@+id/buttonSendVerification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Send Verification" />
         <Button
-            android:id="@+id/theButton"
+            android:id="@+id/buttonApprovalRequest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="Approval Request" />
 
+        <!-- AuthyID/PhoneNumber -->
+        <EditText
+            android:id="@+id/editNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="40023285" />
+        <!-- Message to send -->
         <EditText
             android:id="@+id/editMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:text="Hello there." />
+            android:text="Do you approve?" />
     </FrameLayout>
 
     <FrameLayout
@@ -72,14 +80,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:text="textString"/>
+                android:text="textString: 40023285"/>
             <TextView
                 android:id="@+id/msgString"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:text="msgString"/>
+                android:text="msgString: 6504837603"/>
             <TextView
                 android:id="@+id/scrollBox"
                 android:layout_width="match_parent"

@@ -227,7 +227,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 for (int i = 0; i < messages.length(); i++) {
                                     // messagesArrayAdapter.insert(messages.getJSONObject(i), i);
                                     if ( !messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
-                                        // Not if status is received, to remove the case of sending to one of your other account phone numbers.
+                                        // Not if status = received, to remove the case of sending to one of your other account phone numbers.
                                         messagesArrayAdapter.insert(messages.getJSONObject(i), im);
                                         im++;
                                     }
