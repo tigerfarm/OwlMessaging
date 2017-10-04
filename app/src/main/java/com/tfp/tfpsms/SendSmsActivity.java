@@ -187,7 +187,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private void populateMessageList() {
 
         // twilioSms.setSmsRequestOnlyTo(twilioNumber);
-        twilioSms.setSmsRequestTo(sendToPhoneNumber.getText().toString(), twilioNumber);
+        twilioSms.setSmsRequestLogs(twilioNumber, sendToPhoneNumber.getText().toString());
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -223,6 +223,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                             try {
                                 JSONArray messages = responseJson.getJSONArray("messages");
                                 messagesArrayAdapter.clear();
+                                textString.setText("");
                                 int im = 0;
                                 for (int i = 0; i < messages.length(); i++) {
                                     // messagesArrayAdapter.insert(messages.getJSONObject(i), i);
@@ -231,6 +232,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                         messagesArrayAdapter.insert(messages.getJSONObject(i), im);
                                         im++;
                                     }
+                                }
+                                if ( im == 0 ) {
+                                    textString.setText("+ No messages.");
                                 }
                             } catch (JSONException e) {
                                 Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
@@ -261,7 +265,11 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             JSONObject messageJson = getItem(position);
 
             try {
-                labelView.setText(messageJson.getString("to") + " status: " + messageJson.getString("status"));
+                labelView.setText(messageJson.getString("to"));
+                String theStatus = messageJson.getString("status");
+                if (!theStatus.equalsIgnoreCase("delivered")) {
+                    labelView.setText(messageJson.getString("to") + " status: " + messageJson.getString("status"));
+                }
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
             } catch (JSONException e) {

@@ -40,6 +40,8 @@
                 android:id="@+id/textString"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="#888888"
+                android:textSize="14sp"
                 android:text=""/>
         </FrameLayout>
 

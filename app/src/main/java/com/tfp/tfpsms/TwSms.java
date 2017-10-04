@@ -35,17 +35,10 @@ public class TwSms {
         return requestUrl;
     }
 
-    public void setSmsRequest() {
-        requestUrl = setSmsRequest;
+    public void setSmsRequestLogs(String fromPhoneNumber, String toPhoneNumber) {
+        requestUrl = setSmsRequest + "?From="+fromPhoneNumber + "&To="+toPhoneNumber;
     }
-
-    public void setSmsRequestFrom(String phoneNumber, String twilioNumber) {
-        requestUrl = setSmsRequest + "?From="+phoneNumber + "&To="+twilioNumber;
-    }
-    public void setSmsRequestTo(String phoneNumber, String twilioNumber) {
-        requestUrl = setSmsRequest + "?To="+phoneNumber + "&From="+twilioNumber;
-    }
-    public void setSmsRequestOnlyTo(String phoneNumber) {
+    public void setSmsRequestLogsTo(String phoneNumber) {
         requestUrl = setSmsRequest + "?To="+phoneNumber;
     }
 
@@ -121,6 +114,9 @@ public class TwSms {
 
     // ---------------------------------------------------------------------------------------------
     // GET Hello World (for testing)
+    // TwilioSms.setUrlHello();
+    // textString.setText("+ GET Hello World text file: "+TwilioSms.getRequestUrl());
+    // getRequest();
     private String urlHello = "http://tigerfarmpress.com/hello.txt";
     public void setUrlHello() throws Exception {
         requestUrl = urlHello;

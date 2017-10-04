@@ -30,13 +30,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:text="List"/>
+            android:text="Get-From"/>
         <Button
             android:id="@+id/buttonGet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="Get" />
+            android:text="Get-To" />
         <Button
             android:id="@+id/buttonDelete"
             android:layout_width="wrap_content"

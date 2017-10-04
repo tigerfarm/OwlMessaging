@@ -128,13 +128,24 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                     e.printStackTrace();
                 }
                 break;
+            case R.id.listPhoneNumbers:
+                try {
+                    textString.setText("+ Messages From: "+ twilioNumber);
+                    msgString.setText("+ Messages to  : "+ theFormPhoneNumber);
+                    TwilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
+                    getMessageList();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
             case R.id.buttonGet:
                 try {
-                    // TwilioSms.setUrlHello();
-                    // textString.setText("+ GET Hello World text file: "+TwilioSms.getRequestUrl());
-                    // getRequest();
-                    textString.setText("+ Get messages sent to: "+ theFormPhoneNumber);
-                    getMessageList(theFormPhoneNumber, twilioNumber);
+                    textString.setText("+ Messages From: "+ theFormPhoneNumber);
+                    msgString.setText("+ Messages to  : "+ twilioNumber);
+                    TwilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
+                    getMessageList();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -143,8 +154,16 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.buttonDelete:
                 try {
-                    textString.setText("+ Remove messages to: " + theFormPhoneNumber);
+                    textScrollBox.setText("+ Remove messages exchanged with: " + theFormPhoneNumber);
+                    //
+                    textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
+                    TwilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
                     getMessagesToDelete();
+                    //
+                    msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
+                    TwilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
+                    getMessagesToDelete();
+                    //
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
@@ -159,14 +178,6 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                     getAccPhoneNumbers();
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.listPhoneNumbers:
-                try {
-                    textString.setText("+ Phone Number Exchange List");
-                    textScrollBox.setText("+ List not available, yet.");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -200,58 +211,8 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // ---------------------------------------------------------------------------------------------
-    void getAccPhoneNumbers() throws Exception {
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(accountCredentials)
-                .build();
-        Request request = new Request.Builder()
-                .url(TwilioSms.getRequestUrl())
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String jsonResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textScrollBox.setText(accPhoneNumberPrintList(jsonResponse));
-                    }
-                });
-            }
-        });
-    }
+    private void getMessagesToDelete() throws Exception {
 
-    String accPhoneNumberPrintList(String jsonList) {
-        String aPrintList = "";
-        final JSONObject responseJson;
-        try {
-            responseJson = new JSONObject(jsonList);
-        } catch (JSONException e) {
-            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
-            return aPrintList;
-        }
-        try {
-            JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
-            for (int i = 0; i < jList.length(); i++) {
-                aPrintList = aPrintList
-                        + jList.getJSONObject(i).getString("phone_number")
-                        + " : "
-                        + jList.getJSONObject(i).getString("friendly_name")
-                        + "\n";
-            }
-        } catch (JSONException e) {
-            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
-            return aPrintList;
-        }
-        return aPrintList;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    void getMessagesToDelete() throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
                 .build();
@@ -281,28 +242,24 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        textScrollBox.setText("+ Messages deleted = " + aCounter);
+                        textScrollBox.setText( textScrollBox.getText() + "\n+ Messages deleted = " + aCounter);
                     }
                 });
             }
         });
     }
 
-    List<String> getDeleteMessageList(String jsonList) {
-
+    private List<String> getDeleteMessageList(String jsonList) {
         List<String> listSids = new ArrayList<String>();
-
         // Check if there is no messages.
         String mtMessages = "\"messages\": []";
         if (jsonList.indexOf(mtMessages, 0)>0) {
             return listSids;
         }
-
         // Message SID:
         // "sid": "SM57be9436e08a43d2bcec786fba8c9424",
         String theSid = "\"sid\":";
         String endValue = "\",";
-
         int si = jsonList.indexOf(theSid, 0);
         int ei = 0;
         while (si > 0) {
@@ -314,11 +271,10 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             }
             si = jsonList.indexOf(theSid, ei);
         }
-
         return listSids;
     }
 
-    void deleteOneMessage(final String aMessageId ) throws Exception {
+    private void deleteOneMessage(final String aMessageId ) throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
                 .build();
@@ -349,9 +305,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // ---------------------------------------------------------------------------------------------
-    void getMessageList(String theFormPhoneNumber, String twilioNumber) throws Exception {
-
-        TwilioSms.setSmsRequestTo(theFormPhoneNumber, twilioNumber);
+    private void getMessageList() throws Exception {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -370,51 +324,101 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 DebugActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textScrollBox.setText(listMessages(myResponse));
+                        textScrollBox.setText( printMessageLog(myResponse) );
                     }
                 });
             }
         });
     }
 
-    String listMessages(String jsonList) {
-        String theList = "+ No messages.";
-
-        // Check if there is no messages.
-        String mtMessages = "\"messages\": []";
-        if (jsonList.indexOf(mtMessages, 0)>0) {
-            return theList;
+    private String printMessageLog(String jsonResponse) {
+        JSONObject responseJson;
+        JSONArray theJsonArray;
+        try {
+            responseJson = new JSONObject(jsonResponse);
+            theJsonArray = responseJson.getJSONArray("messages");
+        } catch (JSONException e) {
+            System.out.println("-- Failed to parse JSON response.");
+            return "-- Failed to parse JSON response.";
         }
-        theList = "";
-
-        // List the date sent and the message body:
-        // "body": "Hello from Android app",
-        // "date_sent": "Mon, 25 Sep 2017 19:55:18 +0000",
-        String theDateSent = "\"date_sent\":";
-        String theBody = "\"body\":";
-        String endValue = "\",";
-
-        int si = jsonList.indexOf(theDateSent, 0);
-        int ei = 0;
-        while (si > 0) {
-            ei = jsonList.indexOf(endValue, si);
-            //  123456                   123456
-            // :Tue, 26 Sep 2017 00:49:31 +0000:
-            theList = theList + localDateTime( jsonList.substring(si + theDateSent.length() + 2 + 5, ei - 6) );
-
-            si = jsonList.indexOf(theBody, ei);
-            if (si > 0) {
-                ei = jsonList.indexOf(endValue, si);
-                theList = theList + ", " + jsonList.substring(si + theBody.length() + 2, ei) + "\n";
+        String theResponse = "++ Message list: from, to, status, date, message" + "\n";
+        try {
+            int theLength = theJsonArray.length();
+            if ( theLength == 0 ) {
+                return "+ No messages.";
             }
-            si = jsonList.indexOf(theDateSent, ei);
+            for (int i = 0; i < theLength; i++) {
+                theJsonArray.getJSONObject(i).getString("from");
+                int counter = i + 1;
+                theResponse = theResponse
+                        + counter
+                        + " " + theJsonArray.getJSONObject(i).getString("from")
+                        + ", " + theJsonArray.getJSONObject(i).getString("to")
+                        + ", " + theJsonArray.getJSONObject(i).getString("status")
+                        + ", " + TwilioSms.localDateTime( theJsonArray.getJSONObject(i).getString("date_updated") )
+                        + ", " + theJsonArray.getJSONObject(i).getString("body")
+                        + "\n";
+            }
+        } catch (JSONException e) {
+            System.out.println("-- Failed to parse JSON response.");
+            return "-- Failed to parse JSON response items.";
         }
-
-        return theList;
+        return theResponse;
     }
 
     // ---------------------------------------------------------------------------------------------
-    void sendSms() throws Exception {
+    private void getAccPhoneNumbers() throws Exception {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(TwilioSms.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String jsonResponse = response.body().string();
+                DebugActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textScrollBox.setText(accPhoneNumberPrintList(jsonResponse));
+                    }
+                });
+            }
+        });
+    }
+
+    private String accPhoneNumberPrintList(String jsonList) {
+        String aPrintList = "";
+        final JSONObject responseJson;
+        try {
+            responseJson = new JSONObject(jsonList);
+        } catch (JSONException e) {
+            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+            return aPrintList;
+        }
+        try {
+            JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
+            for (int i = 0; i < jList.length(); i++) {
+                aPrintList = aPrintList
+                        + jList.getJSONObject(i).getString("phone_number")
+                        + " : "
+                        + jList.getJSONObject(i).getString("friendly_name")
+                        + "\n";
+            }
+        } catch (JSONException e) {
+            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
+            return aPrintList;
+        }
+        return aPrintList;
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    private void sendSms() throws Exception {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
                 .build();
@@ -440,7 +444,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    String responseStatus(String jsonList) {
+    private String responseStatus(String jsonList) {
         String theStatusResult = "+ Response status: ";
 
         // List the date sent and the message body:
@@ -473,7 +477,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         return theStatusResult;
     }
 
-    String localDateTime(String theGmtDate) {
+    private String localDateTime(String theGmtDate) {
         //                                                        "27 Sep 2017 00:32:47"
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
         Date gmtDate = new Date();
