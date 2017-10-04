@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -43,7 +44,9 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_lookup);
 
         // To return to MainActivity
-        setupActionBar();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Send message form objects:
         theButton = (Button) findViewById(R.id.theButton);

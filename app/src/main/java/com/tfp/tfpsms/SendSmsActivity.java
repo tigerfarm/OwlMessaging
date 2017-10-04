@@ -10,7 +10,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
@@ -50,6 +53,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private EditText sendToPhoneNumber;
     private EditText textMessage;
 
+    private Spinner twilioNumberSpinner;
+
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private MessagesArrayAdapter messagesArrayAdapter;
@@ -63,8 +68,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sendsms);
 
-        // To return to MainActivity
-        setupActionBar();
+        // Top bar with: return to MainActivity.
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Send message form objects:
         setButton = (Button) findViewById(R.id.setButton);
@@ -102,20 +109,31 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Show the Back arrow (Up button) in the action bar.
-    // When clicked, to the MainActivity.
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Adds 3-dot option menu in the action bar.
+        getMenuInflater().inflate(R.menu.menu_sendsms, menu);
 
+        MenuItem item = menu.findItem(R.id.spinner);
+        twilioNumberSpinner = (Spinner) item.getActionView();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(twilioNumber));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        twilioNumberSpinner.setAdapter(adapter);
+
+        return true;
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Note, this automatically back-arrow to parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == android.R.id.home) {
-            startActivity(new Intent(this, MainActivity.class));
+        if (id == R.id.action_encode) {
+            textString.setText("+ 3-dot menu selected: action_encode");
+            return true;
+        } else if (id == R.id.action_getfrom) {
+            textString.setText("+ 3-dot menu selected: action_getfrom");
+            return true;
+        } else if (id == R.id.action_getto) {
+            textString.setText("+ 3-dot menu selected: action_getto");
             return true;
         }
         return super.onOptionsItemSelected(item);

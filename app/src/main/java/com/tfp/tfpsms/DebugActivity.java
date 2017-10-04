@@ -17,10 +17,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -33,6 +36,7 @@ import java.security.InvalidKeyException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -63,6 +67,8 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
 
     private EncDecString doEncDecString;
     private Button buttonEncDec;
+
+    private Spinner twilioNumberSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +115,37 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         TwilioSms = new TwSms(accountCredentials);
         twilioNumber = accountCredentials.getTwilioPhoneNumber();
         formPhoneNumber.setText( accountCredentials.getToPhoneNumber() );
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Adds 3-dot option menu in the action bar.
+        getMenuInflater().inflate(R.menu.menu_dev, menu);
+
+        MenuItem item = menu.findItem(R.id.spinner);
+        twilioNumberSpinner = (Spinner) item.getActionView();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(twilioNumber));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        twilioNumberSpinner.setAdapter(adapter);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Note, this automatically back-arrow to parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_encode) {
+            textString.setText("+ 3-dot menu selected: action_encode");
+            return true;
+        } else if (id == R.id.action_getfrom) {
+            textString.setText("+ 3-dot menu selected: action_getfrom");
+            return true;
+        } else if (id == R.id.action_getto) {
+            textString.setText("+ 3-dot menu selected: action_getto");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // ---------------------------------------------------------------------------------------------

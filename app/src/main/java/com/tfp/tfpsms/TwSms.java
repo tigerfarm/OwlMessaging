@@ -88,14 +88,29 @@ public class TwSms {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Twilio Account Security API Requests (Sample API for testing: POST without credentials)
+    // Twilio Account Security API Requests
+    // Note, doesn't require account credentials, but uses application API key.
 
+    // To do:
+    //
+    // Setup Push Authentication callback to SMS the Authy App answer of Approve or Deny.
+    // Add to Settings: application API key (appApiKey).
+    //
+    // Add user.
+    // Get user status.
+    // Remove user.
+    // DB phone numbers to Authy IDs.
+    //
+    // Send an OTP.
+    // Verify a TOTP passcode.
+
+    //--------------------------------------------------
     private String default_seconds_to_expire = "120";
 
-    public void setPushAuthentication( String authyId, String AskForApproval ) throws Exception {
+    public void setPushAuthentication( String authyId, String AskForApproval ) {
         setPushAuthentication(authyId, AskForApproval, default_seconds_to_expire);
     }
-    public void setPushAuthentication( String AuthyId, String AskForApproval, String seconds_to_expire ) throws Exception {
+    public void setPushAuthentication( String AuthyId, String AskForApproval, String seconds_to_expire ) {
         postParams = new FormBody.Builder()
                 .add("message", AskForApproval)
                 .add("seconds_to_expire", seconds_to_expire)
@@ -103,7 +118,8 @@ public class TwSms {
         requestUrl = "https://api.authy.com/onetouch/json/users/"+AuthyId+"/approval_requests?api_key=" + accountCredentials.getAppApiKey();
     }
 
-    public void setPhoneVerificationSend( String param1, String param2, String param3 ) throws Exception {
+    //--------------------------------------------------
+    public void setPhoneVerificationSend( String param1, String param2, String param3 ) {
         postParams = new FormBody.Builder()
                 .add("via", param1)
                 .add("country_code", param2)

@@ -17,12 +17,12 @@
     <item
         android:id="@+id/action_sendsms"
         android:orderInCategory="100"
-        android:title="@string/title_activity_sendmessage"
+        android:title="@string/title_activity_sendsms"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_lookup"
         android:orderInCategory="100"
-        android:title="Lookup phone number"
+        android:title="@string/title_activity_lookup"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_accsec"

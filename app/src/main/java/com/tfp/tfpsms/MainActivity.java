@@ -42,14 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
     private AccountCredentials accountCredentials;
     private TwSms twilioSms;
+    private String twilioNumber;
 
     private ListView listView;
     private MessagesArrayAdapter messagesArrayAdapter;
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private Spinner twilioNumberSpinner;
-
-    private String twilioNumber;
-    private String phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,14 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         accountCredentials = new AccountCredentials(this);
         twilioNumber = accountCredentials.getTwilioPhoneNumber();
-        phoneNumber = accountCredentials.getToPhoneNumber();
-        // Must be after accountCredentials being set, because it uses accountCredentials.
         twilioSms = new TwSms(accountCredentials);
 
-        listView = (ListView) findViewById(R.id.list_view);
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
+        listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(messagesArrayAdapter);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
@@ -92,16 +88,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         MenuItem item = menu.findItem(R.id.spinner);
-
         twilioNumberSpinner = (Spinner) item.getActionView();
-
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(twilioNumber));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         twilioNumberSpinner.setAdapter(adapter);
 
         populateMessageList();
-
         return true;
     }
 

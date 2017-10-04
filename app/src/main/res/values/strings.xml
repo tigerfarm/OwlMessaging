@@ -3,14 +3,15 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_refresh">Get recent messages</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="title_activity_debug">Development</string>
-    <string name="title_activity_sendmessage">Send Message</string>
+    <string name="title_activity_sendsms">Send Message</string>
+    <string name="title_activity_lookup">Phone number information</string>
     <string name="title_activity_accsec">2FA and Phone Verification</string>
-
-    <!-- Strings related to Settings -->
+    <string name="title_activity_debug">Development</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- ======================================================================================= -->
+    <!-- Strings related to Settings -->
+
     <string name="pref_header_twilio">Twilio Account</string>
     <string name="pref_title_account_sid">Account SID</string>
     <string name="pref_title_account_token">Account Auth Token</string>

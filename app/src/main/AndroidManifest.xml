@@ -22,18 +22,34 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".DebugActivity"
+            android:label="@string/title_activity_debug"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tfp.tfpsms.MainActivity" />
+        </activity>
+        <activity
+            android:name=".LookupActivity"
+            android:label="@string/title_activity_lookup"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.tfp.tfpsms.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:name="com.tfp.tfpsms.SettingsActivity"
             android:parentActivityName="com.tfp.tfpsms.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tfp.tfpsms.MainActivity" />
         </activity>
-        <activity android:name="com.tfp.tfpsms.SendSmsActivity"></activity>
-        <activity android:name="com.tfp.tfpsms.LookupActivity"></activity>
         <activity
-            android:name=".DebugActivity"
-            android:label="@string/title_activity_debug"
+            android:name=".SendSmsActivity"
+            android:label="@string/title_activity_sendsms"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
