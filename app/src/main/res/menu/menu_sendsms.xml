@@ -11,19 +11,9 @@
         app:actionViewClass="android.widget.Spinner" />
 
     <item
-        android:id="@+id/action_encode"
+        android:id="@+id/action_delete"
         android:orderInCategory="100"
-        android:title="Encode"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_getfrom"
-        android:orderInCategory="100"
-        android:title="Get-from"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_getto"
-        android:orderInCategory="100"
-        android:title="Get-to"
+        android:title="@string/title_activity_deleteconversation"
         app:showAsAction="never" />
 
 </menu>

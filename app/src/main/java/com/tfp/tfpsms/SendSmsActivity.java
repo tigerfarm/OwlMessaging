@@ -32,9 +32,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import okhttp3.Call;
@@ -126,16 +129,30 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         // Note, this automatically back-arrow to parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_encode) {
-            textString.setText("+ 3-dot menu selected: action_encode");
-            return true;
-        } else if (id == R.id.action_getfrom) {
-            textString.setText("+ 3-dot menu selected: action_getfrom");
-            return true;
-        } else if (id == R.id.action_getto) {
-            textString.setText("+ 3-dot menu selected: action_getto");
+
+        if (id == R.id.action_delete) {
+            // This will function. I need to have message feedback.
+            textString.setText("+ 3-dot menu selected: action_delete");
+            String toPhoneNumber = sendToPhoneNumber.getText().toString();
+            try {
+                // textScrollBox.setText("+ Remove messages exchanged with: " + theFormPhoneNumber);
+                //
+                textString.setText("+ Remove messages to/from  : " + toPhoneNumber);
+                twilioSms.setSmsRequestLogs(twilioNumber, toPhoneNumber);
+                getMessagesToDelete();
+                //
+                // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
+                twilioSms.setSmsRequestLogs(toPhoneNumber, twilioNumber);
+                getMessagesToDelete();
+                //
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -147,15 +164,11 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.sendButton:
                 try {
                     accountCredentials.setToPhoneNumber(toPhoneNumber);
-                    // properties.setProperty("phone.number", toPhoneNumber);
-                    //
                     String theTextMessage = textMessage.getText().toString();
                     twilioSms.setSmsSend(toPhoneNumber, twilioNumber, theTextMessage);
                     sendSms();
                     // wait(1000);
                     populateMessageList();
-                    // Intent intent = new Intent(this, MainActivity.class);
-                    // startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -299,4 +312,100 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    private void getMessagesToDelete() throws Exception {
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                SendSmsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<String> messageList = getDeleteMessageList(myResponse);
+                        int aCounter = 0;
+                        try {
+                            String aMessageId;
+                            for (Iterator<String> iter = messageList.iterator(); iter.hasNext();) {
+                                aMessageId = iter.next();
+                                deleteOneMessage( aMessageId );
+                                aCounter++;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        // textScrollBox.setText( textScrollBox.getText() + "\n+ Messages deleted = " + aCounter);
+                    }
+                });
+            }
+        });
+    }
+
+    private List<String> getDeleteMessageList(String jsonList) {
+        List<String> listSids = new ArrayList<String>();
+        // Check if there is no messages.
+        String mtMessages = "\"messages\": []";
+        if (jsonList.indexOf(mtMessages, 0)>0) {
+            return listSids;
+        }
+        // Message SID:
+        // "sid": "SM57be9436e08a43d2bcec786fba8c9424",
+        String theSid = "\"sid\":";
+        String endValue = "\",";
+        int si = jsonList.indexOf(theSid, 0);
+        int ei = 0;
+        while (si > 0) {
+            ei = jsonList.indexOf(endValue, si);
+            if (si > 0) {
+                ei = jsonList.indexOf(endValue, si);
+                String aSid = jsonList.substring(si + theSid.length() + 2, ei);
+                listSids.add(aSid);
+            }
+            si = jsonList.indexOf(theSid, ei);
+        }
+        return listSids;
+    }
+
+    private void deleteOneMessage(final String aMessageId ) throws Exception {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.rmSmsMessages(aMessageId))
+                .delete()
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String myResponse = response.body().string();
+                SendSmsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // textScrollBox.setText("+ deleteOneMessage " + myResponse);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+
+    // ---------------------------------------------------------------------------------------------
 }
