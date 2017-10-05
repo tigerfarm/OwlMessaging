@@ -222,4 +222,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------
+    private void getAccPhoneNumbers() throws Exception {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String jsonResponse = response.body().string();
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //textScrollBox.setText(accPhoneNumberPrintList(jsonResponse));
+                    }
+                });
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
 }

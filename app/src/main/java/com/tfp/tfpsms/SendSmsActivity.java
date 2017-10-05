@@ -119,7 +119,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
         MenuItem item = menu.findItem(R.id.spinner);
         twilioNumberSpinner = (Spinner) item.getActionView();
+        //
+        // Add item to spinner.
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(twilioNumber));
+        //
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         twilioNumberSpinner.setAdapter(adapter);
 
