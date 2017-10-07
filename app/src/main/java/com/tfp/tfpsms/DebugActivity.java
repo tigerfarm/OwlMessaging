@@ -149,13 +149,19 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
+
+        // Set the Application Twilio Phone Number.
         String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        accountCredentials.setTwilioPhoneNumber(twilioNumber);
+
         String theFormPhoneNumber = formPhoneNumber.getText().toString();
+
         switch (view.getId()) {
             case R.id.buttonSend:
                 try {
                     String theTextMessage = textMessage.getText().toString();
-                    textString.setText("+ Send message to: " + theFormPhoneNumber);
+                    textString.setText("+ Send message from: " + twilioNumber);
+                    msgString.setText("+ Send message to: " + theFormPhoneNumber);
                     twilioSms.setSmsSend(theFormPhoneNumber, twilioNumber, theTextMessage);
                     sendSms();
                 } catch (IOException e) {
@@ -190,7 +196,11 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.buttonDelete:
                 try {
-                    textScrollBox.setText("+ Remove messages exchanged with: " + theFormPhoneNumber);
+                    textScrollBox.setText(
+                            "+ Remove messages exchanged between: \n"
+                                    + "Twilio Number: " + twilioNumber + "\n"
+                                    + "Phone Number: " + theFormPhoneNumber + "\n"
+                    );
                     //
                     textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
                     twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
@@ -592,7 +602,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
         //
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         twilioNumberSpinner.setAdapter(adapter);
-        twilioNumberSpinner.setSelection( adapter.getPosition("+"+accountCredentials.getTwilioPhoneNumber()) );
+        twilioNumberSpinner.setSelection( adapter.getPosition(accountCredentials.getTwilioPhoneNumber()) );
 
         return aPrintList;
     }

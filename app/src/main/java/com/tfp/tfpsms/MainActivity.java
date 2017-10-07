@@ -29,7 +29,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import okhttp3.Call;
@@ -38,11 +40,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.tfp.tfpsms.R.id.spinner;
+
 public class MainActivity extends AppCompatActivity {
 
     private AccountCredentials accountCredentials;
     private TwSms twilioSms;
-    private String twilioNumber;
 
     private ListView listView;
     private MessagesArrayAdapter messagesArrayAdapter;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Spinner twilioNumberSpinner;
 
+    // ---------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         accountCredentials = new AccountCredentials(this);
-        twilioNumber = accountCredentials.getTwilioPhoneNumber();
         twilioSms = new TwSms(accountCredentials);
 
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
@@ -84,29 +87,28 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // ---------------------------------------------------------------------------------------------
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        MenuItem item = menu.findItem(R.id.spinner);
-        twilioNumberSpinner = (Spinner) item.getActionView();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(twilioNumber));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        twilioNumberSpinner.setAdapter(adapter);
+        // Top bar list of account phone numbers:
+        loadSpinnerAccPhoneNumbers(menu);
 
-        populateMessageList();
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Set the Appication Twilio Phone Number before going to another panel.
+        accountCredentials.setTwilioPhoneNumber( twilioNumberSpinner.getSelectedItem().toString() );
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
@@ -135,9 +137,14 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
 
+        // Set the Application Twilio Phone Number.
         String selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        accountCredentials.setTwilioPhoneNumber(selectedTwilioNumber);
+
+        // Get the recent message logs for the Twilio Phone Number.
         twilioSms.setSmsRequestLogsTo(selectedTwilioNumber);
 
         OkHttpClient client = new OkHttpClient.Builder()
@@ -210,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             JSONObject messageJson = getItem(position);
 
             try {
-                labelView.setText(messageJson.getString("from"));
+                labelView.setText("+ From: " + messageJson.getString("from") + " to " + messageJson.getString("to"));
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(twilioSms.localDateTime(messageJson.getString("date_sent")));
             } catch (JSONException e) {
@@ -223,7 +230,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // ---------------------------------------------------------------------------------------------
-    private void getAccPhoneNumbers() throws Exception {
+    private void loadSpinnerAccPhoneNumbers(final Menu menu) {
+        twilioSms.setAccPhoneNumbers();
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
                 .build();
@@ -241,12 +249,61 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //textScrollBox.setText(accPhoneNumberPrintList(jsonResponse));
+                        String theResponse = accPhoneNumberPrintList(menu, jsonResponse);
                     }
                 });
             }
         });
     }
 
-    // ---------------------------------------------------------------------------------------------
+    private String accPhoneNumberPrintList(Menu menu, String jsonList) {
+        String aPrintList = "";
+        final JSONObject responseJson;
+        try {
+            responseJson = new JSONObject(jsonList);
+        } catch (JSONException e) {
+            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+            return aPrintList;
+        }
+
+        // Top bar spinner list of account phone numbers.
+        MenuItem item = menu.findItem(spinner);
+        twilioNumberSpinner = (Spinner) item.getActionView();
+        List<String> spinnerList = new ArrayList<String>();
+        try {
+            JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
+            for (int i = 0; i < jList.length(); i++) {
+                String accPhoneNumber = jList.getJSONObject(i).getString("phone_number");
+                spinnerList.add( accPhoneNumber );
+                aPrintList = aPrintList
+                        + accPhoneNumber
+                        + " : "
+                        + jList.getJSONObject(i).getString("friendly_name")
+                        + "\n";
+            }
+        } catch (JSONException e) {
+            Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
+            return aPrintList;
+        }
+        String[] spinnerArray = new String[ spinnerList.size() ];
+        spinnerList.toArray( spinnerArray );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(spinnerArray));
+        //
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        twilioNumberSpinner.setAdapter(adapter);
+        String twilioPhoneNumber = accountCredentials.getTwilioPhoneNumber();
+        if (twilioPhoneNumber.startsWith("+")) {
+            twilioNumberSpinner.setSelection( adapter.getPosition(twilioPhoneNumber) );
+        } else {
+            // Temporary case while switching over from data entered phone number in Settings.
+            twilioNumberSpinner.setSelection( adapter.getPosition("+" + twilioPhoneNumber) );
+            accountCredentials.setTwilioPhoneNumber(twilioPhoneNumber);
+        }
+
+        populateMessageList();
+
+        return aPrintList;
+    }
+
+   // ---------------------------------------------------------------------------------------------
 }

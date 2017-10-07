@@ -64,6 +64,12 @@ public class AccountCredentials implements Interceptor {
         return accountSid;
     }
 
+    public void setTwilioPhoneNumber(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        prefEditor.putString("twilio_phone_number", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
+    }
     public String getTwilioPhoneNumber() {
         return twilioPhoneNumber;
     }

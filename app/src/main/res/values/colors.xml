@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimaryDark">#954C08</color>  <!-- Top slim bar -->
+    <color name="colorPrimary">#954C08</color>      <!-- Top application bar, below the slim bar -->
+
+    <color name="colorAccent">#E7C9B1</color>
     <color name="colorWhite">#FFFFFF</color>
+
+    <color name="listBackground">#FFFFFF</color>
+    <color name="listText">#000618</color>
 </resources>
