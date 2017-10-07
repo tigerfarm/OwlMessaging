@@ -6,7 +6,7 @@
     <string name="title_activity_sendsms">Send Message</string>
     <string name="title_activity_lookup">Phone number information</string>
     <string name="title_activity_accsec">2FA and Phone Verification</string>
-    <string name="title_activity_debug">Development</string>
+    <string name="title_activity_dev">Development</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_deleteconversation">Delete this conversation messages</string>
 

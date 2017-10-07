@@ -7,7 +7,7 @@
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:id="@+id/activity_debug"
-    tools:context="com.tfp.tfpsms.DebugActivity">
+    tools:context="com.tfp.tfpsms.DevActivity">
 
     <!-- =================================== -->
     <android.support.design.widget.AppBarLayout

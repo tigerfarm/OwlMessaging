@@ -22,8 +22,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DebugActivity"
-            android:label="@string/title_activity_debug"
+            android:name=".DevActivity"
+            android:label="@string/title_activity_dev"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

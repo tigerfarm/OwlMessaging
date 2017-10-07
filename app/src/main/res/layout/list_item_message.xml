@@ -44,38 +44,5 @@
             android:textSize="12sp" />
     </LinearLayout>
 
-    <!--
-    <ImageView
-        android:id="@+id/host_row_divider1"
-        android:layout_width="1dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center_vertical" />
-
-    <ImageButton
-        android:id="@+id/host_row_delete"
-        android:layout_width="48dp"
-        android:layout_height="match_parent"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        android:scaleType="center" />
-
-    <ImageView
-        android:id="@+id/host_row_divider2"
-        android:layout_width="1dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center_vertical" />
-
-    <ImageButton
-        android:id="@+id/host_row_edit"
-        android:layout_width="48dp"
-        android:layout_height="match_parent"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp"
-        android:scaleType="center" />
-    -->
 
 </LinearLayout>

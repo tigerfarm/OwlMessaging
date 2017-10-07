@@ -18,7 +18,6 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,7 +48,7 @@ import okhttp3.Response;
 
 import static com.tfp.tfpsms.R.id.spinner;
 
-public class DebugActivity extends AppCompatActivity implements View.OnClickListener {
+public class DevActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AccountCredentials accountCredentials;
     private TwSms twilioSms;
@@ -72,7 +71,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_debug);
+        setContentView(R.layout.activity_dev);
 
         // -----------------------------------------------------------------------------------------
         listPhoneNumbers = (Button) findViewById(R.id.listPhoneNumbers);
@@ -121,7 +120,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Adds 3-dot option menu in the action bar.
-        getMenuInflater().inflate(R.menu.menu_debug, menu);
+        getMenuInflater().inflate(R.menu.menu_dev, menu);
 
         // Top bar list of account phone numbers:
         loadSpinnerAccPhoneNumbers(menu);
@@ -273,7 +272,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String myResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
+                DevActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         List<String> messageList = getDeleteMessageList(myResponse);
@@ -336,7 +335,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String myResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
+                DevActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -367,7 +366,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String myResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
+                DevActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         textScrollBox.setText( printMessageLog(myResponse) );
@@ -429,7 +428,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String myResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
+                DevActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         textScrollBox.setText(responseStatus(myResponse));
@@ -505,7 +504,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String jsonResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
+                DevActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         textScrollBox.setText(accPhoneNumberPrintList(jsonResponse));
@@ -557,7 +556,7 @@ public class DebugActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String jsonResponse = response.body().string();
-                DebugActivity.this.runOnUiThread(new Runnable() {
+                DevActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         textScrollBox.setText("+ Add to the spinner:\n" + accPhoneNumberPrintList(menu, jsonResponse));

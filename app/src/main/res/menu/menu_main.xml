@@ -30,15 +30,14 @@
         android:title="@string/title_activity_accsec"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_debug"
+        android:id="@+id/action_dev"
         android:orderInCategory="100"
-        android:title="@string/title_activity_debug"
+        android:title="@string/title_activity_dev"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/title_activity_settings"
         app:showAsAction="never" />
-
 
 </menu>
