@@ -26,7 +26,7 @@ public class AccountCredentials implements Interceptor {
     private static final String TAG = "AccountCredentials";
 
     private Context mContext;
-    private String accountSid;
+    private String accountSid = "";
     private String authToken;
     private String credentials;
     //
@@ -58,6 +58,13 @@ public class AccountCredentials implements Interceptor {
         Request authenticatedRequest = request.newBuilder()
                 .header("Authorization", credentials).build();
         return chain.proceed(authenticatedRequest);
+    }
+
+    public boolean existAccountSid() {
+        if (accountSid.isEmpty()) {
+            return false;
+        }
+        return true;
     }
 
     public String getAccountSid() {

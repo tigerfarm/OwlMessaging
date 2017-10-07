@@ -41,6 +41,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.tfp.tfpsms.R.id.spinner;
+import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,17 +54,28 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Spinner twilioNumberSpinner;
 
+    // Display process and error messages
+    private TextView textString, msgString, textScrollBox;
+
     // ---------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        accountCredentials = new AccountCredentials(this);
+        if ( !accountCredentials.existAccountSid() ) {
+            // if the Twilio account info hasn't been entered, go to Settings.
+            startActivity(new Intent(this, SettingsActivity.class));
+        }
+        twilioSms = new TwSms(accountCredentials);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        accountCredentials = new AccountCredentials(this);
-        twilioSms = new TwSms(accountCredentials);
+        textString = (TextView) findViewById(R.id.textString);
+        msgString = (TextView) findViewById(R.id.msgString);
+        textScrollBox = (TextView) findViewById(R.id.textScrollBox);
 
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
         listView = (ListView) findViewById(R.id.list_view);
@@ -84,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -103,7 +114,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         // Set the Appication Twilio Phone Number before going to another panel.
-        accountCredentials.setTwilioPhoneNumber( twilioNumberSpinner.getSelectedItem().toString() );
+        String selectedTwilioNumber = "";
+        try {
+            selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        }
+        catch (NullPointerException e) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        if (selectedTwilioNumber.isEmpty()) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -140,12 +162,15 @@ public class MainActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
 
-        // Set the Application Twilio Phone Number.
-        String selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-        accountCredentials.setTwilioPhoneNumber(selectedTwilioNumber);
+        textString.setText("");
+        msgString.setText("");
+        textScrollBox.setText("");
 
-        // Get the recent message logs for the Twilio Phone Number.
-        twilioSms.setSmsRequestLogsTo(selectedTwilioNumber);
+        // Set the Application Twilio Phone Number.
+        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        accountCredentials.setTwilioPhoneNumber(twilioNumber);
+
+        twilioSms.setSmsRequestLogsTo(twilioNumber);
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -158,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
-                Snackbar.make(swipeRefreshLayout, "Failed to retrieve messages", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to retrieve messages: populateMessageList", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
@@ -169,7 +194,9 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     responseJson = new JSONObject(responseContent);
                 } catch (JSONException e) {
-                    Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(swipeRefreshLayout,
+                            "- Error: failed to parse JSON response: populateMessageList",
+                            Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
@@ -188,8 +215,11 @@ public class MainActivity extends AppCompatActivity {
                                     im++;
                                     }
                                 }
+                                if ( im == 0 ) {
+                                    textString.setText("+ No messages.");
+                                }
                             } catch (JSONException e) {
-                                Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(swipeRefreshLayout, "-- Error: failed to parse JSON response: populateMessageList", Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -221,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(twilioSms.localDateTime(messageJson.getString("date_sent")));
             } catch (JSONException e) {
-                Log.e("MainActivity", "Failed to parse JSON", e);
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: MessagesArrayAdapter", Snackbar.LENGTH_LONG).show();
                 System.out.println(e);
             }
 
@@ -249,41 +279,44 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        String theResponse = accPhoneNumberPrintList(menu, jsonResponse);
+                        accPhoneNumberPrintList(menu, jsonResponse);
                     }
                 });
             }
         });
     }
 
-    private String accPhoneNumberPrintList(Menu menu, String jsonList) {
-        String aPrintList = "";
+    private void accPhoneNumberPrintList(Menu menu, String jsonList) {
         final JSONObject responseJson;
         try {
             responseJson = new JSONObject(jsonList);
         } catch (JSONException e) {
-            // Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
-            return aPrintList;
+            Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: accPhoneNumberPrintList", Snackbar.LENGTH_LONG).show();
+            return;
         }
 
         // Top bar spinner list of account phone numbers.
         MenuItem item = menu.findItem(spinner);
         twilioNumberSpinner = (Spinner) item.getActionView();
         List<String> spinnerList = new ArrayList<String>();
+        int i = 0;
         try {
             JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
-            for (int i = 0; i < jList.length(); i++) {
+            for (i = 0; i < jList.length(); i++) {
                 String accPhoneNumber = jList.getJSONObject(i).getString("phone_number");
                 spinnerList.add( accPhoneNumber );
-                aPrintList = aPrintList
-                        + accPhoneNumber
-                        + " : "
-                        + jList.getJSONObject(i).getString("friendly_name")
-                        + "\n";
             }
         } catch (JSONException e) {
-            Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
-            return aPrintList;
+            textString.setText("++ Check and set: Twilio Account Settings.");
+            Snackbar.make(swipeRefreshLayout,
+                    "-- Error: failed to parse JSON response: accPhoneNumberPrintList",
+                    Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        if (i==0) {
+            textString.setText("--- Your Twilio Account does not have an SMS capiable phone number.");
+            msgString.setText("++ Go to your Twilio and select a SMS capiable phone number.");
+            return;
         }
         String[] spinnerArray = new String[ spinnerList.size() ];
         spinnerList.toArray( spinnerArray );
@@ -291,18 +324,17 @@ public class MainActivity extends AppCompatActivity {
         //
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         twilioNumberSpinner.setAdapter(adapter);
+        //
+        // Set the application Twilio account phone number.
         String twilioPhoneNumber = accountCredentials.getTwilioPhoneNumber();
-        if (twilioPhoneNumber.startsWith("+")) {
-            twilioNumberSpinner.setSelection( adapter.getPosition(twilioPhoneNumber) );
-        } else {
-            // Temporary case while switching over from data entered phone number in Settings.
-            twilioNumberSpinner.setSelection( adapter.getPosition("+" + twilioPhoneNumber) );
-            accountCredentials.setTwilioPhoneNumber(twilioPhoneNumber);
+        int positionTwilioPhoneNumber = adapter.getPosition(twilioPhoneNumber);
+        if ( positionTwilioPhoneNumber < 0) {
+            positionTwilioPhoneNumber = 0;
         }
+        twilioNumberSpinner.setSelection( positionTwilioPhoneNumber );
+        accountCredentials.setTwilioPhoneNumber( twilioNumberSpinner.getSelectedItem().toString() );
 
         populateMessageList();
-
-        return aPrintList;
     }
 
    // ---------------------------------------------------------------------------------------------

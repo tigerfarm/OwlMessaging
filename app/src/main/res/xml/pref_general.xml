@@ -12,16 +12,6 @@
         android:singleLine="true"
         android:defaultValue="@string/pref_default_display_name" />
 
-    <EditTextPreference
-        android:key="twilio_phone_number"
-        android:title="@string/pref_title_twilio_phone_number"
-        android:capitalize="words"
-        android:inputType="textCapWords"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:defaultValue="@string/pref_default_twilio_phone_number" />
-
     <ListPreference
         android:key="local_time_offset"
         android:title="@string/pref_title_gmt_offset"

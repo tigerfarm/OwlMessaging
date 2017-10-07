@@ -63,8 +63,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private SwipeRefreshLayout swipeRefreshLayout;
     private MessagesArrayAdapter messagesArrayAdapter;
 
-    // For testing
-    private TextView textString;
+    // Display process messages
+    private TextView textString, msgString, textScrollBox;
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -82,9 +82,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         setButton.setOnClickListener(this);
         sendButton = (Button) findViewById(R.id.sendButton);
         sendButton.setOnClickListener(this);
+        //
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
         textMessage = (EditText)findViewById(R.id.textMessage);
+        //
         textString = (TextView) findViewById(R.id.textString);
+        msgString = (TextView) findViewById(R.id.msgString);
+        textScrollBox = (TextView) findViewById(R.id.textScrollBox);
 
         accountCredentials = new AccountCredentials(this);
         twilioSms = new TwSms(accountCredentials);
@@ -117,16 +121,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
         // Top bar list of account phone numbers:
         loadSpinnerAccPhoneNumbers(menu);
-/*
-        MenuItem item = menu.findItem(R.id.spinner);
-        twilioNumberSpinner = (Spinner) item.getActionView();
-        //
-        // Add item to spinner.
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(twilioNumber));
-        //
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        twilioNumberSpinner.setAdapter(adapter);
-*/
+
         return true;
     }
     @Override
@@ -139,17 +134,20 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         int id = item.getItemId();
         if (id == R.id.action_delete) {
             // This works. I need to have message feedback.
-            textString.setText("+ 3-dot menu selected: action_delete");
-            String toPhoneNumber = sendToPhoneNumber.getText().toString();
+            String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
             try {
-                // textScrollBox.setText("+ Remove messages exchanged with: " + theFormPhoneNumber);
+                textScrollBox.setText(
+                        "+ Remove messages exchanged between: \n"
+                                + "Twilio Number: " + twilioNumber + "\n"
+                                + "Phone Number: " + theFormPhoneNumber + "\n"
+                );
                 //
-                textString.setText("+ Remove messages to/from  : " + toPhoneNumber);
-                twilioSms.setSmsRequestLogs(twilioNumber, toPhoneNumber);
+                // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
+                twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
                 getMessagesToDelete();
                 //
                 // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
-                twilioSms.setSmsRequestLogs(toPhoneNumber, twilioNumber);
+                twilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
                 getMessagesToDelete();
                 //
             } catch (IOException e) {
@@ -170,6 +168,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         // Set the Application Twilio Phone Number.
         String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         accountCredentials.setTwilioPhoneNumber(twilioNumber);
+
+        textString.setText("");
+        msgString.setText("");
+        textScrollBox.setText("");
 
         String toPhoneNumber = sendToPhoneNumber.getText().toString();
         switch (view.getId()) {
@@ -359,7 +361,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        // textScrollBox.setText( textScrollBox.getText() + "\n+ Messages deleted = " + aCounter);
+                        messagesArrayAdapter.clear();
+                        textScrollBox.setText( textScrollBox.getText() + "\n+ Messages deleted = " + aCounter);
                     }
                 });
             }

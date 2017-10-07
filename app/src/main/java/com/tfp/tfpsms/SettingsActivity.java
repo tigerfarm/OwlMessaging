@@ -74,7 +74,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
-            bindPreferenceSummaryToValue(findPreference("twilio_phone_number"));
             bindPreferenceSummaryToValue(findPreference("local_time_offset"));
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("example_list"));

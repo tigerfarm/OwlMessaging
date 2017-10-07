@@ -20,6 +20,36 @@
 
     <include layout="@layout/content_main" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="192dp">
+
+        <TextView
+            android:id="@+id/textString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:text=""
+            android:textColor="@color/listText"
+            android:textSize="14sp" />
+        <TextView
+            android:id="@+id/msgString"
+            android:layout_below="@+id/textString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listText"
+            android:textSize="14sp"
+            android:text=""/>
+        <TextView
+            android:id="@+id/textScrollBox"
+            android:layout_below="@+id/msgString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/listText"
+            android:textSize="14sp"
+            android:text=""/>
+    </RelativeLayout>
+
     <!-- android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
