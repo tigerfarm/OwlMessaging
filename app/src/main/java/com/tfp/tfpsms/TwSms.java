@@ -68,14 +68,18 @@ public class TwSms {
 
     // ---------------------------------------------------------------------------------------------
     String localDateTime(String theGmtDate) {
-        //                                                        "27 Sep 2017 00:32:47"
+        // :Tue, 26 Sep 2017 00:49:31 +0000:
+        //  012345678901234567890123456789
+        int numDateStart = 5;
+        int numDateEnd = 25;
+        if (theGmtDate.length()< numDateEnd) {
+
+        }
+        //                                                        "26 Sep 2017 00:49:31"
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
         Date gmtDate = new Date();
         try {
-            //  012345678901234567890123456789
-            //  123456                   123456
-            // :Tue, 26 Sep 2017 00:49:31 +0000:
-            gmtDate = readDateFormatter.parse(theGmtDate.substring(5, 25));
+            gmtDate = readDateFormatter.parse(theGmtDate.substring(numDateStart, numDateEnd));
         } catch (ParseException e) {
             e.printStackTrace();
         }

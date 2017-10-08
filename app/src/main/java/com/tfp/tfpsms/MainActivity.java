@@ -128,6 +128,10 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        // Set the Twilio phone number for the next panel to use.
+        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        accountCredentials.setTwilioPhoneNumber( twilioNumber );
+
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -308,11 +312,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Variation on this:
+    // http://theopentutorials.com/tutorials/android/listview/android-custom-listview-with-image-and-text-using-baseadapter/
     private class MessagesArrayAdapter extends ArrayAdapter<JSONObject> {
         public MessagesArrayAdapter(@NonNull Context context, @LayoutRes int resource) {
             super(context, resource);
         }
-
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -323,16 +328,17 @@ public class MainActivity extends AppCompatActivity {
             TextView portsView =(TextView) view.findViewById(R.id.host_row_ports);
 
             JSONObject messageJson = getItem(position);
-
             try {
-                labelView.setText("+ From: " + messageJson.getString("from") + " to " + messageJson.getString("to"));
+                labelView.setText(
+                        "+ From: " + messageJson.getString("from")
+                        // + " to " + messageJson.getString("to")
+                );
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(twilioSms.localDateTime(messageJson.getString("date_sent")));
             } catch (JSONException e) {
                 Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: MessagesArrayAdapter", Snackbar.LENGTH_LONG).show();
                 System.out.println(e);
             }
-
             return view;
         }
     }
