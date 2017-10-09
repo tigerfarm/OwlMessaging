@@ -127,24 +127,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         // Note, this automatically adds a back-arrow to parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_delete) {
-            // This works. I need to have message feedback.
             try {
-                /*
-                textScrollBox.setText(
-                        "+ Remove messages exchanged between: \n"
-                                + "Twilio Number: " + twilioNumber + "\n"
-                                + "Phone Number: " + theFormPhoneNumber + "\n"
-                );
-                */
-                //
                 // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
                 twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
                 getMessagesToDelete();
-                //
                 // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
                 twilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
                 getMessagesToDelete();
-                //
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -379,6 +368,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
 
+        // Snackbar.make(swipeRefreshLayout, "+ populateMessageList", Snackbar.LENGTH_LONG).show();
+
         // Set the Application Twilio Phone Number.
         final String selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         final String formPhoneNumber = sendToPhoneNumber.getText().toString();
@@ -392,18 +383,15 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         Request request = new Request.Builder()
                 .url(twilioSms.getRequestUrl())
                 .build();
-
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
                 Snackbar.make(swipeRefreshLayout, "- Error: failed to retrieve messages", Snackbar.LENGTH_LONG).show();
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseContent = response.body().string();
-
                 final JSONObject responseJson;
                 try {
                     responseJson = new JSONObject(responseContent);
@@ -411,17 +399,79 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON", Snackbar.LENGTH_LONG).show();
                     return;
                 }
-
                 if (response.code() == 200) {
                     SendSmsActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            try {
+                                // Merge from and to messages.
+                                JSONArray messages = responseJson.getJSONArray("messages");
+                                messagesArrayAdapter.clear();
+                                int im = 0;
+                                for (int i = 0; i < messages.length(); i++) {
+                                    if ( !messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
+                                        // Remove the case of sending from one Twilio account phone number to another in the same account.
+                                        messagesArrayAdapter.insert(messages.getJSONObject(i), im);
+                                        im++;
+                                    }
+                                }
+                                if ( im == 0 ) {
+                                    Snackbar.make(swipeRefreshLayout, "+ No messages.", Snackbar.LENGTH_LONG).show();
+                                }
+
+                                // Send the list to the next call
+                                // populateMessageListView(messageList, selectedTwilioNumber, formPhoneNumber);
+
+                            } catch (JSONException e) {
+                                Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    Snackbar.make(swipeRefreshLayout, String.format("Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void populateMessageListView(List<String> messageList, String selectedTwilioNumber, String formPhoneNumber) {
+
+        // Messages sent to the Twilio phone number:
+        twilioSms.setSmsRequestLogs(formPhoneNumber, selectedTwilioNumber );
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to retrieve messages", Snackbar.LENGTH_LONG).show();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseContent = response.body().string();
+                final JSONObject responseJson;
+                try {
+                    responseJson = new JSONObject(responseContent);
+                } catch (JSONException e) {
+                    Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                if (response.code() == 200) {
+                    SendSmsActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println(responseContent);
                             try {
 
                                 // Merge from and to messages.
 
                                 JSONArray messages = responseJson.getJSONArray("messages");
                                 messagesArrayAdapter.clear();
+                                // textString.setText("");
                                 int im = 0;
                                 for (int i = 0; i < messages.length(); i++) {
                                     if ( !messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
@@ -439,7 +489,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     });
                 } else {
-                    Snackbar.make(swipeRefreshLayout, String.format("Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(swipeRefreshLayout, String.format("- Error: received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -475,5 +525,5 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-
+    // ---------------------------------------------------------------------------------------------
 }

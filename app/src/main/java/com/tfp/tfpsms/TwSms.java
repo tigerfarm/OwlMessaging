@@ -73,7 +73,7 @@ public class TwSms {
         int numDateStart = 5;
         int numDateEnd = 25;
         if (theGmtDate.length()< numDateEnd) {
-
+            return "01 Jan 1980 00:00:00";      // return a default value
         }
         //                                                        "26 Sep 2017 00:49:31"
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");

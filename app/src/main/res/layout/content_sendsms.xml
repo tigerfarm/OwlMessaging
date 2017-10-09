@@ -7,8 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.tfp.tfpsms.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context="com.tfp.tfpsms.SendSmsActivity"
+    tools:showIn="@layout/activity_sendsms">
 
     <ListView
         android:id="@+id/list_view"

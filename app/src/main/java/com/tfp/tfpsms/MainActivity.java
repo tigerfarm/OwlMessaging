@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -92,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
     }
 
     // ---------------------------------------------------------------------------------------------
