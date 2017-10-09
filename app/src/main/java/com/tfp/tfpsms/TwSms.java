@@ -35,17 +35,10 @@ public class TwSms {
         return requestUrl;
     }
 
-    public void setSmsRequest() {
-        requestUrl = setSmsRequest;
+    public void setSmsRequestLogs(String fromPhoneNumber, String toPhoneNumber) {
+        requestUrl = setSmsRequest + "?From="+fromPhoneNumber + "&To="+toPhoneNumber;
     }
-
-    public void setSmsRequestFrom(String phoneNumber, String twilioNumber) {
-        requestUrl = setSmsRequest + "?From="+phoneNumber + "&To="+twilioNumber;
-    }
-    public void setSmsRequestTo(String phoneNumber, String twilioNumber) {
-        requestUrl = setSmsRequest + "?To="+phoneNumber + "&From="+twilioNumber;
-    }
-    public void setSmsRequestOnlyTo(String phoneNumber) {
+    public void setSmsRequestLogsTo(String phoneNumber) {
         requestUrl = setSmsRequest + "?To="+phoneNumber;
     }
 
@@ -75,14 +68,18 @@ public class TwSms {
 
     // ---------------------------------------------------------------------------------------------
     String localDateTime(String theGmtDate) {
-        //                                                        "27 Sep 2017 00:32:47"
+        // :Tue, 26 Sep 2017 00:49:31 +0000:
+        //  012345678901234567890123456789
+        int numDateStart = 5;
+        int numDateEnd = 25;
+        if (theGmtDate.length()< numDateEnd) {
+
+        }
+        //                                                        "26 Sep 2017 00:49:31"
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
         Date gmtDate = new Date();
         try {
-            //  012345678901234567890123456789
-            //  123456                   123456
-            // :Tue, 26 Sep 2017 00:49:31 +0000:
-            gmtDate = readDateFormatter.parse(theGmtDate.substring(5, 25));
+            gmtDate = readDateFormatter.parse(theGmtDate.substring(numDateStart, numDateEnd));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -95,13 +92,29 @@ public class TwSms {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Not used in the SMS version
-    // ---------------------------------------------------------------------------------------------
-    // Twilio Account Security API Requests (Sample API for testing: POST without credentials)
+    // Twilio Account Security API Requests
+    // Note, doesn't require account credentials, but uses application API key.
 
-    private String seconds_to_expire = "120";
+    // To do:
+    //
+    // Setup Push Authentication callback to SMS the Authy App answer of Approve or Deny.
+    // Add to Settings: application API key (appApiKey).
+    //
+    // Add user.
+    // Get user status.
+    // Remove user.
+    // DB phone numbers to Authy IDs.
+    //
+    // Send an OTP.
+    // Verify a TOTP passcode.
 
-    public void setPushAuthentication( String AuthyId, String AskForApproval, String seconds_to_expire ) throws Exception {
+    //--------------------------------------------------
+    private String default_seconds_to_expire = "120";
+
+    public void setPushAuthentication( String authyId, String AskForApproval ) {
+        setPushAuthentication(authyId, AskForApproval, default_seconds_to_expire);
+    }
+    public void setPushAuthentication( String AuthyId, String AskForApproval, String seconds_to_expire ) {
         postParams = new FormBody.Builder()
                 .add("message", AskForApproval)
                 .add("seconds_to_expire", seconds_to_expire)
@@ -109,7 +122,8 @@ public class TwSms {
         requestUrl = "https://api.authy.com/onetouch/json/users/"+AuthyId+"/approval_requests?api_key=" + accountCredentials.getAppApiKey();
     }
 
-    public void setPhoneVerificationSend( String param1, String param2, String param3 ) throws Exception {
+    //--------------------------------------------------
+    public void setPhoneVerificationSend( String param1, String param2, String param3 ) {
         postParams = new FormBody.Builder()
                 .add("via", param1)
                 .add("country_code", param2)
@@ -117,22 +131,12 @@ public class TwSms {
                 .build();
         requestUrl = "https://api.authy.com/protected/json/phones/verification/start" + "?api_key=" + accountCredentials.getAppApiKey();
     }
-                    /*
-                    URL_REQUEST.setPhoneVerificationSend("sms", "1", "2223331234");
-                    textString.setText("+ POST Phone Verification: "+URL_REQUEST.getRequestUrl());
-                    postRequest();
-                    */
-                    /*
-                    String AuthyId = "12312312";   // Mine
-                    String AskForApproval = "Lunch at 1pm, the usual place.";
-                    String seconds_to_expire = "120";
-                    URL_REQUEST.setPushAuthentication(AuthyId, AskForApproval, seconds_to_expire);
-                    textString.setText("+ Approval Request: " + AskForApproval);
-                    postRequest();
-                    */
 
     // ---------------------------------------------------------------------------------------------
     // GET Hello World (for testing)
+    // TwilioSms.setUrlHello();
+    // textString.setText("+ GET Hello World text file: "+TwilioSms.getRequestUrl());
+    // getRequest();
     private String urlHello = "http://tigerfarmpress.com/hello.txt";
     public void setUrlHello() throws Exception {
         requestUrl = urlHello;

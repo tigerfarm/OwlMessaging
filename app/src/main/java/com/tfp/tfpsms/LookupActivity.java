@@ -1,9 +1,13 @@
 package com.tfp.tfpsms;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +43,11 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lookup);
 
+        // To return to MainActivity
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Send message form objects:
         theButton = (Button) findViewById(R.id.theButton);
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
@@ -53,6 +62,26 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         theButton.setOnClickListener(this);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // Show the Back arrow (Up button) in the action bar.
+    // When clicked, to the MainActivity.
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // ---------------------------------------------------------------------------------------------

@@ -26,15 +26,16 @@ public class AccountCredentials implements Interceptor {
     private static final String TAG = "AccountCredentials";
 
     private Context mContext;
-    private String accountSid;
+    private String accountSid = "";
     private String authToken;
     private String credentials;
     //
+    private String twilioPhoneNumber;
     private String toPhoneNumber;
     private int localTimeOffset;
     //
     // Twilio Authy Application entry API Key:
-    private String appApiKey;
+    private String appApiKey = "Vye28fVRU1Bo85BISTENwp1klE5a7tir";  // Owl Publishing
     private SharedPreferences sharedPreferences;
 
     public AccountCredentials(Context context) {
@@ -44,6 +45,8 @@ public class AccountCredentials implements Interceptor {
         this.accountSid = sharedPreferences.getString("account_sid", "");
         this.authToken = sharedPreferences.getString("auth_token", "");
         this.credentials = Credentials.basic(accountSid, authToken);
+        //
+        this.twilioPhoneNumber = sharedPreferences.getString("twilio_phone_number", "");
         //
         this.toPhoneNumber = sharedPreferences.getString("to_phone_number", "");
         this.localTimeOffset = Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );    // Default: -7 is San Francisco time
@@ -57,8 +60,25 @@ public class AccountCredentials implements Interceptor {
         return chain.proceed(authenticatedRequest);
     }
 
+    public boolean existAccountSid() {
+        if (accountSid.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
     public String getAccountSid() {
         return accountSid;
+    }
+
+    public void setTwilioPhoneNumber(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        prefEditor.putString("twilio_phone_number", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
+    }
+    public String getTwilioPhoneNumber() {
+        return twilioPhoneNumber;
     }
 
     public void setToPhoneNumber(String aParam) {
@@ -71,7 +91,7 @@ public class AccountCredentials implements Interceptor {
         return toPhoneNumber;
     }
 
-    // Needs to be set, in the Settings panel.
+    // Needs to be set, in the Settings panel. Or calculate difference from GMT to local time.
     public void setLocalTimeOffset(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
         prefEditor.putString("local_time_offset", aParam);
@@ -79,7 +99,7 @@ public class AccountCredentials implements Interceptor {
         prefEditor.commit();
     }
     public int getLocalTimeOffset() {
-        return localTimeOffset;
+        return Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );
     }
 
     // ---------------------------------------------------------------------------------------------

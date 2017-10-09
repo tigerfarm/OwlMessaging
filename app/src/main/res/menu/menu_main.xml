@@ -16,12 +16,6 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_sendsms"
         android:orderInCategory="100"
         android:title="Send message"
@@ -34,9 +28,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_debug"
+        android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:title="Development"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
 
 </menu>

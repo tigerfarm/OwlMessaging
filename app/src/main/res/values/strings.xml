@@ -2,26 +2,86 @@
     <string name="app_name">Owl SMS</string>
 
     <string name="action_settings">Settings</string>
+    <string name="title_activity_refresh">Get recent messages</string>
+    <string name="title_activity_sendsms">Send Message</string>
+    <string name="title_activity_lookup">Phone number information</string>
+    <string name="title_activity_accsec">2FA and Phone Verification</string>
+    <string name="title_activity_dev">Development</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_deleteconversation">Delete this conversation messages</string>
 
+    <!-- ======================================================================================= -->
     <!-- Strings related to Settings -->
 
-    <!-- Example General settings -->
+    <string name="pref_header_twilio">Twilio Account</string>
+    <string name="pref_title_account_sid">Account SID</string>
+    <string name="pref_title_account_token">Account Auth Token</string>
+
+    <!-- ======================================================================================= -->
+    <!-- General settings samples displayed, but not used -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">Enter your name</string>
+
+    <string name="pref_default_twilio_phone_number">Enter your Twilio phone number</string>
+
+    <string name="pref_title_gmt_offset">GMT hours offset for local time</string>
+    <string-array name="pref_gmt_offset_list_titles">
+        <item>GMT</item>
+        <item>-1</item>
+        <item>-2</item>
+        <item>-3</item>
+        <item>-4</item>
+        <item>-5</item>
+        <item>-6</item>
+        <item>-7: PT: California</item>
+        <item>-8</item>
+        <item>-9</item>
+        <item>-10: ET: Toronto and New York</item>
+        <item>-11</item>
+        <item>-12</item>
+        <item>-13</item>
+        <item>-14</item>
+        <item>-15</item>
+        <item>-16</item>
+        <item>-17</item>
+        <item>-18</item>
+        <item>-19</item>
+        <item>-20</item>
+        <item>-21</item>
+        <item>-22</item>
+        <item>-23</item>
+    </string-array>
+    <string-array name="pref_gmt_offset_list_values">
+        <item>0</item>
+        <item>-1</item>
+        <item>-2</item>
+        <item>-3</item>
+        <item>-4</item>
+        <item>-5</item>
+        <item>-6</item>
+        <item>-7</item>
+        <item>-8</item>
+        <item>-9</item>
+        <item>-10</item>
+        <item>-11</item>
+        <item>-12</item>
+    </string-array>
+
+    <!-- Other examples -->
+
+    <!-- Enable/disable (true/false) -->
+    <string name="pref_title_social_recommendations">Enable notifications</string>
+    <string name="pref_description_social_recommendations">
+        This feature is not implemented.
     </string>
 
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-
+    <!-- Popup radio buttons -->
+    <string name="pref_title_add_friends_to_messages">When do you want to be notified?</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
-        <item>When possible</item>
+        <item>Sometimes</item>
         <item>Never</item>
     </string-array>
     <string-array name="pref_example_list_values">
@@ -29,6 +89,9 @@
         <item>0</item>
         <item>-1</item>
     </string-array>
+
+    <!-- ======================================================================================= -->
+    <!-- Samples not used -->
 
     <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
@@ -64,20 +127,12 @@
     </string-array>
 
     <string-array name="multi_select_list_preference_default_value" />
-
     <string name="pref_title_system_sync_settings">System sync settings</string>
-
     <string name="pref_header_notifications">Notifications</string>
 
-    <string name="pref_header_twilio">Twilio</string>
-
     <string name="pref_title_new_message_notifications">New message notifications</string>
-
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>
-
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <string name="pref_title_account_sid">Account SID</string>
-    <string name="pref_title_auth_token">Auth Token</string>
 </resources>
