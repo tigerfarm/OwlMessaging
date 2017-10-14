@@ -31,7 +31,7 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
     private TwSms URL_REQUEST;
 
     private Button theButton;
-    private EditText sendToPhoneNumber;
+    private EditText formPhoneNumber;
     private TextView rowOne, rowTwo, rowThree;
     private TextView showResults;
 
@@ -50,7 +50,7 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
 
         // Send message form objects:
         theButton = (Button) findViewById(R.id.theButton);
-        sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
+        formPhoneNumber = (EditText)findViewById(R.id.formPhoneNumber);
         showResults = (TextView)findViewById(R.id.showResults);
         rowOne = (TextView)findViewById(R.id.row01);
         rowTwo = (TextView)findViewById(R.id.row02);
@@ -58,9 +58,8 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
 
         accountCredentials = new AccountCredentials(this);
         URL_REQUEST = new TwSms(accountCredentials);
-        sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
+        formPhoneNumber.setText(accountCredentials.getToPhoneNumber());
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         theButton.setOnClickListener(this);
     }
 
@@ -90,7 +89,10 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
         switch (view.getId()) {
             case R.id.theButton:
                 try {
-                    // showResults.setText("+ onClick:theButton");
+                    showResults.setText("");
+                    rowOne.setText("");
+                    rowTwo.setText("");
+                    rowThree.setText("");
                     displayResults();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -106,14 +108,20 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                 .addInterceptor(accountCredentials)
                 .build();
         Request request = new Request.Builder()
-                .url(URL_REQUEST.getLookup(sendToPhoneNumber.getText().toString()))
+                .url(URL_REQUEST.getLookup(formPhoneNumber.getText().toString()))
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
-                Snackbar.make(swipeRefreshLayout, "Failed to retrieve messages", Snackbar.LENGTH_LONG).show();
+                // showResults.setText("- Error: Failed to retrieve messages.");
+                LookupActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showResults.setText("- Error: Failed to retrieve messages.");
+                    }
+                });
             }
 
             @Override
@@ -124,7 +132,13 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                 try {
                     responseJson = new JSONObject(responseContent);
                 } catch (JSONException e) {
-                    Snackbar.make(swipeRefreshLayout, "Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+                    // showResults.setText("- Error 1: Failed to parse JSON response.");
+                    LookupActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showResults.setText("- Error 1: Failed to parse JSON response.");
+                        }
+                    });
                     return;
                 }
 
@@ -135,21 +149,32 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                             System.out.println(responseContent);
                             try {
                                 rowOne.setText(
-                                        responseJson.getString("country_code") + " : " +
-                                                responseJson.getString("national_format")
+                                        responseJson.getString("country_code")
+                                                + " : " + responseJson.getString("national_format")
                                 );
                                 rowTwo.setText("Carrier: " + responseJson.getJSONObject("carrier").getString("name"));
                                 rowThree.setText("Type of line: " + responseJson.getJSONObject("carrier").getString("type"));
                             } catch (JSONException e) {
-                                Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
+                                showResults.setText("- Error 2: Failed to parse JSON response.");
                             }
                         }
                     });
+                } else if (response.code() == 404) {
+                    LookupActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showResults.setText("+ Phone number not found: ");
+                        }
+                    });
                 } else {
-                    Snackbar.make(swipeRefreshLayout, String.format("Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
+                    LookupActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showResults.setText("- Error: Received %s status code");
+                        }
+                    });
                 }
             }
         });
     }
-
 }
