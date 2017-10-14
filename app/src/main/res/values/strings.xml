@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Owl SMS</string>
 
-    <string name="action_settings">Settings</string>
+    <!-- ======================================================================================= -->
+    <!-- Menu titles -->
+
     <string name="title_activity_refresh">Get recent messages</string>
     <string name="title_activity_sendsms">Send Message</string>
     <string name="title_activity_lookup">Phone number information</string>

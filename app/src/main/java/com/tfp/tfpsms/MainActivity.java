@@ -70,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Use when working on Sending SMS.
+        // Intent intent = new Intent(this, SendSmsActivity.class);
+        // startActivity(intent);
+
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
         listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(messagesArrayAdapter);

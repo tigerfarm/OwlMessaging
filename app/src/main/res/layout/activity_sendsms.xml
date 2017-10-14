@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.tfp.tfpsms.SendSmsActivity">
-
     <!-- =================================== -->
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -23,55 +22,49 @@
 
     <!-- =================================== -->
     <FrameLayout
-        android:id="@+id/phoneNumberBox"
+        android:id="@+id/phoneNumberSetBox"
         android:background="@drawable/borders_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <EditText
             android:id="@+id/sendToPhoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""/>
-
         <Button
             android:id="@+id/setButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="Set" />
-
     </FrameLayout>
 
+    <!-- =================================== -->
     <FrameLayout
-        android:id="@+id/content"
+        android:id="@+id/messageList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
         <include layout="@layout/content_sendsms" />
-
     </FrameLayout>
 
+    <!-- =================================== -->
     <FrameLayout
-        android:id="@+id/messageBox"
+        android:id="@+id/messageSendBox"
         android:background="@drawable/borders_bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <EditText
             android:id="@+id/textMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello There"/>
-
+            android:text="Hello"/>
         <Button
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="Send MSG" />
-
     </FrameLayout>
 
 </LinearLayout>

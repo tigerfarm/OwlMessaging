@@ -292,7 +292,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     public void run() {
                         try {
                             // textScrollBox.setText("+ deleteOneMessage " + myResponse);
-                            Snackbar.make(swipeRefreshLayout, "+ deleted messages", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(swipeRefreshLayout, "+ Messages deleted.", Snackbar.LENGTH_LONG).show();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -368,14 +368,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
 
-        // Snackbar.make(swipeRefreshLayout, "+ populateMessageList", Snackbar.LENGTH_LONG).show();
-
-        // Set the Application Twilio Phone Number.
         final String selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         final String formPhoneNumber = sendToPhoneNumber.getText().toString();
-        // textString.setText("+ Messages between " + selectedTwilioNumber + " and " + selectedTwilioNumber);
 
-        // Messages sent from the Twilio phone number:
+        // textString.setText("+ Messages from " + selectedTwilioNumber + " to " + formPhoneNumber);
         twilioSms.setSmsRequestLogs(selectedTwilioNumber, formPhoneNumber);
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -391,10 +387,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String responseContent = response.body().string();
+                final String stringFromTwilioNumberToFormNumber = response.body().string();
                 final JSONObject responseJson;
                 try {
-                    responseJson = new JSONObject(responseContent);
+                    responseJson = new JSONObject(stringFromTwilioNumberToFormNumber);
                 } catch (JSONException e) {
                     Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON", Snackbar.LENGTH_LONG).show();
                     return;
@@ -403,28 +399,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     SendSmsActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                // Merge from and to messages.
-                                JSONArray messages = responseJson.getJSONArray("messages");
-                                messagesArrayAdapter.clear();
-                                int im = 0;
-                                for (int i = 0; i < messages.length(); i++) {
-                                    if ( !messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
-                                        // Remove the case of sending from one Twilio account phone number to another in the same account.
-                                        messagesArrayAdapter.insert(messages.getJSONObject(i), im);
-                                        im++;
-                                    }
-                                }
-                                if ( im == 0 ) {
-                                    Snackbar.make(swipeRefreshLayout, "+ No messages.", Snackbar.LENGTH_LONG).show();
-                                }
-
-                                // Send the list to the next call
-                                // populateMessageListView(messageList, selectedTwilioNumber, formPhoneNumber);
-
-                            } catch (JSONException e) {
-                                Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON", Snackbar.LENGTH_LONG).show();
-                            }
+                            System.out.println("+ stringFromTwilioNumberToFormNumber: " + stringFromTwilioNumberToFormNumber);
+                            populateMessageListView(responseJson, selectedTwilioNumber, formPhoneNumber);
                         }
                     });
                 } else {
@@ -434,9 +410,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void populateMessageListView(List<String> messageList, String selectedTwilioNumber, String formPhoneNumber) {
+    private void populateMessageListView(final JSONObject jsonFromTwilioNumberToFormNumber, String selectedTwilioNumber, String formPhoneNumber) {
 
-        // Messages sent to the Twilio phone number:
+        // textString.setText("+ Messages from " + formPhoneNumber + " to " + selectedTwilioNumber);
         twilioSms.setSmsRequestLogs(formPhoneNumber, selectedTwilioNumber );
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -452,34 +428,50 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String responseContent = response.body().string();
-                final JSONObject responseJson;
+
+                // ---------------------------------------------------------------------------------
+                // Messages from formPhoneNumber to selectedTwilioNumber
+                final String stringFromFormNumberToTwilioNumber = response.body().string();
+                final JSONObject jsonFromFormNumberToTwilioNumber;
                 try {
-                    responseJson = new JSONObject(responseContent);
+                    jsonFromFormNumberToTwilioNumber = new JSONObject(stringFromFormNumberToTwilioNumber);
                 } catch (JSONException e) {
                     Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response", Snackbar.LENGTH_LONG).show();
                     return;
                 }
+
                 if (response.code() == 200) {
                     SendSmsActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println(responseContent);
+                            messagesArrayAdapter.clear();
+                            System.out.println("+ stringFromFormNumberToTwilioNumber: " + stringFromFormNumberToTwilioNumber);
                             try {
-
-                                // Merge from and to messages.
-
-                                JSONArray messages = responseJson.getJSONArray("messages");
-                                messagesArrayAdapter.clear();
-                                // textString.setText("");
                                 int im = 0;
-                                for (int i = 0; i < messages.length(); i++) {
-                                    if ( !messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
-                                        // Remove the case of sending from one Twilio account phone number to another in the same account.
-                                        messagesArrayAdapter.insert(messages.getJSONObject(i), im);
+
+                                // Messages from selectedTwilioNumber to formPhoneNumber
+                                JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
+                                // textString.setText("");
+                                for (int i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
+                                    if ( !msgFromTwilioNumberToFormNumber.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
+                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
+                                        // if Twilio phone number to non-Twilio phone number: "delivered"
+                                        messagesArrayAdapter.insert(msgFromTwilioNumberToFormNumber.getJSONObject(i), im);
                                         im++;
                                     }
                                 }
+
+                                // Messages from formPhoneNumber to selectedTwilioNumber
+                                JSONArray msgFromFormNumberToTwilioNumber = jsonFromFormNumberToTwilioNumber.getJSONArray("messages");
+                                for (int i = 0; i < msgFromFormNumberToTwilioNumber.length(); i++) {
+                                    if ( !msgFromFormNumberToTwilioNumber.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
+                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
+                                        // if non-Twilio phone number to Twilio account phone number: "received"
+                                        messagesArrayAdapter.insert(msgFromFormNumberToTwilioNumber.getJSONObject(i), im);
+                                        im++;
+                                    }
+                                }
+
                                 if ( im == 0 ) {
                                     Snackbar.make(swipeRefreshLayout, "+ No messages.", Snackbar.LENGTH_LONG).show();
                                 }
@@ -510,7 +502,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
             JSONObject messageJson = getItem(position);
             try {
-                labelView.setText("+ From: " + messageJson.getString("from"));
+                labelView.setText("From: " + messageJson.getString("from") + " To: " + messageJson.getString("to"));
                 String theStatus = messageJson.getString("status");
                 if (!theStatus.equalsIgnoreCase("delivered")) {
                     labelView.setText( labelView.getText() + ", status: " + messageJson.getString("status"));
