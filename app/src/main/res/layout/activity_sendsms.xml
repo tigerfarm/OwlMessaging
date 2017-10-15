@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_sendsms"
+    tools:context="com.tfp.tfpsms.SendSmsActivity"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_sendsms"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.tfp.tfpsms.SendSmsActivity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <!-- =================================== -->
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -14,10 +14,10 @@
         android:theme="@style/AppTheme.AppBarOverlay">
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
     </android.support.design.widget.AppBarLayout>
 
     <!-- =================================== -->
@@ -25,18 +25,22 @@
         android:id="@+id/phoneNumberSetBox"
         android:background="@drawable/borders_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="39dp">
         <EditText
             android:id="@+id/sendToPhoneNumber"
-            android:layout_width="wrap_content"
+            android:textSize="@dimen/buttonTextSize"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:text=""/>
         <Button
+            android:text="Set"
             android:id="@+id/setButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:textSize="@dimen/buttonTextSize"
+            android:textColor="@color/buttonTextColor"
+            android:background="@color/buttonBackgroundColor"
             android:layout_gravity="right"
-            android:text="Set" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
     <!-- =================================== -->
@@ -56,15 +60,19 @@
         android:layout_height="wrap_content">
         <EditText
             android:id="@+id/textMessage"
-            android:layout_width="wrap_content"
+            android:textSize="@dimen/buttonTextSize"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:text="Hello"/>
         <Button
+            android:text="Send MSG"
             android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:textSize="@dimen/buttonTextSize"
+            android:textColor="@color/buttonTextColor"
+            android:background="@color/buttonBackgroundColor"
             android:layout_gravity="right"
-            android:text="Send MSG" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
 </LinearLayout>

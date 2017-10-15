@@ -11,6 +11,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -410,7 +411,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void populateMessageListView(final JSONObject jsonFromTwilioNumberToFormNumber, String selectedTwilioNumber, String formPhoneNumber) {
+    private void populateMessageListView(final JSONObject jsonFromTwilioNumberToFormNumber, final String selectedTwilioNumber, String formPhoneNumber) {
 
         // textString.setText("+ Messages from " + formPhoneNumber + " to " + selectedTwilioNumber);
         twilioSms.setSmsRequestLogs(formPhoneNumber, selectedTwilioNumber );
@@ -445,6 +446,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void run() {
                             messagesArrayAdapter.clear();
+
                             System.out.println("+ stringFromFormNumberToTwilioNumber: " + stringFromFormNumberToTwilioNumber);
                             try {
                                 int im = 0;
@@ -496,21 +498,31 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View view = getLayoutInflater().inflate(R.layout.list_item_message, parent, false);
 
+            String messageTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+            System.out.println("+ messageTwilioNumber: " + messageTwilioNumber);
+
             TextView labelView = (TextView) view.findViewById(R.id.host_row_label);
             TextView hostnameView =(TextView) view.findViewById(R.id.host_row_hostname);
             TextView portsView =(TextView) view.findViewById(R.id.host_row_ports);
 
             JSONObject messageJson = getItem(position);
             try {
+                String thePhoneNumber = messageJson.getString("from");
+                if (messageTwilioNumber.equalsIgnoreCase(thePhoneNumber)) {
+                    view.setBackgroundResource( R.color.listBackgroundIncoming );
+                    labelView.setGravity(Gravity.RIGHT);
+                    hostnameView.setGravity(Gravity.RIGHT);
+                    portsView.setGravity(Gravity.RIGHT);
+                }
                 labelView.setText("From: " + messageJson.getString("from") + " To: " + messageJson.getString("to"));
                 String theStatus = messageJson.getString("status");
-                if (!theStatus.equalsIgnoreCase("delivered")) {
+                if (!theStatus.equalsIgnoreCase("delivered") && !theStatus.equalsIgnoreCase("received")) {
                     labelView.setText( labelView.getText() + ", status: " + messageJson.getString("status"));
                 }
                 hostnameView.setText(messageJson.getString("body"));
                 portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
             } catch (JSONException e) {
-                Log.e("MainActivity", "- Error: failed to parse JSON", e);
+                Log.e("SendSmsActivity", "- Error: failed to parse JSON", e);
                 System.out.println(e);
             }
             return view;

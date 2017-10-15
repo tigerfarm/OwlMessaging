@@ -28,6 +28,7 @@
 
     <string name="pref_default_twilio_phone_number">Enter your Twilio phone number</string>
 
+    <!-- Reference: https://greenwichmeantime.com/time-zone/asia/india/time/ -->
     <string name="pref_title_gmt_offset">GMT hours offset for local time</string>
     <string-array name="pref_gmt_offset_list_titles">
         <item>GMT</item>
@@ -43,17 +44,20 @@
         <item>-10: ET: Toronto and New York</item>
         <item>-11</item>
         <item>-12</item>
-        <item>-13</item>
-        <item>-14</item>
-        <item>-15</item>
-        <item>-16</item>
-        <item>-17</item>
-        <item>-18</item>
-        <item>-19</item>
-        <item>-20</item>
-        <item>-21</item>
-        <item>-22</item>
-        <item>-23</item>
+        <item>0</item>
+        <item>1: London, UK</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>5.5: India</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
     </string-array>
     <string-array name="pref_gmt_offset_list_values">
         <item>0</item>
@@ -69,6 +73,20 @@
         <item>-10</item>
         <item>-11</item>
         <item>-12</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>5.5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
     </string-array>
 
     <!-- Other examples -->
