@@ -13,6 +13,14 @@
     <string name="title_activity_deleteconversation">Delete this conversation messages</string>
 
     <!-- ======================================================================================= -->
+    <!-- Strings related to General program messages -->
+    <!-- getString(R.string.MessagesSent) -->
+
+    <string name="MessagesSent">+ Messages sent.</string>
+    <string name="MessagesDeleted">+ Messages deleted.</string>
+    <string name="NoMessages">+ No messages.</string>
+
+    <!-- ======================================================================================= -->
     <!-- Strings related to Settings -->
 
     <string name="pref_header_twilio">Twilio Account</string>

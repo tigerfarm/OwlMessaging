@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 if ( im == 0 ) {
                                     // textString.setText("+ No messages.");
-                                    Snackbar.make(swipeRefreshLayout, "+ No messages.", Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
                             } catch (JSONException e) {
                                 Snackbar.make(swipeRefreshLayout, "-- Error: failed to parse JSON response: populateMessageList", Snackbar.LENGTH_LONG).show();
@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    Snackbar.make(swipeRefreshLayout, String.format("Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(swipeRefreshLayout, String.format("- Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
                 }
             }
         });

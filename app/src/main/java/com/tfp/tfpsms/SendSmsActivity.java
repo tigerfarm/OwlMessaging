@@ -201,7 +201,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void run() {
                         // textScrollBox.setText(responseStatus(myResponse));
-                        Snackbar.make(swipeRefreshLayout, "+ Message sent.", Snackbar.LENGTH_LONG).setDuration(3000).show();
+                        Snackbar.make(swipeRefreshLayout, getString(R.string.MessagesSent), Snackbar.LENGTH_LONG).setDuration(3000).show();
                         // sleep(1000);
                         populateMessageList();
                         textMessage.setText("");
@@ -297,7 +297,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     public void run() {
                         try {
                             // textScrollBox.setText("+ deleteOneMessage " + myResponse);
-                            Snackbar.make(swipeRefreshLayout, "+ Messages deleted.", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(swipeRefreshLayout, getString(R.string.MessagesDeleted), Snackbar.LENGTH_LONG).show();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -354,7 +354,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 spinnerList.add( accPhoneNumber );
             }
         } catch (JSONException e) {
-            Snackbar.make(swipeRefreshLayout, "Failed to parse JSON", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(swipeRefreshLayout, "- Failed to parse JSON", Snackbar.LENGTH_LONG).show();
             return;
         }
         String[] spinnerArray = new String[ spinnerList.size() ];
@@ -409,7 +409,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                         }
                     });
                 } else {
-                    Snackbar.make(swipeRefreshLayout, String.format("Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(swipeRefreshLayout, String.format("- Received %s status code", response.code()), Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -457,6 +457,27 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
                                 // Messages from selectedTwilioNumber to formPhoneNumber
                                 JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
+                                // Messages from formPhoneNumber to selectedTwilioNumber
+                                JSONArray msgFromFormNumberToTwilioNumber = jsonFromFormNumberToTwilioNumber.getJSONArray("messages");
+                                for (int i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
+                                    if ( !msgFromTwilioNumberToFormNumber.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
+                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
+                                        // if Twilio phone number to non-Twilio phone number: "delivered"
+                                        messagesArrayAdapter.insert(msgFromTwilioNumberToFormNumber.getJSONObject(i), im);
+                                        im++;
+                                    }
+                                }
+                                for (int i = 0; i < msgFromFormNumberToTwilioNumber.length(); i++) {
+                                    if ( !msgFromFormNumberToTwilioNumber.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
+                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
+                                        // if non-Twilio phone number to Twilio account phone number: "received"
+                                        messagesArrayAdapter.insert(msgFromFormNumberToTwilioNumber.getJSONObject(i), im);
+                                        im++;
+                                    }
+                                }
+                                /*
+                                // Messages from selectedTwilioNumber to formPhoneNumber
+                                JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
                                 // textString.setText("");
                                 for (int i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
                                     if ( !msgFromTwilioNumberToFormNumber.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
@@ -466,7 +487,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                         im++;
                                     }
                                 }
-
                                 // Messages from formPhoneNumber to selectedTwilioNumber
                                 JSONArray msgFromFormNumberToTwilioNumber = jsonFromFormNumberToTwilioNumber.getJSONArray("messages");
                                 for (int i = 0; i < msgFromFormNumberToTwilioNumber.length(); i++) {
@@ -477,9 +497,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                         im++;
                                     }
                                 }
+                                */
 
                                 if ( im == 0 ) {
-                                    Snackbar.make(swipeRefreshLayout, "+ No messages.", Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
                             } catch (JSONException e) {
                                 Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON", Snackbar.LENGTH_LONG).show();
