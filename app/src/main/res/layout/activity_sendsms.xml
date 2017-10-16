@@ -29,7 +29,7 @@
         <EditText
             android:id="@+id/sendToPhoneNumber"
             android:textSize="@dimen/buttonTextSize"
-            android:layout_width="280dp"
+            android:layout_width="@dimen/editSendSmsFieldWidth"
             android:layout_height="wrap_content"
             android:text=""/>
         <Button
@@ -61,7 +61,7 @@
         <EditText
             android:id="@+id/textMessage"
             android:textSize="@dimen/buttonTextSize"
-            android:layout_width="280dp"
+            android:layout_width="@dimen/editSendSmsFieldWidth"
             android:layout_height="wrap_content"
             android:text="Hello"/>
         <Button

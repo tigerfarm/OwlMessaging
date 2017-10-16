@@ -46,6 +46,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.os.SystemClock.sleep;
 import static com.tfp.tfpsms.R.id.spinner;
 
 public class SendSmsActivity extends AppCompatActivity implements View.OnClickListener {
@@ -162,7 +163,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     twilioSms.setSmsSend(theFormPhoneNumber, twilioNumber, textMessage.getText().toString());
                     sendSms();
                     // wait(1000);
-                    populateMessageList();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -191,6 +191,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to send message.", Snackbar.LENGTH_LONG).show();
                 call.cancel();
             }
             @Override
@@ -200,7 +201,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void run() {
                         // textScrollBox.setText(responseStatus(myResponse));
+                        Snackbar.make(swipeRefreshLayout, "+ Message sent.", Snackbar.LENGTH_LONG).setDuration(3000).show();
+                        // sleep(1000);
                         populateMessageList();
+                        textMessage.setText("");
                     }
                 });
             }
@@ -498,15 +502,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View view = getLayoutInflater().inflate(R.layout.list_item_message, parent, false);
 
-            String messageTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-            System.out.println("+ messageTwilioNumber: " + messageTwilioNumber);
-
             TextView labelView = (TextView) view.findViewById(R.id.host_row_label);
             TextView hostnameView =(TextView) view.findViewById(R.id.host_row_hostname);
             TextView portsView =(TextView) view.findViewById(R.id.host_row_ports);
 
             JSONObject messageJson = getItem(position);
             try {
+                String messageTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
                 String thePhoneNumber = messageJson.getString("from");
                 if (messageTwilioNumber.equalsIgnoreCase(thePhoneNumber)) {
                     view.setBackgroundResource( R.color.listBackgroundIncoming );
