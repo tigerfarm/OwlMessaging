@@ -459,6 +459,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
                                 // Messages from formPhoneNumber to selectedTwilioNumber
                                 JSONArray msgFromFormNumberToTwilioNumber = jsonFromFormNumberToTwilioNumber.getJSONArray("messages");
+
                                 for (int i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
                                     if ( !msgFromTwilioNumberToFormNumber.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
                                         // if Twilio account phone number to Twilio account phone number: "received" and "delivered"

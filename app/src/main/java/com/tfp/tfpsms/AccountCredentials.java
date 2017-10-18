@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.util.Properties;
 import java.util.Set;
 
@@ -22,10 +24,13 @@ import okhttp3.Response;
 
 public class AccountCredentials implements Interceptor {
 
+    private EncDecString EncDec;
+
     //                                 12345678901234567890123 (max 23 char)
     private static final String TAG = "AccountCredentials";
 
     private Context mContext;
+    //
     private String accountSid = "";
     private String authToken;
     private String credentials;
@@ -34,8 +39,7 @@ public class AccountCredentials implements Interceptor {
     private String toPhoneNumber;
     private int localTimeOffset;
     //
-    // Twilio Authy Application entry API Key:
-    private String appApiKey = "Vye28fVRU1Bo85BISTENwp1klE5a7tir";  // Owl Publishing
+    // ---------------------------------------------------------------------------------------------
     private SharedPreferences sharedPreferences;
 
     public AccountCredentials(Context context) {
@@ -44,6 +48,7 @@ public class AccountCredentials implements Interceptor {
         //
         this.accountSid = sharedPreferences.getString("account_sid", "");
         this.authToken = sharedPreferences.getString("auth_token", "");
+        // this.credentials = Credentials.basic(accountSid, getAccountTokenDecrypted());
         this.credentials = Credentials.basic(accountSid, authToken);
         //
         this.twilioPhoneNumber = sharedPreferences.getString("twilio_phone_number", "");
@@ -60,17 +65,47 @@ public class AccountCredentials implements Interceptor {
         return chain.proceed(authenticatedRequest);
     }
 
+    // ---------------------------------------------------------------------------------------------
+
     public boolean existAccountSid() {
         if (accountSid.isEmpty()) {
             return false;
         }
         return true;
     }
-
     public String getAccountSid() {
         return accountSid;
     }
 
+    // ----------------------------------------------------
+    // Encrypt the account token when stored on the phone.
+    // Decrypt for use in the application.
+    public void setAccountTokenEncrypted(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        try {
+            prefEditor.putString("auth_token", EncDec.encryptBase64String(aParam));
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        prefEditor.apply();
+        prefEditor.commit();
+    }
+    public String getAccountTokenDecrypted() {
+        this.authToken = sharedPreferences.getString("auth_token", "");
+        String theToken = "";
+        try {
+            theToken = EncDec.decryptBase64String(this.authToken);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        return theToken;
+    }
+
+    // ----------------------------------------------------
     public void setTwilioPhoneNumber(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
         prefEditor.putString("twilio_phone_number", aParam);
@@ -91,6 +126,7 @@ public class AccountCredentials implements Interceptor {
         return toPhoneNumber;
     }
 
+    // ----------------------------------------------------
     // Needs to be set, in the Settings panel. Or calculate difference from GMT to local time.
     public void setLocalTimeOffset(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
@@ -105,6 +141,9 @@ public class AccountCredentials implements Interceptor {
     // ---------------------------------------------------------------------------------------------
     // NOT used in the SMS version.
     // ---------------------------------------------------------------------------------------------
+
+    // Twilio Authy Application entry API Key:
+    private String appApiKey = "Vye28fVRU1Bo85BISTENwp1klE5a7tir";  // Owl Publishing
 
     public String getAppApiKey() {
         return appApiKey;

@@ -15,7 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class EncDecString {
 
-    //                                  1234567890123456
+    //                                          1234567890123456
     private final String encryptionKeyString = "16-character-Str";
 
     //                                 1234567890123456 - 16 bytes IV
