@@ -15,7 +15,14 @@
     <string name="title_activity_deleteconversation">Delete this conversation messages</string>
 
     <!-- ======================================================================================= -->
-    <!-- About Text -->
+    <!-- Send SMS Panel -->
+    <string name="sendsms_send">Send</string>
+    <string name="sendsms_set">Set</string>
+
+    <!-- Lookup Panel -->
+    <string name="lookup_lookup">Lookup</string>
+
+    <!-- About Text Panel -->
     <string name="about_row01">SMS program calling Twilio REST APIs.</string>
     <string name="about_row02">
         \n Version: 0.9

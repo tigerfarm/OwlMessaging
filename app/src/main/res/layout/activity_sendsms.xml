@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text=""/>
         <Button
-            android:text="Set"
+            android:text="@string/sendsms_set"
             android:id="@+id/setButton"
             android:textSize="@dimen/buttonTextSize"
             android:textColor="@color/buttonTextColor"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:text="Hello"/>
         <Button
-            android:text="Send MSG"
+            android:text="@string/sendsms_send"
             android:id="@+id/sendButton"
             android:textSize="@dimen/buttonTextSize"
             android:textColor="@color/buttonTextColor"
