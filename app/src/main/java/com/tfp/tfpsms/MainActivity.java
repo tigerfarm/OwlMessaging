@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -221,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String[] spinnerArray = new String[ spinnerList.size() ];
         spinnerList.toArray( spinnerArray );
+        Arrays.sort(spinnerArray);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, Arrays.asList(spinnerArray));
         //
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
