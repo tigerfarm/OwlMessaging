@@ -318,9 +318,9 @@ public class MainActivity extends AppCompatActivity {
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             View view = getLayoutInflater().inflate(R.layout.list_item_message, parent, false);
 
-            TextView labelView = (TextView) view.findViewById(R.id.host_row_label);
-            TextView hostnameView = (TextView) view.findViewById(R.id.host_row_hostname);
-            TextView portsView = (TextView) view.findViewById(R.id.host_row_ports);
+            TextView labelView = (TextView) view.findViewById(R.id.row01);
+            TextView hostnameView = (TextView) view.findViewById(R.id.row02);
+            TextView portsView = (TextView) view.findViewById(R.id.row03);
 
             JSONObject messageJson = getItem(position);
             try {

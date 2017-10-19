@@ -23,26 +23,29 @@
 
         <TextView
             android:text="Set1"
-            android:id="@+id/host_row_label"
+            android:id="@+id/row01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
+            android:paddingRight="@dimen/listItemPaddingRight"
             android:textSize="12sp" />
 
         <TextView
             android:text="Set2"
-            android:id="@+id/host_row_hostname"
+            android:id="@+id/row02"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingRight="@dimen/listItemPaddingRight"
             android:textSize="16sp" />
 
         <TextView
             android:text="Set3"
-            android:id="@+id/host_row_ports"
+            android:id="@+id/row03"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:maxLines="1"
+            android:paddingRight="@dimen/listItemPaddingRight"
             android:textSize="12sp" />
     </LinearLayout>
 

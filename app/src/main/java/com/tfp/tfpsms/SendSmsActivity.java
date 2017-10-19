@@ -456,36 +456,11 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 sortedJson = sortedJson + " {" + messageList.get(0) + "}";
                                 sortedJson = sortedJson + " ] }";
                                 final JSONObject jsonSortedMessages = new JSONObject(sortedJson);
-                                JSONArray msgFromTwilioNumberToFormNumber = jsonSortedMessages.getJSONArray("messages");
+                                JSONArray conversationMessages = jsonSortedMessages.getJSONArray("messages");
                                 int i = 0;
-                                for (i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
-                                    messagesArrayAdapter.insert(msgFromTwilioNumberToFormNumber.getJSONObject(i), i);
+                                for (i = 0; i < conversationMessages.length(); i++) {
+                                    messagesArrayAdapter.insert(conversationMessages.getJSONObject(i), i);
                                 }
-
-                                /*
-                                // Messages from selectedTwilioNumber to formPhoneNumber
-                                JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
-                                // textString.setText("");
-                                for (int i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
-                                    if ( !msgFromTwilioNumberToFormNumber.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
-                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
-                                        // if Twilio phone number to non-Twilio phone number: "delivered"
-                                        messagesArrayAdapter.insert(msgFromTwilioNumberToFormNumber.getJSONObject(i), im);
-                                        im++;
-                                    }
-                                }
-                                // Messages from formPhoneNumber to selectedTwilioNumber
-                                JSONArray msgFromFormNumberToTwilioNumber = jsonFromFormNumberToTwilioNumber.getJSONArray("messages");
-                                for (int i = 0; i < msgFromFormNumberToTwilioNumber.length(); i++) {
-                                    if ( !msgFromFormNumberToTwilioNumber.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
-                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
-                                        // if non-Twilio phone number to Twilio account phone number: "received"
-                                        messagesArrayAdapter.insert(msgFromFormNumberToTwilioNumber.getJSONObject(i), im);
-                                        im++;
-                                    }
-                                }
-                                */
-
                                 if ( i == 0 ) {
                                     Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
@@ -573,9 +548,9 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
             View view = getLayoutInflater().inflate(R.layout.list_item_message, parent, false);
-            TextView row01 = (TextView) view.findViewById(R.id.host_row_label);
-            TextView row02 =(TextView) view.findViewById(R.id.host_row_hostname);
-            TextView row03 =(TextView) view.findViewById(R.id.host_row_ports);
+            TextView row01 = (TextView) view.findViewById(R.id.row01);
+            TextView row02 =(TextView) view.findViewById(R.id.row02);
+            TextView row03 =(TextView) view.findViewById(R.id.row03);
 
             JSONObject messageJson = getItem(position);
             try {
