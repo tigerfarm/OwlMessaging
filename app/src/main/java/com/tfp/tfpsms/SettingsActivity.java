@@ -101,7 +101,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_twilio);
             setHasOptionsMenu(true);
             bindPreferenceSummaryToValue(findPreference("account_sid"));
-            bindPreferenceToken(findPreference("auth_token"));
+            // bindPreferenceToken(findPreference("auth_token"));
+            bindPreferenceSummaryToValue(findPreference("auth_token"));
         }
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {

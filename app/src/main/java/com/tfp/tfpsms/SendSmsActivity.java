@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -405,7 +406,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void run() {
                             System.out.println("+ stringFromTwilioNumberToFormNumber: " + stringFromTwilioNumberToFormNumber);
-                            populateMessageListView(responseJson, selectedTwilioNumber, formPhoneNumber);
+                            populateMessageListView(stringFromTwilioNumberToFormNumber, selectedTwilioNumber, formPhoneNumber);
                         }
                     });
                 } else {
@@ -415,7 +416,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
-    private void populateMessageListView(final JSONObject jsonFromTwilioNumberToFormNumber, final String selectedTwilioNumber, String formPhoneNumber) {
+    private void populateMessageListView(final String stringFromTwilioNumberToFormNumber, final String selectedTwilioNumber, String formPhoneNumber) {
 
         // textString.setText("+ Messages from " + formPhoneNumber + " to " + selectedTwilioNumber);
         twilioSms.setSmsRequestLogs(formPhoneNumber, selectedTwilioNumber );
@@ -437,45 +438,30 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 // ---------------------------------------------------------------------------------
                 // Messages from formPhoneNumber to selectedTwilioNumber
                 final String stringFromFormNumberToTwilioNumber = response.body().string();
-                final JSONObject jsonFromFormNumberToTwilioNumber;
-                try {
-                    jsonFromFormNumberToTwilioNumber = new JSONObject(stringFromFormNumberToTwilioNumber);
-                } catch (JSONException e) {
-                    Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response", Snackbar.LENGTH_LONG).show();
-                    return;
-                }
-
                 if (response.code() == 200) {
                     SendSmsActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             messagesArrayAdapter.clear();
-
                             System.out.println("+ stringFromFormNumberToTwilioNumber: " + stringFromFormNumberToTwilioNumber);
                             try {
-                                int im = 0;
-
-                                // Messages from selectedTwilioNumber to formPhoneNumber
-                                JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
-                                // Messages from formPhoneNumber to selectedTwilioNumber
-                                JSONArray msgFromFormNumberToTwilioNumber = jsonFromFormNumberToTwilioNumber.getJSONArray("messages");
-
-                                for (int i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
-                                    if ( !msgFromTwilioNumberToFormNumber.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
-                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
-                                        // if Twilio phone number to non-Twilio phone number: "delivered"
-                                        messagesArrayAdapter.insert(msgFromTwilioNumberToFormNumber.getJSONObject(i), im);
-                                        im++;
-                                    }
+                                List<String> messageList;
+                                messageList = printMessageLog("received", stringFromTwilioNumberToFormNumber);
+                                messageList.addAll(printMessageLog("delivered", stringFromFormNumberToTwilioNumber));
+                                Collections.sort(messageList);
+                                String sortedJson = "{\"messages\": [";
+                                for (int index = (messageList.size() - 1); index > 0; index--) {
+                                    sortedJson = sortedJson + " {" + messageList.get(index) + "},";
                                 }
-                                for (int i = 0; i < msgFromFormNumberToTwilioNumber.length(); i++) {
-                                    if ( !msgFromFormNumberToTwilioNumber.getJSONObject(i).getString("status").equalsIgnoreCase("delivered")) {
-                                        // if Twilio account phone number to Twilio account phone number: "received" and "delivered"
-                                        // if non-Twilio phone number to Twilio account phone number: "received"
-                                        messagesArrayAdapter.insert(msgFromFormNumberToTwilioNumber.getJSONObject(i), im);
-                                        im++;
-                                    }
+                                sortedJson = sortedJson + " {" + messageList.get(0) + "}";
+                                sortedJson = sortedJson + " ] }";
+                                final JSONObject jsonSortedMessages = new JSONObject(sortedJson);
+                                JSONArray msgFromTwilioNumberToFormNumber = jsonSortedMessages.getJSONArray("messages");
+                                int i = 0;
+                                for (i = 0; i < msgFromTwilioNumberToFormNumber.length(); i++) {
+                                    messagesArrayAdapter.insert(msgFromTwilioNumberToFormNumber.getJSONObject(i), i);
                                 }
+
                                 /*
                                 // Messages from selectedTwilioNumber to formPhoneNumber
                                 JSONArray msgFromTwilioNumberToFormNumber = jsonFromTwilioNumberToFormNumber.getJSONArray("messages");
@@ -500,11 +486,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 }
                                 */
 
-                                if ( im == 0 ) {
+                                if ( i == 0 ) {
                                     Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
                             } catch (JSONException e) {
                                 Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON", Snackbar.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
                             }
                         }
                     });
@@ -515,6 +503,67 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    private List printMessageLog(String ignoreType, String theResponse) throws Exception {
+        List<String> messageList = new ArrayList<>();
+        String messageString;
+        JSONObject responseJson;
+        JSONArray theJsonArray;
+        try {
+            responseJson = new JSONObject(theResponse);
+            theJsonArray = responseJson.getJSONArray("messages");
+        } catch (JSONException e) {
+            Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response", Snackbar.LENGTH_LONG).show();
+            messageList.add("");
+            return messageList;
+        }
+        try {
+            for (int i = 0; i < theJsonArray.length(); i++) {
+                if (!theJsonArray.getJSONObject(i).getString("status").equalsIgnoreCase(ignoreType)) {
+                    messageString
+                            = "\"date_sort\": \"" + sortDateTime(theJsonArray.getJSONObject(i).getString("date_sent")) + "\""
+                            + ", \"from\": \"" + theJsonArray.getJSONObject(i).getString("from") + "\""
+                            + ", \"to\": \"" + theJsonArray.getJSONObject(i).getString("to") + "\""
+                            + ", \"date_sent\": \"" + theJsonArray.getJSONObject(i).getString("date_sent") + "\""
+                            + ", \"status\": \"" + theJsonArray.getJSONObject(i).getString("status") + "\""
+                            + ", \"body\": \"" + unescapeJavaString(theJsonArray.getJSONObject(i).getString("body")) + "\"";
+                    messageList.add(messageString);
+                    // System.out.println("+ " + messageString);
+                }
+            }
+        } catch (JSONException e) {
+            System.out.println("-- Failed to parse JSON response.");
+        }
+        return messageList;
+    }
+
+    private String sortDateTime(String theGmtDate) {
+        String theSortDateTime = "19800101:00:00:00"; // error default.
+        //                                                        "26 Sep 2017 00:49:31"
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
+        // :Tue, 26 Sep 2017 00:49:31 +0000:
+        //  012345678901234567890123456789
+        int numDateStart = 5;
+        int numDateEnd = 25;
+        if (theGmtDate.length() < numDateEnd) {
+            return theSortDateTime;                     // return the error default value.
+        }
+        Date gmtDate;
+        try {
+            gmtDate = readDateFormatter.parse(theGmtDate.substring(numDateStart, numDateEnd));
+        } catch (ParseException ex) {
+            return theSortDateTime;                     // return the error default value.
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(gmtDate);
+        SimpleDateFormat writeDateformatter = new SimpleDateFormat("yyyyMMdd:HH:mm:ss");
+        return writeDateformatter.format(cal.getTime());
+    }
+
+    public String unescapeJavaString(String st) {
+        String theString = st.replace("\n", "\\n").replace("\r", "\\r");
+        return theString;
+    }
+
     private class MessagesArrayAdapter extends ArrayAdapter<JSONObject> {
         public MessagesArrayAdapter(@NonNull Context context, @LayoutRes int resource) {
             super(context, resource);
@@ -522,11 +571,11 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            View view = getLayoutInflater().inflate(R.layout.list_item_message, parent, false);
 
-            TextView labelView = (TextView) view.findViewById(R.id.host_row_label);
-            TextView hostnameView =(TextView) view.findViewById(R.id.host_row_hostname);
-            TextView portsView =(TextView) view.findViewById(R.id.host_row_ports);
+            View view = getLayoutInflater().inflate(R.layout.list_item_message, parent, false);
+            TextView row01 = (TextView) view.findViewById(R.id.host_row_label);
+            TextView row02 =(TextView) view.findViewById(R.id.host_row_hostname);
+            TextView row03 =(TextView) view.findViewById(R.id.host_row_ports);
 
             JSONObject messageJson = getItem(position);
             try {
@@ -534,17 +583,17 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 String thePhoneNumber = messageJson.getString("from");
                 if (messageTwilioNumber.equalsIgnoreCase(thePhoneNumber)) {
                     view.setBackgroundResource( R.color.listBackgroundIncoming );
-                    labelView.setGravity(Gravity.RIGHT);
-                    hostnameView.setGravity(Gravity.RIGHT);
-                    portsView.setGravity(Gravity.RIGHT);
+                    row01.setGravity(Gravity.RIGHT);
+                    row02.setGravity(Gravity.RIGHT);
+                    row03.setGravity(Gravity.RIGHT);
                 }
-                labelView.setText("From: " + messageJson.getString("from") + " To: " + messageJson.getString("to"));
+                row01.setText("From: " + messageJson.getString("from") + " To: " + messageJson.getString("to"));
                 String theStatus = messageJson.getString("status");
                 if (!theStatus.equalsIgnoreCase("delivered") && !theStatus.equalsIgnoreCase("received")) {
-                    labelView.setText( labelView.getText() + ", status: " + messageJson.getString("status"));
+                    row01.setText( row01.getText() + ", status: " + messageJson.getString("status"));
                 }
-                hostnameView.setText(messageJson.getString("body"));
-                portsView.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
+                row02.setText(messageJson.getString("body"));
+                row03.setText(twilioSms.localDateTime( messageJson.getString("date_sent")));
             } catch (JSONException e) {
                 Log.e("SendSmsActivity", "- Error: failed to parse JSON", e);
                 System.out.println(e);
