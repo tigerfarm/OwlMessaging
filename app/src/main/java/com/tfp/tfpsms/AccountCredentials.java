@@ -141,10 +141,30 @@ public class AccountCredentials implements Interceptor {
     private String senderList = "";
     public String getSenderList() {
         this.senderList = sharedPreferences.getString("sender_list", "");
+        /*
+        String decValue = "";
+        try {
+            decValue = EncDec.decryptBase64String(this.senderList);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        return decValue;
+        */
         return senderList;
     }
     public void setSenderList(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        /*
+        try {
+            prefEditor.putString("sender_list", EncDec.encryptBase64String(aParam));
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        */
         prefEditor.putString("sender_list", aParam);
         prefEditor.apply();
         prefEditor.commit();

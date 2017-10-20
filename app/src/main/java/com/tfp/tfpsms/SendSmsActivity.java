@@ -77,6 +77,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // -----------------------
         // Send message form objects:
         setButton = (Button) findViewById(R.id.setButton);
         setButton.setOnClickListener(this);
@@ -88,6 +89,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         accountCredentials = new AccountCredentials(this);
         twilioSms = new TwSms(accountCredentials);
 
+        // -----------------------
+        // Set senderSpinner
         // https://developer.android.com/guide/topics/ui/controls/spinner.html
         // spinnerArray[0] = "1231231234";
         // spinnerArray[1] = "1333231234";
@@ -100,13 +103,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         senderSpinner = (Spinner)findViewById(R.id.senderSpinner);
         senderSpinner.setAdapter(adapter);
         int thePosition = adapter.getPosition( accountCredentials.getToPhoneNumber() );
-        if (thePosition > 0) {
-            sendToPhoneNumber.setText("");
+        if (thePosition >= 0) {
             senderSpinner.setSelection( thePosition );
         } else {
             sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
         }
 
+        // -----------------------
         listView = (ListView) findViewById(R.id.list_view);
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
         listView.setAdapter(messagesArrayAdapter);
@@ -138,46 +141,11 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
         return true;
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        // Either the field Phone Number or the spinner number.
-        String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
-        if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
-            theFormPhoneNumber = senderSpinner.getSelectedItem().toString();
-        }
-        accountCredentials.setToPhoneNumber(theFormPhoneNumber);
-
-        // Set the Application Twilio Phone Number.
-        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-        accountCredentials.setTwilioPhoneNumber( twilioNumber );
-
-        // Note, this automatically adds a back-arrow to parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_delete) {
-            try {
-                // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
-                twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
-                getMessagesToDelete();
-                // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
-                twilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
-                getMessagesToDelete();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    // ---------------------------------------------------------------------------------------------
     @Override
     public void onClick(View view) {
 
-        // Either the field Phone Number or the spinner number.
+        // Either the editText Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
         if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
             theFormPhoneNumber = senderSpinner.getSelectedItem().toString();
@@ -208,6 +176,41 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 break;
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Either the editText Phone Number or the spinner number.
+        String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
+        if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
+            theFormPhoneNumber = senderSpinner.getSelectedItem().toString();
+        }
+        accountCredentials.setToPhoneNumber(theFormPhoneNumber);
+
+        // Set the Application Twilio Phone Number.
+        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        accountCredentials.setTwilioPhoneNumber( twilioNumber );
+
+        // Note, this automatically adds a back-arrow to parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_delete) {
+            try {
+                // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
+                twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
+                getMessagesToDelete();
+                // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
+                twilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
+                getMessagesToDelete();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -385,6 +388,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void run() {
                         accPhoneNumberSpinnerList(menu, jsonResponse);
+                        populateMessageList();
                     }
                 });
             }
@@ -399,7 +403,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             Snackbar.make(swipeRefreshLayout, "- Error: Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
             return;
         }
-
         // Top bar spinner list of account phone numbers.
         MenuItem item = menu.findItem(spinner);
         twilioNumberSpinner = (Spinner) item.getActionView();
@@ -421,10 +424,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         twilioNumberSpinner.setAdapter(adapter);
         twilioNumberSpinner.setSelection( adapter.getPosition(accountCredentials.getTwilioPhoneNumber()) );
-
-        populateMessageList();
-
-        return;
     }
 
     // ---------------------------------------------------------------------------------------------

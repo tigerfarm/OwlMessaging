@@ -69,7 +69,7 @@
             android:textSize="@dimen/buttonTextSize"
             android:layout_width="@dimen/editSendSmsFieldWidth"
             android:layout_height="wrap_content"
-            android:text="Hello"/>
+            android:text=""/>
         <Button
             android:text="@string/sendsms_send"
             android:id="@+id/sendButton"
