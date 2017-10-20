@@ -206,7 +206,11 @@ public class MainActivity extends AppCompatActivity {
             JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
             for (i = 0; i < jList.length(); i++) {
                 String accPhoneNumber = jList.getJSONObject(i).getString("phone_number");
-                spinnerList.add( accPhoneNumber );
+                if ( jList.getJSONObject(i).getJSONObject("capabilities").getBoolean("sms") ) {
+                    // Only SMS capable phone numbers
+                    spinnerList.add( accPhoneNumber );
+                    // Note Hong Kong and UK numbers can only send/receive local SMS
+                }
             }
         } catch (JSONException e) {
             // textString.setText("++ Check and set: Twilio Account Settings.");
@@ -288,16 +292,31 @@ public class MainActivity extends AppCompatActivity {
                                 JSONArray messages = responseJson.getJSONArray("messages");
                                 messagesArrayAdapter.clear();
                                 int im = 0;
+                                List<String> senderList = new ArrayList<>();    // To store a list of sender phone numbers
                                 for (int i = 0; i < messages.length(); i++) {
                                     if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
                                         messagesArrayAdapter.insert(messages.getJSONObject(i), im);
                                         im++;
+                                        senderList.add(messages.getJSONObject(i).getString("from"));
                                     }
                                 }
                                 if ( im == 0 ) {
                                     // textString.setText("+ No messages.");
                                     Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
+                                // Sort and minimize the list, then store it for use in the Send SMS panel.
+                                Collections.sort(senderList);
+                                String theSenderList = ":";
+                                String anItem = "";
+                                for (int index = 0; index < senderList.size(); index++) {
+                                    String thisItem = senderList.get(index);
+                                    if (!anItem.equalsIgnoreCase(thisItem)) {
+                                        theSenderList = theSenderList + thisItem + ":";
+                                    }
+                                    anItem = thisItem;
+                                }
+                                // System.out.println("+ theSenderList: " + theSenderList);
+                                accountCredentials.setSenderList(theSenderList);
                             } catch (JSONException e) {
                                 Snackbar.make(swipeRefreshLayout, "-- Error: failed to parse JSON response: populateMessageList", Snackbar.LENGTH_LONG).show();
                             }

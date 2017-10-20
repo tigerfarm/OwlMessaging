@@ -29,9 +29,15 @@
         <EditText
             android:id="@+id/sendToPhoneNumber"
             android:textSize="@dimen/buttonTextSize"
-            android:layout_width="@dimen/editSendSmsFieldWidth"
+            android:layout_width="@dimen/editPhoneNumberFieldWidth"
             android:layout_height="wrap_content"
             android:text=""/>
+        <Spinner
+            android:id="@+id/senderSpinner"
+            android:title="Spinner"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         <Button
             android:text="@string/sendsms_set"
             android:id="@+id/setButton"

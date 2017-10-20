@@ -25,7 +25,6 @@ public class TwSms {
     }
 
     private RequestBody postParams;
-
     public RequestBody getPostParams() throws Exception {
         return postParams;
     }

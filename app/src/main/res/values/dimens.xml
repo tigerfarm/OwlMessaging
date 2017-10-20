@@ -2,6 +2,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dividerHeight">3px</dimen>
     <dimen name="buttonTextSize">14dp</dimen>
+    <dimen name="editPhoneNumberFieldWidth">121dp</dimen>
     <dimen name="editSendSmsFieldWidth">260dp</dimen>
-    <dimen name="listItemPaddingRight">6dp</dimen>
+    <dimen name="listItemPaddingRight">9dp</dimen>
 </resources>

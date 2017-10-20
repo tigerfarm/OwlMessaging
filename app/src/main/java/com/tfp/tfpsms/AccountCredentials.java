@@ -138,6 +138,18 @@ public class AccountCredentials implements Interceptor {
         return Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );
     }
 
+    private String senderList = "";
+    public String getSenderList() {
+        this.senderList = sharedPreferences.getString("sender_list", "");
+        return senderList;
+    }
+    public void setSenderList(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        prefEditor.putString("sender_list", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
+    }
+
     // ---------------------------------------------------------------------------------------------
     // NOT used in the SMS version.
     // ---------------------------------------------------------------------------------------------
