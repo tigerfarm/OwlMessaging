@@ -56,7 +56,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private TwSms twilioSms;
     private Spinner twilioNumberSpinner;
 
-    private Spinner senderSpinner;
+    private Menu theMenu;
+    private Spinner sendToSpinner;
 
     private Button sendButton, setButton;
     private EditText sendToPhoneNumber;
@@ -90,21 +91,21 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         twilioSms = new TwSms(accountCredentials);
 
         // -----------------------
-        // Set senderSpinner
+        // Set sendToSpinner
         // https://developer.android.com/guide/topics/ui/controls/spinner.html
         // spinnerArray[0] = "1231231234";
         // spinnerArray[1] = "1333231234";
         // spinnerArray[2] = "18182103863";
-        List<String> listItems = getSenderList( accountCredentials.getSenderList() );
+        List<String> listItems = getSendToList( accountCredentials.getSendToList() );
         String[] spinnerArray = new String[ listItems.size() ];
         listItems.toArray( spinnerArray );
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.sender_spinner_item, Arrays.asList(spinnerArray));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.send_to_spinner_item, Arrays.asList(spinnerArray));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        senderSpinner = (Spinner)findViewById(R.id.senderSpinner);
-        senderSpinner.setAdapter(adapter);
+        sendToSpinner = (Spinner)findViewById(R.id.sendToSpinner);
+        sendToSpinner.setAdapter(adapter);
         int thePosition = adapter.getPosition( accountCredentials.getToPhoneNumber() );
         if (thePosition >= 0) {
-            senderSpinner.setSelection( thePosition );
+            sendToSpinner.setSelection( thePosition );
         } else {
             sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
         }
@@ -133,11 +134,14 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        theMenu = menu;
+
         // Adds 3-dot option menu in the action bar.
         getMenuInflater().inflate(R.menu.menu_sendsms, menu);
 
         // Top bar list of account phone numbers:
-        loadSpinnerAccPhoneNumbers(menu);
+        loadSpinnerAccPhoneNumbers();
 
         return true;
     }
@@ -148,7 +152,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         // Either the editText Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
         if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
-            theFormPhoneNumber = senderSpinner.getSelectedItem().toString();
+            theFormPhoneNumber = sendToSpinner.getSelectedItem().toString();
         }
         accountCredentials.setToPhoneNumber(theFormPhoneNumber);
 
@@ -169,6 +173,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.setButton:
                 try {
                     // textString.setText("+ setButton, Send message to: " + toPhoneNumber);
+                    Snackbar.make(swipeRefreshLayout, "+ Loading messages ...", Snackbar.LENGTH_LONG).show();
                     populateMessageList();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -184,7 +189,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         // Either the editText Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
         if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
-            theFormPhoneNumber = senderSpinner.getSelectedItem().toString();
+            theFormPhoneNumber = sendToSpinner.getSelectedItem().toString();
         }
         accountCredentials.setToPhoneNumber(theFormPhoneNumber);
 
@@ -214,7 +219,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     // ---------------------------------------------------------------------------------------------
-    private List<String> getSenderList(String jsonList) {
+    private List<String> getSendToList(String jsonList) {
         List<String> listItems = new ArrayList<String>();
         // Check if there is no messages.
         String mtMessages = "\"messages\": []";
@@ -283,6 +288,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to delete messages.", Snackbar.LENGTH_LONG).show();
                 call.cancel();
             }
             @Override
@@ -347,6 +353,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to delete message.", Snackbar.LENGTH_LONG).show();
                 call.cancel();
             }
             @Override
@@ -368,7 +375,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     // ---------------------------------------------------------------------------------------------
-    private void loadSpinnerAccPhoneNumbers(final Menu menu) {
+    private void loadSpinnerAccPhoneNumbers() {
+        Snackbar.make(swipeRefreshLayout, "+ Loading data ...", Snackbar.LENGTH_LONG).show();
         twilioSms.setAccPhoneNumbers();
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -379,6 +387,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Snackbar.make(swipeRefreshLayout, "- Error: Network failure, try again.", Snackbar.LENGTH_LONG).show();
                 call.cancel();
             }
             @Override
@@ -387,7 +396,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                 SendSmsActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        accPhoneNumberSpinnerList(menu, jsonResponse);
+                        accPhoneNumberSpinnerList(theMenu, jsonResponse);
                         populateMessageList();
                     }
                 });
@@ -432,7 +441,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         // Either the field Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
         if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
-            theFormPhoneNumber = senderSpinner.getSelectedItem().toString();
+            theFormPhoneNumber = sendToSpinner.getSelectedItem().toString();
         }
         final String finalFormPhoneNumber = theFormPhoneNumber;
         // accountCredentials.setToPhoneNumber(theFormPhoneNumber);

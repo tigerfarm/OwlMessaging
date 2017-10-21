@@ -138,13 +138,29 @@ public class AccountCredentials implements Interceptor {
         return Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );
     }
 
-    private String senderList = "";
-    public String getSenderList() {
-        this.senderList = sharedPreferences.getString("sender_list", "");
+    // ----------------------------------------------------
+    private String sendToList = "";
+    public void setSendToList(String aParam) {
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        /*
+        try {
+            prefEditor.putString("send_to_list", EncDec.encryptBase64String(aParam));
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        */
+        prefEditor.putString("send_to_list", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
+    }
+    public String getSendToList() {
+        this.sendToList = sharedPreferences.getString("send_to_list", "");
         /*
         String decValue = "";
         try {
-            decValue = EncDec.decryptBase64String(this.senderList);
+            decValue = EncDec.decryptBase64String(this.sendToList);
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
@@ -152,22 +168,21 @@ public class AccountCredentials implements Interceptor {
         }
         return decValue;
         */
-        return senderList;
+        return sendToList;
     }
-    public void setSenderList(String aParam) {
+
+    // ----------------------------------------------------
+    // Future use when improving preformance.
+    private String accNumberList = "";
+    public void setAccNumberList(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-        /*
-        try {
-            prefEditor.putString("sender_list", EncDec.encryptBase64String(aParam));
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        }
-        */
-        prefEditor.putString("sender_list", aParam);
+        prefEditor.putString("account_phone_number_list", aParam);
         prefEditor.apply();
         prefEditor.commit();
+    }
+    public String getAccNumberList() {
+        this.accNumberList = sharedPreferences.getString("account_phone_number_list", "");
+        return accNumberList;
     }
 
     // ---------------------------------------------------------------------------------------------

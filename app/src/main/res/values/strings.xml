@@ -4,7 +4,7 @@
     <!-- ======================================================================================= -->
     <!-- Menu titles -->
 
-    <string name="title_activity_refresh">Get recent messages</string>
+    <string name="title_activity_refresh">Refresh message data</string>
     <string name="title_activity_sendsms">Send Message</string>
     <string name="title_activity_lookup">Phone number information</string>
     <string name="title_activity_accsec">2FA and Phone Verification</string>

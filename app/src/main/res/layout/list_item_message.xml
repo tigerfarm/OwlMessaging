@@ -22,7 +22,7 @@
         android:paddingTop="3dp">
 
         <TextView
-            android:text="Set1"
+            android:text=""
             android:id="@+id/row01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:textSize="12sp" />
 
         <TextView
-            android:text="Set2"
+            android:text="+ Loading data..."
             android:id="@+id/row02"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:text="Set3"
+            android:text=""
             android:id="@+id/row03"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
