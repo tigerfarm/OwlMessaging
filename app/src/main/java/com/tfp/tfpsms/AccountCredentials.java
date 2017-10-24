@@ -47,14 +47,18 @@ public class AccountCredentials implements Interceptor {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         //
         this.accountSid = sharedPreferences.getString("account_sid", "");
+
         this.authToken = sharedPreferences.getString("auth_token", "");
-        // this.credentials = Credentials.basic(accountSid, getAccountTokenDecrypted());
+        // getAccountTokenDecrypted();
+
         this.credentials = Credentials.basic(accountSid, authToken);
         //
         this.twilioPhoneNumber = sharedPreferences.getString("twilio_phone_number", "");
         //
         this.toPhoneNumber = sharedPreferences.getString("to_phone_number", "");
         this.localTimeOffset = Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );    // Default: -7 is San Francisco time
+
+        EncDec = new EncDecString();
     }
 
     @Override
@@ -94,15 +98,15 @@ public class AccountCredentials implements Interceptor {
     }
     public String getAccountTokenDecrypted() {
         this.authToken = sharedPreferences.getString("auth_token", "");
-        String theToken = "";
+        String decValue = "";
         try {
-            theToken = EncDec.decryptBase64String(this.authToken);
+            decValue = EncDec.decryptBase64String(this.authToken);
         } catch (InvalidKeyException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
-        return theToken;
+        return decValue;
     }
 
     // ----------------------------------------------------
@@ -142,7 +146,6 @@ public class AccountCredentials implements Interceptor {
     private String sendToList = "";
     public void setSendToList(String aParam) {
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
-        /*
         try {
             prefEditor.putString("send_to_list", EncDec.encryptBase64String(aParam));
         } catch (InvalidKeyException e) {
@@ -150,14 +153,11 @@ public class AccountCredentials implements Interceptor {
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
-        */
-        prefEditor.putString("send_to_list", aParam);
         prefEditor.apply();
         prefEditor.commit();
     }
     public String getSendToList() {
         this.sendToList = sharedPreferences.getString("send_to_list", "");
-        /*
         String decValue = "";
         try {
             decValue = EncDec.decryptBase64String(this.sendToList);
@@ -167,8 +167,6 @@ public class AccountCredentials implements Interceptor {
             e.printStackTrace();
         }
         return decValue;
-        */
-        return sendToList;
     }
 
     // ----------------------------------------------------

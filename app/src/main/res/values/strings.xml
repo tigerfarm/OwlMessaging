@@ -44,6 +44,11 @@
     <!-- ======================================================================================= -->
     <!-- Strings related to Settings -->
 
+    <string name="labelSid">Account SID</string>
+    <string name="labelToken">Account authenication token</string>
+    <string name="labelGmtOffset">Timezone GMT offset</string>
+    <string name="buttomUpdate">Update</string>
+
     <string name="pref_header_twilio">Twilio Account</string>
     <string name="pref_title_account_sid">Account SID</string>
     <string name="pref_title_account_token">Account Auth Token</string>

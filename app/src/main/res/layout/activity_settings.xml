@@ -21,9 +21,92 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <ListView
-        android:id="@+id/list"
+    <!-- =================================== -->
+    <RelativeLayout
+        android:id="@+id/TwilioBox"
+        android:background="@drawable/borders_top"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/labelSid"
+            android:text="@string/labelSid"
+            android:paddingTop="9px"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="14sp"/>
+        <Button
+            android:id="@+id/tokenButton"
+            android:text="@string/buttomUpdate"
+            android:textSize="@dimen/buttonTextSize"
+            android:textColor="@color/buttonTextColor"
+            android:background="@color/buttonBackgroundColor"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/TwilioSid"
+            android:layout_below="@+id/labelSid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/accountSid"
+                android:textSize="@dimen/buttonTextSize"
+                android:layout_width="@dimen/editSendSmsFieldWidth"
+                android:layout_height="wrap_content"
+                android:text=""/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelToken"
+            android:text="@string/labelToken"
+            android:layout_below="@+id/TwilioSid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="14sp"/>
+
+        <LinearLayout
+            android:id="@+id/TwilioToken"
+            android:layout_below="@+id/labelToken"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/accountToken"
+                android:textSize="@dimen/buttonTextSize"
+                android:layout_width="@dimen/editSendSmsFieldWidth"
+                android:layout_height="wrap_content"
+                android:text=""/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelGmtOffset"
+            android:text="@string/labelGmtOffset"
+            android:layout_below="@+id/TwilioToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textSize="14sp"/>
+        <Spinner
+            android:id="@+id/gmtOffsetSpinner"
+            android:title="Spinner"
+            android:paddingBottom="18px"
+            android:layout_below="@+id/labelGmtOffset"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/showResults"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="9px"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:text=""/>
 
 </LinearLayout>
