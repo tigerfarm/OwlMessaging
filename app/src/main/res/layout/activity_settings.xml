@@ -92,7 +92,7 @@
         <Spinner
             android:id="@+id/gmtOffsetSpinner"
             android:title="Spinner"
-            android:paddingBottom="18px"
+            android:paddingBottom="21px"
             android:layout_below="@+id/labelGmtOffset"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
