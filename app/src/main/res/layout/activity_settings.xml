@@ -44,7 +44,7 @@
             android:background="@color/buttonBackgroundColor"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="30dp" />
 
         <LinearLayout
             android:id="@+id/TwilioSid"

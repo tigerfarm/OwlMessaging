@@ -63,7 +63,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         accountCredentials = new AccountCredentials(this);
         accountSid.setText(accountCredentials.getAccountSid());
-        accountToken.setText(accountCredentials.getAccountTokenDecrypted());
+        accountToken.setText(accountCredentials.getAccountToken());
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             case R.id.updateButton:
                 try {
                     accountCredentials.setAccountSid( accountSid.getText().toString() );
-                    accountCredentials.setAccountTokenEncrypted( accountToken.getText().toString() );
+                    accountCredentials.setAccountToken( accountToken.getText().toString() );
                     showResults.setText("+ Settings updated." );
                     /*
                     showResults.setText("+ Get the data: "
