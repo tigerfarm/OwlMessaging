@@ -45,20 +45,19 @@ public class AccountCredentials implements Interceptor {
     public AccountCredentials(Context context) {
         this.mContext = context;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        //
-        this.accountSid = sharedPreferences.getString("account_sid", "");
 
-        this.authToken = sharedPreferences.getString("auth_token", "");
-        // getAccountTokenDecrypted();
+        EncDec = new EncDecString();
 
+        // this.accountSid = sharedPreferences.getString("account_sid", "");
+        getAccountSid();
+        // this.authToken = sharedPreferences.getString("auth_token", "");
+        this.authToken = getAccountTokenDecrypted();
         this.credentials = Credentials.basic(accountSid, authToken);
         //
         this.twilioPhoneNumber = sharedPreferences.getString("twilio_phone_number", "");
         //
         this.toPhoneNumber = sharedPreferences.getString("to_phone_number", "");
         this.localTimeOffset = Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );    // Default: -7 is San Francisco time
-
-        EncDec = new EncDecString();
     }
 
     @Override
@@ -78,13 +77,36 @@ public class AccountCredentials implements Interceptor {
         return true;
     }
     public String getAccountSid() {
-        return accountSid;
+        this.accountSid = sharedPreferences.getString("account_sid", "");
+        return this.accountSid;
+    }
+    public void setAccountSid(String aParam) {
+        this.accountSid = aParam;
+        SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
+        prefEditor.putString("account_sid", aParam);
+        prefEditor.apply();
+        prefEditor.commit();
     }
 
     // ----------------------------------------------------
     // Encrypt the account token when stored on the phone.
     // Decrypt for use in the application.
+    public String getAccountToken() {
+        return this.authToken;
+    }
+    public String getAccountTokenDecrypted() {
+        String encValue = sharedPreferences.getString("auth_token", "");
+        try {
+            this.authToken = EncDec.decryptBase64String(encValue);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        return this.authToken;
+    }
     public void setAccountTokenEncrypted(String aParam) {
+        this.authToken = aParam;
         SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(mContext).edit();
         try {
             prefEditor.putString("auth_token", EncDec.encryptBase64String(aParam));
@@ -95,18 +117,6 @@ public class AccountCredentials implements Interceptor {
         }
         prefEditor.apply();
         prefEditor.commit();
-    }
-    public String getAccountTokenDecrypted() {
-        this.authToken = sharedPreferences.getString("auth_token", "");
-        String decValue = "";
-        try {
-            decValue = EncDec.decryptBase64String(this.authToken);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        }
-        return decValue;
     }
 
     // ----------------------------------------------------

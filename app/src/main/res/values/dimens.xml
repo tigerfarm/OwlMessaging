@@ -5,4 +5,5 @@
     <dimen name="editPhoneNumberFieldWidth">109dp</dimen>
     <dimen name="editSendSmsFieldWidth">260dp</dimen>
     <dimen name="listItemPaddingRight">9dp</dimen>
+    <dimen name="editAccountFieldWidth">280dp</dimen>
 </resources>

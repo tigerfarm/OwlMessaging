@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // startActivity(new Intent(this, SettingsActivity.class));
         accountCredentials = new AccountCredentials(this);
         if ( !accountCredentials.existAccountSid() ) {
             // if the Twilio account info hasn't been entered, go to Settings.
@@ -69,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
         }
         twilioSms = new TwSms(accountCredentials);
+
+        // Snackbar.make(swipeRefreshLayout, "+ getAccountSid: " + accountCredentials.getAccountSid(), Snackbar.LENGTH_LONG).show();
+        // Snackbar.make(swipeRefreshLayout, "+ ." + accountCredentials.getAccountSid(), Snackbar.LENGTH_LONG).show();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -134,10 +138,12 @@ public class MainActivity extends AppCompatActivity {
         }
         catch (NullPointerException e) {
             Snackbar.make(swipeRefreshLayout, "- No account phone numbers.", Snackbar.LENGTH_LONG).show();
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         if (selectedTwilioNumber.isEmpty()) {
             Snackbar.make(swipeRefreshLayout, "- No account phone numbers.", Snackbar.LENGTH_LONG).show();
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 
@@ -189,32 +195,35 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    accPhoneNumberPrintList(theMenu, jsonResponse);
-                    populateMessageList();
+                        if (jsonResponse.contains("\"code\": 20003")) {
+                            Snackbar.make(swipeRefreshLayout, "+ Logging into your Twilio account failed. Go to Settings.", Snackbar.LENGTH_LONG).show();
+                        } else if (accPhoneNumberPrintList(theMenu, jsonResponse) > 0) {
+                            populateMessageList();
+                        }
                     }
                 });
             }
         });
     }
 
-    private void accPhoneNumberPrintList(Menu menu, String jsonList) {
+    private int accPhoneNumberPrintList(Menu menu, String jsonList) {
+        int numPhoneNumbers = 0;
         final JSONObject responseJson;
         try {
             responseJson = new JSONObject(jsonList);
         } catch (JSONException e) {
             Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: accPhoneNumberPrintList", Snackbar.LENGTH_LONG).show();
-            return;
+            return numPhoneNumbers;
         }
         // Top bar spinner list of account phone numbers.
         MenuItem item = menu.findItem(spinner);
         twilioNumberSpinner = (Spinner) item.getActionView();
         List<String> spinnerList = new ArrayList<String>();
-        int i = 0;
         try {
             JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
-            for (i = 0; i < jList.length(); i++) {
-                String accPhoneNumber = jList.getJSONObject(i).getString("phone_number");
-                if ( jList.getJSONObject(i).getJSONObject("capabilities").getBoolean("sms") ) {
+            for (numPhoneNumbers = 0; numPhoneNumbers < jList.length(); numPhoneNumbers++) {
+                String accPhoneNumber = jList.getJSONObject(numPhoneNumbers).getString("phone_number");
+                if ( jList.getJSONObject(numPhoneNumbers).getJSONObject("capabilities").getBoolean("sms") ) {
                     // Only SMS capable phone numbers
                     spinnerList.add( accPhoneNumber );
                     // Note Hong Kong and UK numbers can only send/receive local SMS
@@ -225,12 +234,13 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(swipeRefreshLayout,
                     "-- Error: failed to parse JSON response: accPhoneNumberPrintList",
                     Snackbar.LENGTH_LONG).show();
-            return;
+            return numPhoneNumbers;
         }
-        if (i==0) {
+        if (numPhoneNumbers==0) {
             // textString.setText("--- Your Twilio Account does not have an SMS capiable phone number.");
             // msgString.setText("++ Go to your Twilio and select a SMS capiable phone number.");
-            return;
+            Snackbar.make(swipeRefreshLayout, "- Error: No SMS capiable account phone numbers: accPhoneNumberPrintList", Snackbar.LENGTH_LONG).show();
+            return numPhoneNumbers;
         }
         String[] spinnerArray = new String[ spinnerList.size() ];
         spinnerList.toArray( spinnerArray );
@@ -248,6 +258,8 @@ public class MainActivity extends AppCompatActivity {
             accountCredentials.setTwilioPhoneNumber( twilioNumberSpinner.getSelectedItem().toString() );
         }
         twilioNumberSpinner.setSelection( positionTwilioPhoneNumber );
+        // Snackbar.make(swipeRefreshLayout, "+ positionTwilioPhoneNumber" + positionTwilioPhoneNumber, Snackbar.LENGTH_LONG).show();
+        return numPhoneNumbers;
     }
 
     // ---------------------------------------------------------------------------------------------

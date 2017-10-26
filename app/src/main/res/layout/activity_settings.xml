@@ -37,7 +37,7 @@
             android:textColor="#000000"
             android:textSize="14sp"/>
         <Button
-            android:id="@+id/tokenButton"
+            android:id="@+id/updateButton"
             android:text="@string/buttomUpdate"
             android:textSize="@dimen/buttonTextSize"
             android:textColor="@color/buttonTextColor"
@@ -54,7 +54,7 @@
             <EditText
                 android:id="@+id/accountSid"
                 android:textSize="@dimen/buttonTextSize"
-                android:layout_width="@dimen/editSendSmsFieldWidth"
+                android:layout_width="@dimen/editAccountFieldWidth"
                 android:layout_height="wrap_content"
                 android:text=""/>
         </LinearLayout>
@@ -76,7 +76,7 @@
             <EditText
                 android:id="@+id/accountToken"
                 android:textSize="@dimen/buttonTextSize"
-                android:layout_width="@dimen/editSendSmsFieldWidth"
+                android:layout_width="@dimen/editAccountFieldWidth"
                 android:layout_height="wrap_content"
                 android:text=""/>
         </LinearLayout>
