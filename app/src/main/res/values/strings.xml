@@ -23,21 +23,30 @@
     <string name="lookup_lookup">Lookup</string>
 
     <!-- About Text Panel -->
-    <string name="about_row01">SMS program calling Twilio REST APIs.</string>
+    <string name="about_row01">Owl SMS</string>
     <string name="about_row02">
-        \n Version: 0.9
-        \n Release date: October 31, 2017
+        \nOwl SMS is an application which directly uses the Twilio REST APIs to send, receive, and manage messages. You are required to have Twilio account with an SMS capiable phone number to use Owl SMS.
+        \n\nGo to http://Twilio.com/console to get, and manage, your account.
+        \n
+        \nYou can use a free Twilio Trial account with Owl SMS. However, take note of the free Trial account restrictions. For more information on a Trial account, search for \"How does Twilio\'s Free Trial work?\"
+        \n
+        \nVersion: 0.6
+        \nRelease date: October 31, 2017
     </string>
     <string name="about_row03">
-        \n Authors and designers, working at Twilio:
-        \n Stacy David and Ahsan Rabbani
+        \nThe application\'s authors and designers, work at Twilio:
+        \nStacy David Thurston and Ahsan Rabbani
+        \n
+        \nNote, this application is not a Twilio company application, even though it was developed by Twilio employees.
+        \n
+        \nThis application is offered \"as is\", without warrantee or guarantee.
     </string>
 
     <!-- ======================================================================================= -->
     <!-- Strings related to General program messages -->
     <!-- getString(R.string.MessagesSent) -->
 
-    <string name="MessagesSent">+ Messages sent.</string>
+    <string name="MessagesSent">+ Message sent.</string>
     <string name="MessagesDeleted">+ Messages deleted.</string>
     <string name="NoMessages">+ No messages.</string>
 

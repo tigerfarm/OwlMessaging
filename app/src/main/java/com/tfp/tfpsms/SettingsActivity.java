@@ -77,6 +77,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         // Set spinnerGmtOffset
 
         spinnerValuesGmtOffset = getResources().getStringArray(R.array.gmt_offset_values); // Arrary Values
+        ArrayAdapter<String> adapterValues = new ArrayAdapter<>(this, R.layout.gmt_offset_spinner_item, Arrays.asList(spinnerValuesGmtOffset));
 
         // For testing:
         // String[] spinnerLabels = new String[ 3 ];
@@ -93,8 +94,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         spinnerGmtOffset.setAdapter(adapter);
 
         // accountCredentials.getLocalTimeOffsetString();   // "-2" or "-7: PT: California"
-        int thePosition = adapter.getPosition( accountCredentials.getLocalTimeOffsetString() );
-
+        String theLabel = accountCredentials.getLocalTimeOffsetString();
+        int is = theLabel.indexOf(":");
+        if (is > 0) {
+            theLabel = theLabel.substring(0, is+1);
+        }
+        int thePosition = adapterValues.getPosition( theLabel );
+        // showResults.setText("+ theLabel :" + theLabel + ": " + thePosition );
         if (thePosition >= 0) {
             spinnerGmtOffset.setSelection( thePosition );
         } else {
@@ -130,15 +136,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     String theValue = spinnerValuesGmtOffset[spinnerGmtOffset.getSelectedItemPosition()];
                     accountCredentials.setLocalTimeOffset(theValue);
 
-                    // showResults.setText("+ spinnerGmtOffset : " + spinnerValuesGmtOffset[spinnerGmtOffset.getSelectedItemPosition()] );
+                    // showResults.setText("+ spinnerGmtOffset : " + theValue );
                     Snackbar.make(swipeRefreshLayout, "+ Settings updated.", Snackbar.LENGTH_LONG).show();
-                    /*
-                    showResults.setText("+ Get the data: "
-                            + "\n+ getAccountSid: " + accountCredentials.getAccountSid()
-                            + "\n+ getAccountToken: " + accountCredentials.getAccountToken()
-                            + "\n+ getAccountTokenDecrypted: " + accountCredentials.getAccountTokenDecrypted()
-                    );
-                    */
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
