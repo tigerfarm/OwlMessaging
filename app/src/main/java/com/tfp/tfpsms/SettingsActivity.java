@@ -17,6 +17,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,22 +25,26 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AccountCredentials accountCredentials;
-    private TwSms twilioSms;
-    private Spinner gmtOffsetSpinner;
+    private Spinner spinnerGmtOffset;
+    private String[] spinnerValuesGmtOffset;
 
     private Button updateButton;
     private EditText accountSid, accountToken;
     private TextView showResults;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+
         // -----------------------
         // Send message form objects:
         updateButton = (Button) findViewById(R.id.updateButton);
@@ -60,10 +67,39 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         showResults = (TextView)findViewById(R.id.showResults);
 
         // showResults.setText("+ Settings started.");
+        // Snackbar.make(swipeRefreshLayout, "+ Settings started.", Snackbar.LENGTH_LONG).show();
 
         accountCredentials = new AccountCredentials(this);
         accountSid.setText(accountCredentials.getAccountSid());
         accountToken.setText(accountCredentials.getAccountToken());
+
+        // -----------------------
+        // Set spinnerGmtOffset
+
+        spinnerValuesGmtOffset = getResources().getStringArray(R.array.gmt_offset_values); // Arrary Values
+
+        // For testing:
+        // String[] spinnerLabels = new String[ 3 ];
+        // spinnerLabels[0] = "1";
+        // spinnerLabels[1] = "2";
+        // spinnerLabels[2] = "3";
+        //
+        String[] spinnerLabels = getResources().getStringArray(R.array.gmt_offset_labels);
+        //
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.gmt_offset_spinner_item, Arrays.asList(spinnerLabels));
+        //
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGmtOffset = (Spinner)findViewById(R.id.spinnerGmtOffset);
+        spinnerGmtOffset.setAdapter(adapter);
+
+        // accountCredentials.getLocalTimeOffsetString();   // "-2" or "-7: PT: California"
+        int thePosition = adapter.getPosition( accountCredentials.getLocalTimeOffsetString() );
+
+        if (thePosition >= 0) {
+            spinnerGmtOffset.setSelection( thePosition );
+        } else {
+            spinnerGmtOffset.setSelection( 0 ); // default initialization
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -71,7 +107,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Adds 3-dot option menu in the action bar.
-        getMenuInflater().inflate(R.menu.menu_sendsms, menu);
+        // getMenuInflater().inflate(R.menu.menu_sendsms, menu);
 
         // loadSpinnerAccPhoneNumbers();
 
@@ -82,13 +118,20 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
 
         // String accountSid = accountSid.getText();
+        Snackbar.make(swipeRefreshLayout, "+ Update clicked.", Snackbar.LENGTH_LONG).show();
 
         switch (view.getId()) {
             case R.id.updateButton:
                 try {
                     accountCredentials.setAccountSid( accountSid.getText().toString() );
                     accountCredentials.setAccountToken( accountToken.getText().toString() );
-                    showResults.setText("+ Settings updated." );
+
+                    // int thePosition = spinnerGmtOffset.getSelectedItemPosition();
+                    String theValue = spinnerValuesGmtOffset[spinnerGmtOffset.getSelectedItemPosition()];
+                    accountCredentials.setLocalTimeOffset(theValue);
+
+                    // showResults.setText("+ spinnerGmtOffset : " + spinnerValuesGmtOffset[spinnerGmtOffset.getSelectedItemPosition()] );
+                    Snackbar.make(swipeRefreshLayout, "+ Settings updated.", Snackbar.LENGTH_LONG).show();
                     /*
                     showResults.setText("+ Get the data: "
                             + "\n+ getAccountSid: " + accountCredentials.getAccountSid()

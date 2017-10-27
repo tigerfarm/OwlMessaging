@@ -90,7 +90,7 @@
             android:textColor="#000000"
             android:textSize="14sp"/>
         <Spinner
-            android:id="@+id/gmtOffsetSpinner"
+            android:id="@+id/spinnerGmtOffset"
             android:title="Spinner"
             android:paddingBottom="21px"
             android:layout_below="@+id/labelGmtOffset"
@@ -108,5 +108,7 @@
         android:textColor="#000000"
         android:textSize="14sp"
         android:text=""/>
+
+    <include layout="@layout/snackbar" />
 
 </LinearLayout>

@@ -89,4 +89,6 @@
         </LinearLayout>
     </FrameLayout>
 
+    <include layout="@layout/snackbar" />
+
 </LinearLayout>

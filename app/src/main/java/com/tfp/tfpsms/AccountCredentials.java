@@ -125,6 +125,9 @@ public class AccountCredentials implements Interceptor {
     public int getLocalTimeOffset() {
         return Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );
     }
+    public String getLocalTimeOffsetString() {
+        return sharedPreferences.getString("local_time_offset", "");
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Application information maintained between panels and between app stopping and starting.

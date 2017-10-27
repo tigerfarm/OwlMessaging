@@ -64,8 +64,8 @@
 
     <!-- Reference: https://greenwichmeantime.com/time-zone/asia/india/time/ -->
     <string name="pref_title_gmt_offset">GMT hours offset for local time</string>
-    <string-array name="pref_gmt_offset_list_titles">
-        <item>GMT</item>
+    <string-array name="gmt_offset_labels">
+        <item>0: GMT</item>
         <item>-1</item>
         <item>-2</item>
         <item>-3</item>
@@ -93,7 +93,7 @@
         <item>11</item>
         <item>12</item>
     </string-array>
-    <string-array name="pref_gmt_offset_list_values">
+    <string-array name="gmt_offset_values">
         <item>0</item>
         <item>-1</item>
         <item>-2</item>
