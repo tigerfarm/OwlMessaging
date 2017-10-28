@@ -54,6 +54,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
     private AccountCredentials accountCredentials;
     private TwSms twilioSms;
+    private String jsonAccPhoneNumbers = "";
     private Spinner twilioNumberSpinner;
 
     private Menu theMenu;
@@ -141,8 +142,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         getMenuInflater().inflate(R.menu.menu_sendsms, menu);
 
         // Top bar list of account phone numbers:
-        loadSpinnerAccPhoneNumbers();
-
+        jsonAccPhoneNumbers = accountCredentials.getAccPhoneNumberList();
+        if (loadAccPhoneNumberSpinner(theMenu, jsonAccPhoneNumbers) > 0) {
+            populateMessageList();
+        }
         return true;
     }
 
@@ -173,7 +176,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.setButton:
                 try {
                     // textString.setText("+ setButton, Send message to: " + toPhoneNumber);
-                    Snackbar.make(swipeRefreshLayout, "+ Loading messages ...", Snackbar.LENGTH_LONG).show();
                     populateMessageList();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -375,42 +377,16 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     // ---------------------------------------------------------------------------------------------
-    private void loadSpinnerAccPhoneNumbers() {
-        Snackbar.make(swipeRefreshLayout, "+ Loading data ...", Snackbar.LENGTH_LONG).show();
-        twilioSms.setAccPhoneNumbers();
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(accountCredentials)
-                .build();
-        Request request = new Request.Builder()
-                .url(twilioSms.getRequestUrl())
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Snackbar.make(swipeRefreshLayout, "- Error: Network failure, try again.", Snackbar.LENGTH_LONG).show();
-                call.cancel();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String jsonResponse = response.body().string();
-                SendSmsActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        accPhoneNumberSpinnerList(theMenu, jsonResponse);
-                        populateMessageList();
-                    }
-                });
-            }
-        });
-    }
+    private int loadAccPhoneNumberSpinner(Menu menu, String jsonList) {
+        Snackbar.make(swipeRefreshLayout, "+ Loading messages ...", Snackbar.LENGTH_LONG).show();
 
-    private void accPhoneNumberSpinnerList(Menu menu, String jsonList) {
+        int numPhoneNumbers = 0;
         final JSONObject responseJson;
         try {
             responseJson = new JSONObject(jsonList);
         } catch (JSONException e) {
             Snackbar.make(swipeRefreshLayout, "- Error: Failed to parse JSON response", Snackbar.LENGTH_LONG).show();
-            return;
+            return numPhoneNumbers;
         }
         // Top bar spinner list of account phone numbers.
         MenuItem item = menu.findItem(spinner);
@@ -418,13 +394,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         List<String> spinnerList = new ArrayList<String>();
         try {
             JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
-            for (int i = 0; i < jList.length(); i++) {
-                String accPhoneNumber = jList.getJSONObject(i).getString("phone_number");
+            for (numPhoneNumbers = 0; numPhoneNumbers < jList.length(); numPhoneNumbers++) {
+                String accPhoneNumber = jList.getJSONObject(numPhoneNumbers).getString("phone_number");
                 spinnerList.add( accPhoneNumber );
             }
         } catch (JSONException e) {
             Snackbar.make(swipeRefreshLayout, "- Failed to parse JSON", Snackbar.LENGTH_LONG).show();
-            return;
+            return numPhoneNumbers;
         }
         String[] spinnerArray = new String[ spinnerList.size() ];
         spinnerList.toArray( spinnerArray );
@@ -433,10 +409,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         twilioNumberSpinner.setAdapter(adapter);
         twilioNumberSpinner.setSelection( adapter.getPosition(accountCredentials.getTwilioPhoneNumber()) );
+
+        return numPhoneNumbers;
     }
 
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
+        Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
 
         // Either the field Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
@@ -476,7 +455,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     SendSmsActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            System.out.println("+ stringFromTwilioNumberToFormNumber: " + stringFromTwilioNumberToFormNumber);
+                            // System.out.println("+ stringFromTwilioNumberToFormNumber: " + stringFromTwilioNumberToFormNumber);
                             populateMessageListView(stringFromTwilioNumberToFormNumber, selectedTwilioNumber, finalFormPhoneNumber);
                         }
                     });
@@ -528,11 +507,13 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                 sortedJson = sortedJson + " ] }";
                                 final JSONObject jsonSortedMessages = new JSONObject(sortedJson);
                                 JSONArray conversationMessages = jsonSortedMessages.getJSONArray("messages");
+                                int im = 0;
                                 int i = 0;
                                 for (i = 0; i < conversationMessages.length(); i++) {
                                     messagesArrayAdapter.insert(conversationMessages.getJSONObject(i), i);
+                                    im++;
                                 }
-                                if ( i == 0 ) {
+                                if ( im == 0 ) {
                                     Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
                             } catch (JSONException e) {

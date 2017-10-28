@@ -146,6 +146,13 @@ public class AccountCredentials implements Interceptor {
         return getDecrypted("to_phone_number");
     }
 
+    public void setAccPhoneNumberList(String aParam) {
+        setEncrypted("account_phone_number_list", aParam);
+    }
+    public String getAccPhoneNumberList() {
+        return getDecrypted("account_phone_number_list");
+    }
+
     public void setSendToList(String aParam) {
         setEncrypted("send_to_list", aParam);
     }

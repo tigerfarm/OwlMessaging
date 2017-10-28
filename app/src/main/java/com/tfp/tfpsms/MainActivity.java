@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AccountCredentials accountCredentials;
     private TwSms twilioSms;
+    private String jsonAccPhoneNumbers = "";
 
     private ListView listView;
     private MessagesArrayAdapter messagesArrayAdapter;
@@ -114,7 +115,14 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         // Top bar list of account phone numbers:
-        loadSpinnerAccPhoneNumbers();
+        jsonAccPhoneNumbers = accountCredentials.getAccPhoneNumberList();
+        if (jsonAccPhoneNumbers.isEmpty()) {
+            loadSpinnerAccPhoneNumbers();
+        } else {
+            if (loadAccPhoneNumberSpinner(theMenu, jsonAccPhoneNumbers) > 0) {
+                populateMessageList();
+            }
+        }
 
         return true;
     }
@@ -124,15 +132,28 @@ public class MainActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
+        // -----------------------------------------
         // This covers the case of no network access, and then when there is access,
         // the user can reload/refresh the data.
+        String selectedTwilioNumber = "";
+        try {
+            selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        }
+        catch (NullPointerException e) {
+            Snackbar.make(swipeRefreshLayout, "+ No account phone numbers listed.", Snackbar.LENGTH_LONG).show();
+        }
+        if (!selectedTwilioNumber.isEmpty()) {
+            // Set the Twilio phone number for the next panel to use.
+            String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+            accountCredentials.setTwilioPhoneNumber( twilioNumber );
+        }
         if (id == R.id.menu_refresh) {
             loadSpinnerAccPhoneNumbers();
             return true;
         }
+        // -----------------------------------------
 
         // Set the Appication Twilio Phone Number before going to another panel.
-        String selectedTwilioNumber = "";
         try {
             selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         }
@@ -146,10 +167,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-
-        // Set the Twilio phone number for the next panel to use.
-        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-        accountCredentials.setTwilioPhoneNumber( twilioNumber );
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sendsms) {
@@ -175,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     // ---------------------------------------------------------------------------------------------
     private void loadSpinnerAccPhoneNumbers() {
-        Snackbar.make(swipeRefreshLayout, "+ Loading data ...", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(swipeRefreshLayout, "+ Loading account phone numbers...", Snackbar.LENGTH_LONG).show();
         twilioSms.setAccPhoneNumbers();
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -197,7 +214,9 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (jsonResponse.contains("\"code\": 20003")) {
                             Snackbar.make(swipeRefreshLayout, "+ Logging into your Twilio account failed. Go to Settings.", Snackbar.LENGTH_LONG).show();
-                        } else if (accPhoneNumberPrintList(theMenu, jsonResponse) > 0) {
+                        } else if (loadAccPhoneNumberSpinner(theMenu, jsonResponse) > 0) {
+                            jsonAccPhoneNumbers = jsonResponse;
+                            accountCredentials.setAccPhoneNumberList(jsonResponse);
                             populateMessageList();
                         }
                     }
@@ -206,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private int accPhoneNumberPrintList(Menu menu, String jsonList) {
+    private int loadAccPhoneNumberSpinner(Menu menu, String jsonList) {
         int numPhoneNumbers = 0;
         final JSONObject responseJson;
         try {
@@ -264,10 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
-
-        // textString.setText("");
-        // msgString.setText("");
-        // textScrollBox.setText("");
+        Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
 
         // Set the Application Twilio Phone Number.
         String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
@@ -319,7 +335,6 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                                 if ( im == 0 ) {
-                                    // textString.setText("+ No messages.");
                                     Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
                                 // --------------------------
