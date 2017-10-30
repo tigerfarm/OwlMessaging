@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:focusableInTouchMode="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -99,16 +100,30 @@
             android:layout_height="wrap_content"/>
 
     </RelativeLayout>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:paddingRight="8dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
 
-    <TextView
-        android:id="@+id/showResults"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="9px"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        android:text=""/>
+            <TextView
+                android:id="@+id/showResults"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="9px"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:text="@string/about_row02"/>
 
-    <include layout="@layout/snackbar" />
-
+            <include layout="@layout/snackbar" />
+</LinearLayout>
+    </ScrollView>
 </LinearLayout>

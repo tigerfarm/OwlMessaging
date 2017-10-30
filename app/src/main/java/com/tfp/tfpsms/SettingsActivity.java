@@ -25,18 +25,34 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import static com.tfp.tfpsms.R.id.spinner;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AccountCredentials accountCredentials;
+    private TwSms twilioSms;
     private Spinner spinnerGmtOffset;
     private String[] spinnerValuesGmtOffset;
     ArrayAdapter<String> adapter;
@@ -74,6 +90,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         accountCredentials = new AccountCredentials(this);
         accountSid.setText(accountCredentials.getAccountSid());
         accountToken.setText(accountCredentials.getAccountToken());
+        twilioSms = new TwSms(accountCredentials);
 
         // -----------------------
         // Set spinnerGmtOffset
@@ -130,15 +147,38 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         switch (view.getId()) {
             case R.id.updateButton:
+                showResults.setText("");
+
+                // hide keyboard
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(accountSid.getWindowToken(), 0);
+
                 try {
+                    String theRequirementsMessage = "";
+                    String theValue = accountSid.getText().toString();
+                    if (theValue.length()!=34) {
+                        theRequirementsMessage = theRequirementsMessage + "\n++ " + getString(R.string.labelSid) + " length must be 34, but is " + theValue.length();
+                    }
+                    theValue = accountToken.getText().toString();
+                    if (theValue.length()!=32) {
+                        theRequirementsMessage = theRequirementsMessage + "\n++ " + getString(R.string.labelToken) + " length must be 32, but is " + theValue.length();
+                    }
+                    if (!theRequirementsMessage.isEmpty()) {
+                        showResults.setText("+ Update: "  + theRequirementsMessage);
+                        return;
+                    }
                     accountCredentials.setAccountSid( accountSid.getText().toString() );
                     accountCredentials.setAccountToken( accountToken.getText().toString() );
-
+                    accountCredentials.setCredentials();
+                    //
                     // showResults.setText("+ spinnerGmtOffset position: " + spinnerGmtOffset.getSelectedItemPosition()
                     //         + " adapterValues: " + spinnerValuesGmtOffset[ spinnerGmtOffset.getSelectedItemPosition() ]);
                     accountCredentials.setLocalTimeOffset( spinnerValuesGmtOffset[ spinnerGmtOffset.getSelectedItemPosition() ] );
 
                     Snackbar.make(swipeRefreshLayout, "+ Settings updated.", Snackbar.LENGTH_LONG).show();
+
+                    checkForAccSmsPhoneNumbers();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -147,4 +187,72 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    // ---------------------------------------------------------------------------------------------
+    private void checkForAccSmsPhoneNumbers() {
+        // Snackbar.make(swipeRefreshLayout, "+ Check for account SMS phone numbers...", Snackbar.LENGTH_LONG).show();
+        twilioSms.setAccPhoneNumbers();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.getRequestUrl())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Snackbar.make(swipeRefreshLayout, "- Error: Network failure, try again.", Snackbar.LENGTH_LONG).show();
+                call.cancel();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String jsonResponse = response.body().string();
+                SettingsActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (jsonResponse.contains("\"code\": 20003") || jsonResponse.contains("\"status\": 404")) {
+                            showResults.setText("- Account SID and Auth token are invalid.");
+                            Snackbar.make(swipeRefreshLayout, "+ Logging into your Twilio account failed. \n++ Update account SID and Token.", Snackbar.LENGTH_LONG).setDuration(6000).show();
+                            /* showResults.setText("+ jsonResponse :" + jsonResponse + ":"
+                                    + "\n SID :" + accountSid.getText().toString()  + ":"
+                                    + "\n Token :" + accountToken.getText().toString() + ":"
+                            ); */
+                        } else {
+                            if ( countAccSmsPhoneNumbers(jsonResponse) == 0 ) {
+                                Snackbar.make(swipeRefreshLayout, "+ No SMS capable account phone numbers.\n++ Requires one Twilio SMS capable phone number.", Snackbar.LENGTH_LONG).setDuration(6000).show();
+                            } else {
+                                showResults.setText("+ Account SID and Auth token have been verified.");
+                                // Snackbar.make(swipeRefreshLayout, "+ Account SMS phone numbers found.", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+    private int countAccSmsPhoneNumbers(String jsonList) {
+        int numSmsPhoneNumbers = 0;
+        final JSONObject responseJson;
+        try {
+            responseJson = new JSONObject(jsonList);
+        } catch (JSONException e) {
+            Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: accPhoneNumberPrintList", Snackbar.LENGTH_LONG).show();
+            return numSmsPhoneNumbers;
+        }
+        try {
+            JSONArray jList = responseJson.getJSONArray("incoming_phone_numbers");
+            for (int numPhoneNumbers = 0; numPhoneNumbers < jList.length(); numPhoneNumbers++) {
+                String accPhoneNumber = jList.getJSONObject(numPhoneNumbers).getString("phone_number");
+                if ( jList.getJSONObject(numPhoneNumbers).getJSONObject("capabilities").getBoolean("sms") ) {
+                    // Only SMS capable phone numbers
+                    numSmsPhoneNumbers++;
+                }
+            }
+        } catch (JSONException e) {
+            // textString.setText("++ Check and set: Twilio Account Settings.");
+            Snackbar.make(swipeRefreshLayout,
+                    "-- Error: failed to parse JSON response: accPhoneNumberPrintList",
+                    Snackbar.LENGTH_LONG).show();
+        }
+        return numSmsPhoneNumbers;
+    }
 }

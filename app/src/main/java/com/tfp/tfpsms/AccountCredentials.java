@@ -51,6 +51,10 @@ public class AccountCredentials implements Interceptor {
         this.credentials = Credentials.basic(accountSid, authToken);
     }
 
+    public void setCredentials() {
+        this.credentials = Credentials.basic(accountSid, authToken);
+    }
+
     // ---------------------------------------------------------------------------------------------
     @Override
     public Response intercept(Chain chain) throws IOException {
