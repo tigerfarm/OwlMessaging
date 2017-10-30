@@ -27,47 +27,74 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">
-        <LinearLayout
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp">
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingRight="8dp"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
 
-            <!-- =================================== -->
-            <TextView
-                android:id="@+id/showResults"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:textSize="14sp"
-                android:text=""/>
-            <TextView
-                android:id="@+id/row01"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/listText"
-                android:textSize="18sp"
-                android:text="@string/about_row01"/>
-            <TextView
-                android:id="@+id/row02"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/listText"
-                android:textSize="14sp"
-                android:text="@string/about_row02"/>
-            <TextView
-                android:id="@+id/row03"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/listText"
-                android:textSize="14sp"
-                android:text="@string/about_row03"/>
+                <!-- =================================== -->
+                <TextView
+                    android:id="@+id/showResults"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    android:text=""/>
+                <TextView
+                    android:id="@+id/row01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/listText"
+                    android:textSize="18sp"
+                    android:text="@string/about_row01"/>
+                <TextView
+                    android:id="@+id/row02"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/listText"
+                    android:textSize="14sp"
+                    android:text="@string/about_row02"/>
+                <TextView
+                    android:id="@+id/row03"
+                    android:background="@drawable/borders_box"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/listText"
+                    android:textSize="14sp"
+                    android:text="@string/about_row03"/>
+                <TextView
+                    android:id="@+id/row04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/listText"
+                    android:textSize="14sp"
+                    android:text="@string/about_row04"/>
 
-        </LinearLayout>
+                <!-- Not imlemented, but should try:
+                https://stackoverflow.com/questions/6910703/android-active-link-of-url-in-textview
+                https://stackoverflow.com/questions/2734270/how-do-i-make-links-in-a-textview-clickable
+                <TextView
+                    android:text="twilio.com"
+                    android:id="@+id/goToTwilioConsole"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:autoLink="web"
+                    android:linksClickable="true">
+                </TextView>
+                -->
+
+            </LinearLayout>
+        </ScrollView>
     </FrameLayout>
 
 </LinearLayout>

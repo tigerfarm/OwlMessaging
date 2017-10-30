@@ -48,8 +48,6 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-
         // Send message form objects:
         theButton = (Button) findViewById(R.id.theButton);
         formPhoneNumber = (EditText)findViewById(R.id.formPhoneNumber);
@@ -121,7 +119,7 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                 LookupActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Snackbar.make(swipeRefreshLayout, "- Error: Failed to retrieve messages.", Snackbar.LENGTH_LONG).show();
+                        showResults.setText("- Error: Failed to retrieve messages.");
                     }
                 });
             }
@@ -138,7 +136,7 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                     LookupActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Snackbar.make(swipeRefreshLayout, "- Error 1: Failed to parse JSON response.", Snackbar.LENGTH_LONG).show();
+                            showResults.setText("- Error 1: Failed to parse JSON response.");
                         }
                     });
                     return;
@@ -157,7 +155,7 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                                 rowTwo.setText("Carrier: " + responseJson.getJSONObject("carrier").getString("name"));
                                 rowThree.setText("Type of line: " + responseJson.getJSONObject("carrier").getString("type"));
                             } catch (JSONException e) {
-                                Snackbar.make(swipeRefreshLayout, "- Error 2: Failed to parse JSON response.", Snackbar.LENGTH_LONG).show();
+                                showResults.setText("- Error 2: Failed to parse JSON response.");
                             }
                         }
                     });
@@ -172,8 +170,7 @@ public class LookupActivity extends AppCompatActivity implements View.OnClickLis
                     LookupActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            // showResults.setText("- Error: Received %s status code");
-                            Snackbar.make(swipeRefreshLayout, "- Error: Received %s status code", Snackbar.LENGTH_LONG).show();
+                            showResults.setText("- Error: Received %s status code");
                         }
                     });
                 }

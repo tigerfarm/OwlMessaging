@@ -21,31 +21,32 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <!-- =================================== -->
     <FrameLayout
-        android:id="@+id/formLookupPhoneNumber"
         android:background="@drawable/borders_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <EditText
             android:id="@+id/formPhoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""/>
+
         <Button
             android:id="@+id/theButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/lookup_lookup" />
+            android:text="Lookup" />
+
     </FrameLayout>
 
-    <!-- =================================== -->
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +57,6 @@
             android:paddingBottom="8dp"
             android:paddingTop="8dp">
 
-            <!-- =================================== -->
             <TextView
                 android:id="@+id/showResults"
                 android:layout_width="wrap_content"
@@ -64,6 +64,7 @@
                 android:textColor="#000000"
                 android:textSize="14sp"
                 android:text=""/>
+
             <TextView
                 android:id="@+id/row01"
                 android:layout_width="wrap_content"
@@ -87,8 +88,7 @@
                 android:text=""/>
 
         </LinearLayout>
-    </FrameLayout>
 
-    <include layout="@layout/snackbar" />
+    </FrameLayout>
 
 </LinearLayout>

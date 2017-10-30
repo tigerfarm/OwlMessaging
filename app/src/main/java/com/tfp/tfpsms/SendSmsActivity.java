@@ -514,6 +514,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                                     im++;
                                 }
                                 if ( im == 0 ) {
+                                    // Not working
                                     Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
                                 }
                             } catch (JSONException e) {

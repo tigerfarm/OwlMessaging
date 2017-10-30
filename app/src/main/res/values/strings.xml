@@ -17,7 +17,7 @@
     <!-- ======================================================================================= -->
     <!-- Send SMS Panel -->
     <string name="sendsms_send">Send</string>
-    <string name="sendsms_set">Set</string>
+    <string name="sendsms_set">Refresh</string>
 
     <!-- Lookup Panel -->
     <string name="lookup_lookup">Lookup</string>
@@ -25,22 +25,26 @@
     <!-- About Text Panel -->
     <string name="about_row01">Owl SMS</string>
     <string name="about_row02">
-        \nOwl SMS is an application which directly uses the Twilio REST APIs to send, receive, and manage messages. You are required to have Twilio account with an SMS capiable phone number to use Owl SMS.
-        \n\nGo to http://Twilio.com/console to get, and manage, your account.
+        \nThis application makes information requests, directly to the Twilio REST APIs, to send, receive, manage messages, and retrieve the list of the account\'s SMS capable phone numbers.
         \n
-        \nYou can use a free Twilio Trial account with Owl SMS. However, take note of the free Trial account restrictions. For more information on a Trial account, search for \"How does Twilio\'s Free Trial work?\"
+        \nTo use Owl SMS, you are required to have Twilio account with at least one SMS capable phone number.
         \n
-        \nVersion: 0.6
-        \nRelease date: October 31, 2017
+        \nGo to http://Twilio.com/console to get, and manage, your account.
+        \n
+        \nYou can use a free Twilio Trial account with Owl SMS. However, take note of the free Trial account restrictions. For example, you can only send and receive messages, to and from, phone numbers you have pre-verified. For more information on a Trial account, search for \"How does Twilio\'s Free Trial work?\"
+        \n
     </string>
     <string name="about_row03">
-        \nThe application\'s authors and designers, work at Twilio:
-        \nStacy David Thurston and Ahsan Rabbani
-        \n
-        \nNote, this application is not a Twilio company application, even though it was developed by Twilio employees.
-        \n
-        \nThis application is offered \"as is\", without warrantee or guarantee.
+        Owl SMS is offered \"as is\", without warrantee or guarantee.
     </string>
+    <string name="about_row04">
+        \nVersion: 0.6
+        \nRelease date: October 31, 2017
+        \n
+        \nThis application is not a Twilio company application, even though it was developed by Twilio employees. There is a saying within the company, "Just draw the Owl." This is our drawing of an SMS application.
+        \n
+    </string>
+    <!-- \n Draw the Owl: https://www.youtube.com/watch?v=dwSe2imUyvg -->
 
     <!-- ======================================================================================= -->
     <!-- Strings related to General program messages -->
@@ -74,38 +78,41 @@
     <!-- Reference: https://greenwichmeantime.com/time-zone/asia/india/time/ -->
     <string name="pref_title_gmt_offset">GMT hours offset for local time</string>
     <string-array name="gmt_offset_labels">
-        <item>0: GMT</item>
+        <item>0: GMT, London, UK</item>
         <item>-1</item>
         <item>-2</item>
-        <item>-3</item>
-        <item>-4</item>
+        <item>-2.5: Newfoundland</item>
+        <item>-3: Nova Scotia</item>
+        <item>-4: ET: Toronto and New York</item>
         <item>-5</item>
         <item>-6</item>
         <item>-7: PT: California</item>
         <item>-8</item>
         <item>-9</item>
-        <item>-10: ET: Toronto and New York</item>
+        <item>-10</item>
         <item>-11</item>
         <item>-12</item>
-        <item>0</item>
-        <item>1: London, UK</item>
+        <item>0: London, UK</item>
+        <item>1</item>
         <item>2</item>
         <item>3</item>
         <item>4</item>
         <item>5</item>
         <item>5.5: India</item>
         <item>6</item>
-        <item>7</item>
-        <item>8</item>
+        <item>7: Thailand</item>
+        <item>8: Singapore, China</item>
         <item>9</item>
         <item>10</item>
         <item>11</item>
         <item>12</item>
     </string-array>
+    <!-- Note, Newfoundland is -3.5 because Newfoundland time is negative and the TwSms.localDateTime simply adds +0.05.-->
     <string-array name="gmt_offset_values">
         <item>0</item>
         <item>-1</item>
         <item>-2</item>
+        <item>-3.5</item>
         <item>-3</item>
         <item>-4</item>
         <item>-5</item>

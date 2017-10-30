@@ -71,7 +71,7 @@ public class TwSms {
         //  012345678901234567890123456789
         int numDateStart = 5;
         int numDateEnd = 25;
-        if (theGmtDate.length()< numDateEnd) {
+        if (theGmtDate.length() < numDateEnd) {
             return "01 Jan 1980 00:00:00";      // return a default value
         }
         //                                                        "26 Sep 2017 00:49:31"
@@ -84,51 +84,21 @@ public class TwSms {
         }
         Calendar cal = Calendar.getInstance();
         cal.setTime(gmtDate);
-        cal.add(Calendar.HOUR, accountCredentials.getLocalTimeOffset()); // from GMT to PST
-
+        // -------------------------
+        String theOffset = accountCredentials.getLocalTimeOffsetString();
+        // 123
+        // 5.5
+        int ie = theOffset.indexOf(".");
+        if (ie >= 0) {
+            theOffset = theOffset.substring(0, ie);
+            cal.add(Calendar.HOUR, Integer.parseInt(theOffset)); // from GMT to PST
+            cal.add(Calendar.MINUTE, 30 ); // India and Newfounland use half hour offset.
+        } else {
+            cal.add(Calendar.HOUR, Integer.parseInt(theOffset)); // from GMT to PST
+        }
+        // -------------------------
         SimpleDateFormat writeDateformatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss");
         return writeDateformatter.format(cal.getTime());
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    // Twilio Account Security API Requests
-    // Note, doesn't require account credentials, but uses application API key.
-
-    // To do:
-    //
-    // Setup Push Authentication callback to SMS the Authy App answer of Approve or Deny.
-    // Add to Settings: application API key (appApiKey).
-    //
-    // Add user.
-    // Get user status.
-    // Remove user.
-    // DB phone numbers to Authy IDs.
-    //
-    // Send an OTP.
-    // Verify a TOTP passcode.
-
-    //--------------------------------------------------
-    private String default_seconds_to_expire = "120";
-
-    public void setPushAuthentication( String authyId, String AskForApproval ) {
-        setPushAuthentication(authyId, AskForApproval, default_seconds_to_expire);
-    }
-    public void setPushAuthentication( String AuthyId, String AskForApproval, String seconds_to_expire ) {
-        postParams = new FormBody.Builder()
-                .add("message", AskForApproval)
-                .add("seconds_to_expire", seconds_to_expire)
-                .build();
-        requestUrl = "https://api.authy.com/onetouch/json/users/"+AuthyId+"/approval_requests?api_key=" + accountCredentials.getAppApiKey();
-    }
-
-    //--------------------------------------------------
-    public void setPhoneVerificationSend( String param1, String param2, String param3 ) {
-        postParams = new FormBody.Builder()
-                .add("via", param1)
-                .add("country_code", param2)
-                .add("phone_number", param3)
-                .build();
-        requestUrl = "https://api.authy.com/protected/json/phones/verification/start" + "?api_key=" + accountCredentials.getAppApiKey();
     }
 
     // ---------------------------------------------------------------------------------------------

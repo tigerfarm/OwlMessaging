@@ -39,6 +39,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private AccountCredentials accountCredentials;
     private Spinner spinnerGmtOffset;
     private String[] spinnerValuesGmtOffset;
+    ArrayAdapter<String> adapter;
+    ArrayAdapter<String> adapterValues;
 
     private Button updateButton;
     private EditText accountSid, accountToken;
@@ -77,7 +79,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         // Set spinnerGmtOffset
 
         spinnerValuesGmtOffset = getResources().getStringArray(R.array.gmt_offset_values); // Arrary Values
-        ArrayAdapter<String> adapterValues = new ArrayAdapter<>(this, R.layout.gmt_offset_spinner_item, Arrays.asList(spinnerValuesGmtOffset));
+        adapterValues = new ArrayAdapter<>(this, R.layout.gmt_offset_spinner_item_value, Arrays.asList(spinnerValuesGmtOffset));
 
         // For testing:
         // String[] spinnerLabels = new String[ 3 ];
@@ -87,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         //
         String[] spinnerLabels = getResources().getStringArray(R.array.gmt_offset_labels);
         //
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.gmt_offset_spinner_item, Arrays.asList(spinnerLabels));
+        adapter = new ArrayAdapter<>(this, R.layout.gmt_offset_spinner_item, Arrays.asList(spinnerLabels));
         //
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerGmtOffset = (Spinner)findViewById(R.id.spinnerGmtOffset);
@@ -124,7 +126,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
 
         // String accountSid = accountSid.getText();
-        Snackbar.make(swipeRefreshLayout, "+ Update clicked.", Snackbar.LENGTH_LONG).show();
+        // Snackbar.make(swipeRefreshLayout, "+ Update clicked.", Snackbar.LENGTH_LONG).show();
 
         switch (view.getId()) {
             case R.id.updateButton:
@@ -132,11 +134,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     accountCredentials.setAccountSid( accountSid.getText().toString() );
                     accountCredentials.setAccountToken( accountToken.getText().toString() );
 
-                    // int thePosition = spinnerGmtOffset.getSelectedItemPosition();
-                    String theValue = spinnerValuesGmtOffset[spinnerGmtOffset.getSelectedItemPosition()];
-                    accountCredentials.setLocalTimeOffset(theValue);
+                    // showResults.setText("+ spinnerGmtOffset position: " + spinnerGmtOffset.getSelectedItemPosition()
+                    //         + " adapterValues: " + spinnerValuesGmtOffset[ spinnerGmtOffset.getSelectedItemPosition() ]);
+                    accountCredentials.setLocalTimeOffset( spinnerValuesGmtOffset[ spinnerGmtOffset.getSelectedItemPosition() ] );
 
-                    // showResults.setText("+ spinnerGmtOffset : " + theValue );
                     Snackbar.make(swipeRefreshLayout, "+ Settings updated.", Snackbar.LENGTH_LONG).show();
                 } catch (Exception e) {
                     e.printStackTrace();

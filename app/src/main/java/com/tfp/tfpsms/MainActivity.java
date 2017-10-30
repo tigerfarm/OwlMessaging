@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         accountCredentials = new AccountCredentials(this);
         if ( !accountCredentials.existAccountSid() ) {
             // if the Twilio account info hasn't been entered, go to Settings.
-            Snackbar.make(swipeRefreshLayout, "+ Enter your correct Twilio account information into Settings.", Snackbar.LENGTH_LONG).show();
+            // Snackbar.make(swipeRefreshLayout, "+ Enter your correct Twilio account information into Settings.", Snackbar.LENGTH_LONG).show();
             startActivity(new Intent(this, SettingsActivity.class));
         }
         twilioSms = new TwSms(accountCredentials);
@@ -78,9 +78,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Use when working on Sending SMS.
-        // Intent intent = new Intent(this, SendSmsActivity.class);
-        // startActivity(intent);
+        // Use when working on specific panel.
+        // startActivity(new Intent(this, SettingsActivity.class));
 
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
         listView = (ListView) findViewById(R.id.list_view);
@@ -117,7 +116,10 @@ public class MainActivity extends AppCompatActivity {
         // Top bar list of account phone numbers:
         jsonAccPhoneNumbers = accountCredentials.getAccPhoneNumberList();
         if (jsonAccPhoneNumbers.isEmpty()) {
+            // Reload the account phone numbers from Twilio.
             loadSpinnerAccPhoneNumbers();
+            // When starting/re-starting, clear this value:
+            accountCredentials.setToPhoneNumber( "" );
         } else {
             if (loadAccPhoneNumberSpinner(theMenu, jsonAccPhoneNumbers) > 0) {
                 populateMessageList();

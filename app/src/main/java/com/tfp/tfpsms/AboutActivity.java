@@ -25,7 +25,7 @@ import okhttp3.Response;
 
 public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private TextView rowOne, rowTwo, rowThree;
+    private TextView rowOne, rowTwo, rowThree, rowFour;
     private TextView showResults;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -46,6 +46,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         rowOne = (TextView)findViewById(R.id.row01);
         rowTwo = (TextView)findViewById(R.id.row02);
         rowThree = (TextView)findViewById(R.id.row03);
+        rowFour = (TextView)findViewById(R.id.row04);
 
     }
 
@@ -79,6 +80,7 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                     rowOne.setText("");
                     rowTwo.setText("");
                     rowThree.setText("");
+                    rowFour.setText("");
                     // displayResults();
                 } catch (Exception e) {
                     e.printStackTrace();

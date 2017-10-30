@@ -123,7 +123,10 @@ public class AccountCredentials implements Interceptor {
         prefEditor.commit();
     }
     public int getLocalTimeOffset() {
-        return Integer.parseInt( sharedPreferences.getString("local_time_offset", "-7") );
+        return Integer.parseInt( sharedPreferences.getString("local_time_offset", "") );
+    }
+    public double getLocalTimeOffsetDouble() {
+        return Double.parseDouble( sharedPreferences.getString("local_time_offset", "") );
     }
     public String getLocalTimeOffsetString() {
         return sharedPreferences.getString("local_time_offset", "");
@@ -170,66 +173,4 @@ public class AccountCredentials implements Interceptor {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // NOT used in the SMS version.
-    // ---------------------------------------------------------------------------------------------
-
-    // Twilio Authy Application entry API Key:
-    private String appApiKey = "Vye28fVRU1Bo85BISTENwp1klE5a7tir";  // Owl Publishing
-
-    public String getAppApiKey() {
-        return appApiKey;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    public static String readFile(final String theReadFilename) {
-        // Need Storage access.
-        // Write permission implies read permission, so you don't need both.
-        // <manifest ...> ... <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> ... </manifest>
-        // <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-        //
-        // FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-        //
-        // Problem with the following is that "context" is not defined.
-        // Context context;
-        // context.getApplicationInfo().dataDir
-        // context.getFilesDir();
-        // File path = context.getExternalFilesDir(null);  // external storage (SD card)
-        // File path = context.getFilesDir();   // internal storage
-        // File file = new File(path, "my-file-name.txt");
-        // File file = new File(getExternalFilesDir(null), "DemoFile.jpg");
-
-        String theFileText = "";
-        try {
-            File readFile = new File(theReadFilename);
-            if ( !readFile.exists() ) {
-                Log.d(TAG, "--- ERROR, theReadFilename not exist.");
-                return theFileText;
-            }
-            DataInputStream pin = new DataInputStream(new FileInputStream(readFile));
-            String theLine = pin.readLine();
-            int lineNum=0;
-            while (theLine != null) {
-                theFileText = theFileText + pin.readLine();
-            }
-            pin.close();
-        } catch (IOException e) {
-            // Logger.logError(TAG, e);
-            Log.d(TAG, "writeStringAsFile");
-        }
-        return theFileText;
-    }
-
-    // ---------------------------------------------------------------------------------------------
-    public static void writeFile(final String theWriteFilename, final String fileText) {
-        try {
-            File writeFile = new File(theWriteFilename);
-            FileOutputStream fout = new FileOutputStream(writeFile);
-            PrintStream pout = new PrintStream(fout);
-            pout.println(fileText);
-            pout.close();
-        } catch (IOException e) {
-            Log.d(TAG, "writeStringAsFile");
-        }
-    }
-
 }
