@@ -43,42 +43,93 @@
 
                 <!-- =================================== -->
                 <TextView
-                    android:id="@+id/showResults"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:text=""/>
-                <TextView
-                    android:id="@+id/row01"
+                    android:id="@+id/about_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/listText"
                     android:textSize="18sp"
-                    android:text="@string/about_row01"/>
+                    android:textStyle="bold"
+                    android:text="@string/about_title"/>
+                <View
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorPrimary"/>
                 <TextView
-                    android:id="@+id/row02"
+                    android:id="@+id/about_intro"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/listText"
                     android:textSize="14sp"
-                    android:text="@string/about_row02"/>
+                    android:text="@string/about_intro"/>
+
+                <!-- =================================== -->
                 <TextView
-                    android:id="@+id/row03"
+                    android:id="@+id/asis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/borders_box"
+                    android:textColor="@color/listText"
+                    android:textSize="14sp"
+                    android:text="@string/about_asis"/>
+                <TextView
+                    android:id="@+id/about_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/listText"
+                    android:textSize="14sp"
+                    android:text="@string/about_version"/>
+                <View
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorPrimary"/>
+
+                <!-- =================================== -->
+                <TextView
+                    android:id="@+id/about_twiliosetup"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@color/listText"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:text="@string/about_twiliosetup"/>
+                <TextView
+                    android:id="@+id/about_twilioaccount"
                     android:gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/listText"
                     android:textSize="14sp"
-                    android:text="@string/about_row03"/>
+                    android:text="@string/about_twilioaccount"/>
                 <TextView
-                    android:id="@+id/row04"
+                    android:id="@+id/about_noresponse_title"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/listText"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:text="@string/about_noresponse_title"/>
+                <TextView
+                    android:id="@+id/about_noresponse"
+                    android:gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/listText"
                     android:textSize="14sp"
-                    android:text="@string/about_row04"/>
+                    android:text="@string/about_noresponse"/>
+                <View
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorPrimary"/>
 
                 <!-- Not imlemented, but should try:
                 https://stackoverflow.com/questions/6910703/android-active-link-of-url-in-textview

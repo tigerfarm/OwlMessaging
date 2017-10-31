@@ -23,12 +23,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class AboutActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private TextView rowOne, rowTwo, rowThree, rowFour;
-    private TextView showResults;
-
-    private SwipeRefreshLayout swipeRefreshLayout;
+public class AboutActivity extends AppCompatActivity {
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -40,14 +35,6 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // For messages:
-        showResults = (TextView)findViewById(R.id.showResults);
-        rowOne = (TextView)findViewById(R.id.row01);
-        rowTwo = (TextView)findViewById(R.id.row02);
-        rowThree = (TextView)findViewById(R.id.row03);
-        rowFour = (TextView)findViewById(R.id.row04);
-
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -71,22 +58,4 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // ---------------------------------------------------------------------------------------------
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.theButton:
-                try {
-                    showResults.setText("");
-                    rowOne.setText("");
-                    rowTwo.setText("");
-                    rowThree.setText("");
-                    rowFour.setText("");
-                    // displayResults();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-        }
-    }
-
 }

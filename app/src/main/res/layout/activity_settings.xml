@@ -121,9 +121,10 @@
                 android:padding="9px"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:text="@string/about_row02"/>
+                android:text="@string/about_twilioaccount"/>
 
             <include layout="@layout/snackbar" />
-</LinearLayout>
+
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>

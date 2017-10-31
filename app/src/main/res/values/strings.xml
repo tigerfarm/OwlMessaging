@@ -23,26 +23,53 @@
     <string name="lookup_lookup">Lookup</string>
 
     <!-- About Text Panel -->
-    <string name="about_row01">Owl SMS</string>
-    <string name="about_row02">
-        \nThis application makes information requests, directly to the Twilio REST APIs: to send, receive, and manage messages; and retrieve the list of the account\'s SMS capable phone numbers.
+    <string name="about_title">Owl SMS</string>
+    <string name="about_intro">
+        This application makes requests directly to the Twilio services to send, receive, and manage messages; and retrieve the list of SMS capable phone numbers.
         \n
-        \nTo use Owl SMS, you are required to have a Twilio account with at least one SMS capable phone number.
+    </string>
+    <string name="about_twiliosetup">
+        Twilio Account Setup
+    </string>
+    <string name="about_twilioaccount">
+        To use Owl SMS, you are required to have a Twilio account with at least one SMS capable phone number.
         \n
-        \nGo to http://Twilio.com/console to get, and manage, your account.
+        \nGo to http://Twilio.com/console to get and manage your account.
         \n
         \nYou can use a free Twilio Trial account with Owl SMS. However, take note of the free Trial account restrictions. For example, you can only send and receive messages, to and from, phone numbers you have pre-verified. For more information on a Trial account, search for \"How does Twilio\'s Free Trial work?\"
-        \n
     </string>
-    <string name="about_row03">
+    <string name="about_noresponse_title">
+        Remove the Automatic SMS Reply Messages
+    </string>
+    <string name="about_noresponse">
+    \n1. Go to TwiML Bins in the Twilio Console:
+    \nhttps://www.twilio.com/console/runtime/twiml-bins
+    \n2. Create a "no reply" TwiML Bin entry, and then configure the phone number to use it.
+    \nClick the create icon (white plus sign in red circle).
+    \nSet, Friendly Name: NoSmsResponse
+    \nSet, TwiML:
+    \n&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;
+        \n&lt;Response&gt;&lt;/Response&gt;
+    \n
+        \nClick Create.
+    \n3. Go to managing phone numbers in the Twilio Console:
+    \nhttps://www.twilio.com/console/phone-numbers/incoming
+    \n4. Click your phone number.
+    \nUnder Messaging, Configure with: (Webhooks, TwiML Bins, Functions or Studio),
+    \nSet "A message comes in" to: TwiML, NoSmsResponse
+    \nClick Save.
+    \n
+        \nNow, when a message is sent to your Twilio phone number, there is no automatic reply.
+    </string>
+
+    <string name="about_asis">
         Owl SMS is offered \"as is\", without warrantee or guarantee.
     </string>
-    <string name="about_row04">
+    <string name="about_version">
         \nVersion: 0.6
         \nRelease date: October 31, 2017
         \n
         \nThis application is not a Twilio company application, even though it was developed by Twilio employees. There is a saying within the company, "Just draw the Owl." This is our drawing of an SMS application.
-        \n
     </string>
     <!-- \n Draw the Owl: https://www.youtube.com/watch?v=dwSe2imUyvg -->
 
@@ -101,7 +128,7 @@
         <item>5.5: India</item>
         <item>6</item>
         <item>7: Thailand</item>
-        <item>8: Singapore, China</item>
+        <item>8: Hong Kong, Singapore, China</item>
         <item>9</item>
         <item>10</item>
         <item>11</item>

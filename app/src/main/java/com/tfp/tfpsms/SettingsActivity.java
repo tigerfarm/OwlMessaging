@@ -22,6 +22,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,9 +38,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -220,7 +225,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             if ( countAccSmsPhoneNumbers(jsonResponse) == 0 ) {
                                 Snackbar.make(swipeRefreshLayout, "+ No SMS capable account phone numbers.\n++ Requires one Twilio SMS capable phone number.", Snackbar.LENGTH_LONG).setDuration(6000).show();
                             } else {
-                                showResults.setText("+ Account SID and Auth token have been verified.");
+                                showResults.setText("+ Account SID and Auth token have been verified."
+                                        + "\n+ Current Local Time: " + currentLocalTime()
+                                );
                                 // Snackbar.make(swipeRefreshLayout, "+ Account SMS phone numbers found.", Snackbar.LENGTH_LONG).show();
                             }
                         }
@@ -255,4 +262,20 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         }
         return numSmsPhoneNumbers;
     }
+
+    // ---------------------------------------------------------------------------------------------
+    private String currentLocalTime() {
+        //                                                        :Tue, 26 Sep 2017 00:49:31 +0000: format for twilioSms.localDateTime
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("     dd MMM yyyy hh:mm:ss      ");
+        readDateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String currentGmtTime = readDateFormatter.format(new Date())+"";
+        return twilioSms.localDateTimeFromGmt( currentGmtTime );
+
+        /*
+SimpleDateFormat dateFormatGmt = new SimpleDateFormat("dd:MM:yyyy HH:mm:ss");
+dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+System.out.println(dateFormatGmt.format(new Date())+"");
+         */
+    }
+
 }
