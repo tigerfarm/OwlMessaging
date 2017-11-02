@@ -220,57 +220,43 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         accountCredentials.setTwilioPhoneNumber( twilioNumber );
 
         // -----------------------------------------------------
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to delete this conversation between:\n" + twilioNumber + " and " + theFormPhoneNumberForDelete + "?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Snackbar.make(swipeRefreshLayout, "+ Delete confirmed, please wait.", Snackbar.LENGTH_LONG).show();
-                        try {
-                            // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
-                            twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumberForDelete);
-                            getMessagesToDelete();
-                            // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
-                            twilioSms.setSmsRequestLogs(theFormPhoneNumberForDelete, twilioNumber);
-                            getMessagesToDelete();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Snackbar.make(swipeRefreshLayout, "+ Delete cancelled.", Snackbar.LENGTH_LONG).show();
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-        // Snackbar.make(swipeRefreshLayout, "+ After dialog.", Snackbar.LENGTH_LONG).show();
-
-        /*
-        // -----------------------------------------------------
 
         // Note, this automatically adds a back-arrow to parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_delete) {
-            try {
-                // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
-                twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumber);
-                getMessagesToDelete();
-                // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
-                twilioSms.setSmsRequestLogs(theFormPhoneNumber, twilioNumber);
-                getMessagesToDelete();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // -----------------------------------------------------
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure you want to delete this conversation between:\n" + twilioNumber + " and " + theFormPhoneNumberForDelete + "?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Snackbar.make(swipeRefreshLayout, "+ Delete confirmed, please wait.", Snackbar.LENGTH_LONG).show();
+                            try {
+                                // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
+                                twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumberForDelete);
+                                getMessagesToDelete();
+                                // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
+                                twilioSms.setSmsRequestLogs(theFormPhoneNumberForDelete, twilioNumber);
+                                getMessagesToDelete();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Snackbar.make(swipeRefreshLayout, "+ Delete cancelled.", Snackbar.LENGTH_LONG).show();
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+            // Snackbar.make(swipeRefreshLayout, "+ After dialog.", Snackbar.LENGTH_LONG).show();
             return true;
         }
-*/
+
         return super.onOptionsItemSelected(item);
     }
 
