@@ -100,6 +100,7 @@
             android:layout_height="wrap_content"/>
 
     </RelativeLayout>
+
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -117,11 +118,19 @@
             <TextView
                 android:id="@+id/showResults"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="42dp"
                 android:padding="9px"
                 android:textColor="#000000"
                 android:textSize="14sp"
-                android:text="@string/about_twilioaccount"/>
+                android:text=""/>
+
+            <View
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimary"/>
+            <include layout="@layout/content_setup" />
 
             <include layout="@layout/snackbar" />
 

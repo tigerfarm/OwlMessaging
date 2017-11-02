@@ -269,7 +269,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("     dd MMM yyyy hh:mm:ss      ");
         readDateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         String currentGmtTime = readDateFormatter.format(new Date())+"";
-        return twilioSms.localDateTimeFromGmt( currentGmtTime );
+        return twilioSms.localDateTime( currentGmtTime );
+        // return twilioSms.localDateTimeFromGmt( currentGmtTime );
 
         /*
 SimpleDateFormat dateFormatGmt = new SimpleDateFormat("dd:MM:yyyy HH:mm:ss");

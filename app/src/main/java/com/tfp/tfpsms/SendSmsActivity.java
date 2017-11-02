@@ -1,13 +1,16 @@
 package com.tfp.tfpsms;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -67,6 +70,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private MessagesArrayAdapter messagesArrayAdapter;
+
+    private boolean networkOkay = true;
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -152,6 +157,20 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View view) {
 
+        if (!networkOkay) {
+            messagesArrayAdapter.clear();
+            String theMessage = "{ \"from\": \"Network test. \", \"body\": \"- Network connection failed. Please wait and try refresh.\", \"date_sent\": \"\" }";
+            // String theMessage = "{ \"from\": \"+ messageText 01\", \"body\": \"+ messageText 02\", \"date_sent\": \"+ messageText 03\" }";
+            JSONObject jsonMessage = null;
+            try {
+                jsonMessage = new JSONObject(theMessage);
+            } catch (JSONException en) {
+                en.printStackTrace();
+            }
+            messagesArrayAdapter.add(jsonMessage);
+            return;
+        }
+
         // Either the editText Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();
         if ( theFormPhoneNumber.trim().equalsIgnoreCase("") ) {
@@ -194,10 +213,45 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             theFormPhoneNumber = sendToSpinner.getSelectedItem().toString();
         }
         accountCredentials.setToPhoneNumber(theFormPhoneNumber);
+        final String theFormPhoneNumberForDelete = theFormPhoneNumber;
 
         // Set the Application Twilio Phone Number.
-        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        final String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         accountCredentials.setTwilioPhoneNumber( twilioNumber );
+
+        // -----------------------------------------------------
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this conversation between:\n" + twilioNumber + " and " + theFormPhoneNumberForDelete + "?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Snackbar.make(swipeRefreshLayout, "+ Delete confirmed, please wait.", Snackbar.LENGTH_LONG).show();
+                        try {
+                            // textString.setText("+ Remove messages to  : " + theFormPhoneNumber);
+                            twilioSms.setSmsRequestLogs(twilioNumber, theFormPhoneNumberForDelete);
+                            getMessagesToDelete();
+                            // msgString.setText( "+ Remove messages from: "+ theFormPhoneNumber);
+                            twilioSms.setSmsRequestLogs(theFormPhoneNumberForDelete, twilioNumber);
+                            getMessagesToDelete();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Snackbar.make(swipeRefreshLayout, "+ Delete cancelled.", Snackbar.LENGTH_LONG).show();
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+        // Snackbar.make(swipeRefreshLayout, "+ After dialog.", Snackbar.LENGTH_LONG).show();
+
+        /*
+        // -----------------------------------------------------
 
         // Note, this automatically adds a back-arrow to parent activity in AndroidManifest.xml.
         int id = item.getItemId();
@@ -216,7 +270,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
             return true;
         }
-
+*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -248,6 +302,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
     // ---------------------------------------------------------------------------------------------
     void sendSms() throws Exception {
+        networkOkay = false;
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
                 .build();
@@ -263,6 +318,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                networkOkay = true;
                 final String myResponse = response.body().string();
                 SendSmsActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -415,6 +471,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
+        networkOkay = false;
         Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
 
         // Either the field Phone Number or the spinner number.
@@ -443,6 +500,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                networkOkay = true;
                 final String stringFromTwilioNumberToFormNumber = response.body().string();
                 final JSONObject responseJson;
                 try {

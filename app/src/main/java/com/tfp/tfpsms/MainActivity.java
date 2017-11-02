@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private Menu theMenu;
     private Spinner twilioNumberSpinner;
+
+    private boolean networkOkay = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +135,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        if (!networkOkay) {
+            messagesArrayAdapter.clear();
+            String theMessage = "{ \"from\": \"Network test. \", \"body\": \"- Network connect failed. Please wait and try reloading.\", \"date_sent\": \"\" }";
+            // String theMessage = "{ \"from\": \"+ messageText 01\", \"body\": \"+ messageText 02\", \"date_sent\": \"+ messageText 03\" }";
+            JSONObject jsonMessage = null;
+            try {
+                jsonMessage = new JSONObject(theMessage);
+            } catch (JSONException en) {
+                en.printStackTrace();
+            }
+            messagesArrayAdapter.add(jsonMessage);
+            return true;
+        }
+
         int id = item.getItemId();
 
         // -----------------------------------------
@@ -194,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
     // ---------------------------------------------------------------------------------------------
     private void loadSpinnerAccPhoneNumbers() {
+        networkOkay = false;
         Snackbar.make(swipeRefreshLayout, "+ Loading account phone numbers...", Snackbar.LENGTH_LONG).show();
         twilioSms.setAccPhoneNumbers();
         OkHttpClient client = new OkHttpClient.Builder()
@@ -210,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                networkOkay = true;
                 final String jsonResponse = response.body().string();
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -286,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
 
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
+        networkOkay = false;
         Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
 
         // Set the Application Twilio Phone Number.
@@ -309,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-
+                networkOkay = true;
                 final String responseContent = response.body().string();
                 final JSONObject responseJson;
                 try {
