@@ -41,7 +41,7 @@
     </string>
     <!-- \n Draw the Owl: https://www.youtube.com/watch?v=dwSe2imUyvg -->
 
-    <!-- ============================= -->
+    <!-- ======================================================================================= -->
     <string name="about_twiliosetup">
         Twilio Account Setup
     </string>
@@ -49,6 +49,8 @@
         To use Owl SMS, you are required to have a Twilio account with at least one SMS capable phone number.
         \n
         \nGo to http://Twilio.com/console to get and manage your account.
+        \n
+        \nThe account SID and auth token is located on the page when you first log in.
         \n
         \nYou can use a free Twilio Trial account with Owl SMS, however, take note of the restrictions. For example, you can only send and receive messages, to and from, phone numbers you have pre-verified. For more information, search for \"How does Twilio\'s Free Trial work?\"
     </string>
