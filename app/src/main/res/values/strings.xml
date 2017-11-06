@@ -122,13 +122,13 @@
         <item>-11</item>
         <item>-10</item>
         <item>-9</item>
-        <item>-8</item>
-        <item>-7: PT, California</item>
+        <item>-8: PT, California</item>
+        <item>-7</item>
         <item>-6</item>
-        <item>-5</item>
-        <item>-4: ET, Toronto and New York</item>
-        <item>-3: Nova Scotia</item>
-        <item>-2.5: Newfoundland</item>
+        <item>-5: ET, Toronto and New York</item>
+        <item>-4: Nova Scotia</item>
+        <item>-3.5: Newfoundland</item>
+        <item>-3</item>
         <item>-2</item>
         <item>-1</item>
         <item>0: GMT, London, UK</item>
@@ -158,8 +158,8 @@
         <item>-6</item>
         <item>-5</item>
         <item>-4</item>
+        <item>-4.5</item>
         <item>-3</item>
-        <item>-3.5</item>
         <item>-2</item>
         <item>-1</item>
         <item>0</item>

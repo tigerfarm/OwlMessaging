@@ -243,9 +243,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     // ---------------------------------------------------------------------------------------------
     private String currentLocalTime() {
-        // SimpleDateFormat AmOrPmFormatter = new SimpleDateFormat("a");
-        // AmOrPmFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        // String AmOrPm = AmOrPmFormatter.format(new Date())+"";
         //                                                        :Tue, 26 Sep 2017 00:49:31 +0000: format for twilioSms.localDateTime
         SimpleDateFormat readDateFormatter = new SimpleDateFormat("     dd MMM yyyy HH:mm:ss      ");
         readDateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -255,12 +252,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         //         + " " + accountCredentials.getLocalTimeOffsetString()
         //         + " = " + twilioSms.localDateTime( currentGmtTime ).trim();
         // return twilioSms.localDateTimeFromGmt( currentGmtTime );
-
-        /*
-SimpleDateFormat dateFormatGmt = new SimpleDateFormat("dd:MM:yyyy HH:mm:ss");
-dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-System.out.println(dateFormatGmt.format(new Date())+"");
-         */
     }
 
 }
