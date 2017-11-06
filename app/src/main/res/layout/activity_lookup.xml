@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/activity_lookup"
-    tools:context="com.tfp.tfpsms.LookupActivity">
+    tools:context="com.tigerfarmpress.owlsms.LookupActivity">
 
     <!-- =================================== -->
     <android.support.design.widget.AppBarLayout

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/activity_settings"
-    tools:context="com.tfp.tfpsms.SettingsActivity">
+    tools:context="com.tigerfarmpress.owlsms.SettingsActivity">
 
     <!-- =================================== -->
     <android.support.design.widget.AppBarLayout

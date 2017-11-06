@@ -31,11 +31,11 @@
     </string>
 
     <string name="about_asis">
-        Owl SMS is offered \"as is\", without warrantee or guarantee.
+        Owl SMS is offered \"as is\", without warranty or guarantee.
     </string>
     <string name="about_version">
-        \nVersion: 0.6
-        \nRelease date: October 31, 2017
+        \nVersion: 1.0
+        \nRelease date: November 3, 2017
         \n
         \nThis application is not a Twilio company application, even though it was developed by Twilio employees. There is a saying within the company, "Just draw the Owl." This is our drawing of an SMS application.
     </string>
@@ -118,20 +118,20 @@
     <string name="pref_title_gmt_offset">GMT hours offset for local time</string>
     <string-array name="gmt_offset_labels">
         <item>0: GMT, London, UK</item>
-        <item>-1</item>
-        <item>-2</item>
-        <item>-2.5: Newfoundland</item>
-        <item>-3: Nova Scotia</item>
-        <item>-4: ET: Toronto and New York</item>
-        <item>-5</item>
-        <item>-6</item>
-        <item>-7: PT: California</item>
-        <item>-8</item>
-        <item>-9</item>
-        <item>-10</item>
-        <item>-11</item>
         <item>-12</item>
-        <item>0: London, UK</item>
+        <item>-11</item>
+        <item>-10</item>
+        <item>-9</item>
+        <item>-8</item>
+        <item>-7: PT, California</item>
+        <item>-6</item>
+        <item>-5</item>
+        <item>-4: ET, Toronto and New York</item>
+        <item>-3: Nova Scotia</item>
+        <item>-2.5: Newfoundland</item>
+        <item>-2</item>
+        <item>-1</item>
+        <item>0: GMT, London, UK</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -149,19 +149,19 @@
     <!-- Note, Newfoundland is -3.5 because Newfoundland time is negative and the TwSms.localDateTime simply adds +0.05.-->
     <string-array name="gmt_offset_values">
         <item>0</item>
-        <item>-1</item>
-        <item>-2</item>
-        <item>-3.5</item>
-        <item>-3</item>
-        <item>-4</item>
-        <item>-5</item>
-        <item>-6</item>
-        <item>-7</item>
-        <item>-8</item>
-        <item>-9</item>
-        <item>-10</item>
-        <item>-11</item>
         <item>-12</item>
+        <item>-11</item>
+        <item>-10</item>
+        <item>-9</item>
+        <item>-8</item>
+        <item>-7</item>
+        <item>-6</item>
+        <item>-5</item>
+        <item>-4</item>
+        <item>-3</item>
+        <item>-3.5</item>
+        <item>-2</item>
+        <item>-1</item>
         <item>0</item>
         <item>1</item>
         <item>2</item>

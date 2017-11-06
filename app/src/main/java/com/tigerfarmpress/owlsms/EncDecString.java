@@ -1,4 +1,4 @@
-package com.tfp.tfpsms;
+package com.tigerfarmpress.owlsms;
 
 import android.util.Base64;
 

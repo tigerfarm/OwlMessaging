@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/activity_about"
-    tools:context="com.tfp.tfpsms.AboutActivity">
+    tools:context="com.tigerfarmpress.owlsms.AboutActivity">
 
     <!-- =================================== -->
     <android.support.design.widget.AppBarLayout

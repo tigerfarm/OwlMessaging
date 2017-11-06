@@ -1,9 +1,7 @@
-package com.tfp.tfpsms;
+package com.tigerfarmpress.owlsms;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.location.Address;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -19,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,7 +40,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -50,8 +47,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static android.os.SystemClock.sleep;
-import static com.tfp.tfpsms.R.id.spinner;
+import static com.tigerfarmpress.owlsms.R.id.spinner;
 
 public class SendSmsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -170,6 +166,10 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
             messagesArrayAdapter.add(jsonMessage);
             return;
         }
+
+        // hide keyboard
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(sendToPhoneNumber.getWindowToken(), 0);
 
         // Either the editText Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();

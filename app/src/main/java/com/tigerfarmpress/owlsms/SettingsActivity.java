@@ -1,30 +1,13 @@
-package com.tfp.tfpsms;
+package com.tigerfarmpress.owlsms;
 
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -39,11 +22,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import okhttp3.Call;
@@ -51,8 +31,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static com.tfp.tfpsms.R.id.spinner;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -265,11 +243,17 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     // ---------------------------------------------------------------------------------------------
     private String currentLocalTime() {
+        // SimpleDateFormat AmOrPmFormatter = new SimpleDateFormat("a");
+        // AmOrPmFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+        // String AmOrPm = AmOrPmFormatter.format(new Date())+"";
         //                                                        :Tue, 26 Sep 2017 00:49:31 +0000: format for twilioSms.localDateTime
-        SimpleDateFormat readDateFormatter = new SimpleDateFormat("     dd MMM yyyy hh:mm:ss      ");
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("     dd MMM yyyy HH:mm:ss      ");
         readDateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         String currentGmtTime = readDateFormatter.format(new Date())+"";
-        return twilioSms.localDateTime( currentGmtTime );
+        return twilioSms.localDateTime( currentGmtTime ).trim();
+        // return currentGmtTime.trim()
+        //         + " " + accountCredentials.getLocalTimeOffsetString()
+        //         + " = " + twilioSms.localDateTime( currentGmtTime ).trim();
         // return twilioSms.localDateTimeFromGmt( currentGmtTime );
 
         /*
