@@ -161,7 +161,8 @@ public class MainActivity extends AppCompatActivity {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
             String theType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
-            if (theType.equalsIgnoreCase("com.google")) {
+            if (theType == null || theType.equalsIgnoreCase("com.google")) {
+                // null is the value for the emulator.
                 // Don't add WhatsApp contacts ("com.whatsapp") because it duplicates the phone number.
                 // StoreContacts.add(name + " : " + phonenumber + " : " + theType);
                 StoreContacts.add(name + " : " + phonenumber);
