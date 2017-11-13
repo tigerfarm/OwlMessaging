@@ -11,7 +11,7 @@
     tools:showIn="@layout/activity_main">
 
     <ListView
-        android:id="@+id/list_view"
+        android:id="@+id/listview1"
         android:textColor="@color/listText"
         android:divider="@color/listTextDivider"
         android:dividerHeight="@dimen/dividerHeight"

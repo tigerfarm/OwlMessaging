@@ -1,12 +1,17 @@
 package com.tigerfarmpress.owlsms;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,8 +19,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,19 +45,31 @@ import okhttp3.Response;
 
 import static com.tigerfarmpress.owlsms.R.id.spinner;
 
+// To add OkHttp, add into app/src/build.gradle:
+// dependencies { ... compile 'com.squareup.okhttp3:okhttp:3.4.1' ... }
+
 public class MainActivity extends AppCompatActivity {
 
     private AccountCredentials accountCredentials;
     private TwSms twilioSms;
     private String jsonAccPhoneNumbers = "";
 
-    private ListView listView;
     private MessagesArrayAdapter messagesArrayAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Menu theMenu;
     private Spinner twilioNumberSpinner;
 
     private boolean networkOkay = true;
+
+    // For contacts
+    private EditText formPhoneNumber;
+    private static TextView labelContactName;
+    private ListView listView;
+    private ArrayList<String> StoreContacts ;
+    private ArrayAdapter<String> arrayAdapter ;
+    private Cursor cursor ;
+    private String name, phonenumber ;
+    private static final int RequestPermissionCode = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         // startActivity(new Intent(this, SettingsActivity.class));
         accountCredentials = new AccountCredentials(this);
-        if ( !accountCredentials.existAccountSid() ) {
+        if (!accountCredentials.existAccountSid()) {
             // if the Twilio account info hasn't been entered, go to Settings.
             // Snackbar.make(swipeRefreshLayout, "+ Enter your correct Twilio account information into Settings.", Snackbar.LENGTH_LONG).show();
             startActivity(new Intent(this, SettingsActivity.class));
@@ -75,8 +94,42 @@ public class MainActivity extends AppCompatActivity {
         // Use when working on specific panel.
         // startActivity(new Intent(this, SettingsActivity.class));
 
+        labelContactName = (TextView)findViewById(R.id.labelContactName);
+        formPhoneNumber = (EditText)findViewById(R.id.formPhoneNumber);
+
+        // ---------------------------------------------------------------------------------------------
+        // Load Contacts into ListView.
+        StoreContacts = new ArrayList<String>();
+        listView = (ListView)findViewById(R.id.listview1);
+        EnableContactPermission();
+        LoadContacts();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            // https://stackoverflow.com/questions/20032270/why-my-android-setonitemclicklistener-doesnt-work
+            // This may fix: https://stackoverflow.com/questions/14332409/custom-listview-is-not-responding-to-the-click-event/14333069#14333069
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int itemPosition     = position;
+                String  itemValue    = (String) listView.getItemAtPosition(position);
+                // Snackbar.make(coordinatorLayout, "+ Position: "+itemPosition+" : " +itemValue, Snackbar.LENGTH_LONG).show();
+                // String toCall = itemValue.toString().trim();
+                // Snackbar.make(coordinatorLayout, "+ "+toCall+" "+toCall.indexOf("+")+1+" "+toCall.length(), Snackbar.LENGTH_LONG).show();
+                formPhoneNumber.setText( itemValue.substring(itemValue.lastIndexOf("+"), itemValue.trim().length()));
+                if ( itemValue.lastIndexOf("+") > 6) {
+                    labelContactName.setText( itemValue.substring(0, itemValue.lastIndexOf("+")-3));
+                }
+            }
+        });
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                LoadContacts();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });        /* List of resently received messages:
         messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
-        listView = (ListView) findViewById(R.id.list_view);
+        listView = (ListView) findViewById(R.id.listview1);
         listView.setAdapter(messagesArrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -96,6 +149,51 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+        */
+
+    }
+    // ---------------------------------------------------------------------------------------------
+
+    public void LoadContacts(){
+        StoreContacts.clear();
+        cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
+        while (cursor.moveToNext()) {
+            name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
+            String theType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+            if (theType.equalsIgnoreCase("com.google")) {
+                // Don't add WhatsApp contacts ("com.whatsapp") because it duplicates the phone number.
+                // StoreContacts.add(name + " : " + phonenumber + " : " + theType);
+                StoreContacts.add(name + " : " + phonenumber);
+            }
+        }
+        cursor.close();
+        Collections.sort(StoreContacts);
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, StoreContacts);
+        listView.setAdapter(arrayAdapter);
+    }
+
+    public void EnableContactPermission(){
+        if ( ActivityCompat.shouldShowRequestPermissionRationale( MainActivity.this, Manifest.permission.READ_CONTACTS) ) {
+            Snackbar.make(swipeRefreshLayout, "+ CONTACTS permission allows us to Access CONTACTS app.", Snackbar.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions( MainActivity.this, new String[] {
+                    Manifest.permission.READ_CONTACTS}, RequestPermissionCode );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        // Check if contacts access permissions are granted
+        if (requestCode == RequestPermissionCode && permissions.length > 0) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Snackbar.make(swipeRefreshLayout, "+ Permission Canceled, your application cannot access CONTACTS.", Snackbar.LENGTH_LONG).show();
+            } else {
+                // Snackbar.make(coordinatorLayout, "+ Permission Granted, Now your application can access CONTACTS.", Snackbar.LENGTH_LONG).show();
+            }
+        }
+
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -116,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             accountCredentials.setToPhoneNumber( "" );
         } else {
             if (loadAccPhoneNumberSpinner(theMenu, jsonAccPhoneNumbers) > 0) {
-                populateMessageList();
+                // populateMessageList();
             }
         }
 
@@ -159,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.menu_refresh) {
             loadSpinnerAccPhoneNumbers();
+            LoadContacts();
             return true;
         }
         // -----------------------------------------
@@ -180,8 +279,12 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sendsms) {
-            Intent intent = new Intent(this, SendSmsActivity.class);
-            startActivity(intent);
+            String callPhoneNumber = formPhoneNumber.getText().toString();
+            if (!callPhoneNumber.isEmpty()) {
+                accountCredentials.setToPhoneNumber(callPhoneNumber);
+                Intent intent = new Intent(this, SendSmsActivity.class);
+                startActivity(intent);
+            }
             return true;
         } else if (id == R.id.action_lookup) {
             Intent intent = new Intent(this, LookupActivity.class);
@@ -229,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
                         } else if (loadAccPhoneNumberSpinner(theMenu, jsonResponse) > 0) {
                             jsonAccPhoneNumbers = jsonResponse;
                             accountCredentials.setAccPhoneNumberList(jsonResponse);
-                            populateMessageList();
+                            // populateMessageList();
                         }
                     }
                 });

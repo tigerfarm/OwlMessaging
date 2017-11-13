@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     tools:context="com.tigerfarmpress.owlsms.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -20,6 +21,65 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <FrameLayout
+        android:id="@+id/numberform"
+        android:background="@drawable/borders_top"
+        android:layout_marginTop="56dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- ==================================================== -->
+        <TextView
+            android:id="@+id/labelToken"
+            android:text="Send-to phone number"
+            android:layout_below="@+id/TwilioSid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/formMarginSize"
+            android:layout_marginLeft="@dimen/activity_horizontal_marginBottom"
+            android:textColor="#000000"
+            android:textSize="14sp"/>
+        <EditText
+            android:id="@+id/formPhoneNumber"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text=""/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/call_action_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginTop="@dimen/activity_horizontal_marginBottom"
+            android:layout_marginBottom="@dimen/activity_horizontal_marginBottom"
+            android:layout_marginLeft="@dimen/activity_horizontal_marginBottom"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:src="@drawable/ic_call_white_24px"
+            android:visibility="invisible" />
+
+        <!-- android:textStyle="italic" -->
+        <!-- android:textStyle="bold" -->
+        <TextView
+            android:id="@+id/labelContactName"
+            android:text="Send to this contact name."
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:layout_below="@+id/formPhoneNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:layout_marginBottom="@dimen/activity_horizontal_marginBottom"
+            android:layout_marginLeft="@dimen/formMarginLeft"
+            />
+    </FrameLayout>
+    <!-- ==================================================== -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="158dp"
+        android:orientation="vertical">
+        <include layout="@layout/content_main" />
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
