@@ -31,7 +31,7 @@
         <!-- ==================================================== -->
         <TextView
             android:id="@+id/labelToken"
-            android:text="Send-to phone number"
+            android:text="Send to:"
             android:layout_below="@+id/TwilioSid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,19 +43,25 @@
             android:id="@+id/formPhoneNumber"
             android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
+            android:textSize="@dimen/buttonTextSize"
             android:text=""/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/call_action_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_marginTop="@dimen/activity_horizontal_marginBottom"
+            android:layout_gravity="right"
+            android:layout_marginTop="@dimen/activity_horizontal_marginTop"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="@dimen/activity_horizontal_marginBottom"
             android:layout_marginLeft="@dimen/activity_horizontal_marginBottom"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:src="@drawable/ic_call_white_24px"
-            android:visibility="invisible" />
+            android:src="@drawable/ic_action_sms"
+            android:fillColor="#FFFFFF"
+            />
+        <!--
+        android:src="@drawable/ic_call_white_24px"
+        app:srcCompat="@android:drawable/ic_input_add"
+        -->
 
         <!-- android:textStyle="italic" -->
         <!-- android:textStyle="bold" -->
@@ -68,7 +74,7 @@
             android:layout_below="@+id/formPhoneNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="48dp"
             android:layout_marginBottom="@dimen/activity_horizontal_marginBottom"
             android:layout_marginLeft="@dimen/formMarginLeft"
             />
@@ -77,7 +83,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="158dp"
+        android:layout_marginTop="145dp"
         android:orientation="vertical">
         <include layout="@layout/content_main" />
     </LinearLayout>

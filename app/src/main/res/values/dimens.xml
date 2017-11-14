@@ -3,11 +3,12 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dividerHeight">3px</dimen>
     <dimen name="buttonTextSize">14dp</dimen>
-    <dimen name="editPhoneNumberFieldWidth">109dp</dimen>
+    <dimen name="editPhoneNumberFieldWidth">260dp</dimen>
     <dimen name="editSendSmsFieldWidth">260dp</dimen>
     <dimen name="listItemPaddingRight">9dp</dimen>
     <dimen name="editAccountFieldWidth">280dp</dimen>
 
+    <dimen name="activity_horizontal_marginTop">10dp</dimen>
     <dimen name="activity_horizontal_marginBottom">8dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>

@@ -69,6 +69,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
     private boolean networkOkay = true;
 
+    private TextView labelContactName;
+
     // ---------------------------------------------------------------------------------------------
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,30 +89,14 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         sendButton = (Button) findViewById(R.id.sendButton);
         sendButton.setOnClickListener(this);
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
+        labelContactName = (TextView)findViewById(R.id.labelContactName);
         textMessage = (EditText)findViewById(R.id.textMessage);
 
         accountCredentials = new AccountCredentials(this);
         twilioSms = new TwSms(accountCredentials);
 
-        // -----------------------
-        // Set sendToSpinner
-        // https://developer.android.com/guide/topics/ui/controls/spinner.html
-        // spinnerArray[0] = "1231231234";
-        // spinnerArray[1] = "1333231234";
-        // spinnerArray[2] = "18182103863";
-        List<String> listItems = getSendToList( accountCredentials.getSendToList() );
-        String[] spinnerArray = new String[ listItems.size() ];
-        listItems.toArray( spinnerArray );
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.send_to_spinner_item, Arrays.asList(spinnerArray));
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sendToSpinner = (Spinner)findViewById(R.id.sendToSpinner);
-        sendToSpinner.setAdapter(adapter);
-        int thePosition = adapter.getPosition( accountCredentials.getToPhoneNumber() );
-        if (thePosition >= 0) {
-            sendToSpinner.setSelection( thePosition );
-        } else {
-            sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
-        }
+        labelContactName.setText(accountCredentials.getToContactName());
+        sendToPhoneNumber.setText(accountCredentials.getToPhoneNumber());
 
         // -----------------------
         listView = (ListView) findViewById(R.id.list_view);
