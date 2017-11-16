@@ -4,7 +4,7 @@
     <!-- ======================================================================================= -->
     <!-- Menu titles -->
 
-    <string name="title_activity_refresh">Refresh account phone numbers</string>
+    <string name="title_activity_refresh">Refresh information</string>
     <string name="title_activity_sendsms">Send Message</string>
     <string name="title_activity_lookup">Phone number information</string>
     <string name="title_activity_accsec">2FA and Phone Verification</string>
@@ -34,8 +34,8 @@
         Owl SMS is offered \"as is\", without warranty or guarantee.
     </string>
     <string name="about_version">
-        \nVersion: 1.0
-        \nRelease date: November 3, 2017
+        \nVersion: 2.0
+        \nRelease date: November 15, 2017
         \n
         \nThis application is not a Twilio company application, even though it was developed by Twilio employees. There is a saying within the company, "Just draw the Owl." This is our drawing of an SMS application.
     </string>

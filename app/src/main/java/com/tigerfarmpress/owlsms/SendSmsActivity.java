@@ -406,7 +406,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
     // ---------------------------------------------------------------------------------------------
     private int loadAccPhoneNumberSpinner(Menu menu, String jsonList) {
-        Snackbar.make(swipeRefreshLayout, "+ Loading messages ...", Snackbar.LENGTH_LONG).show();
+        // Snackbar.make(swipeRefreshLayout, "+ Loading messages ...", Snackbar.LENGTH_LONG).show();
 
         int numPhoneNumbers = 0;
         final JSONObject responseJson;
@@ -445,7 +445,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     // ---------------------------------------------------------------------------------------------
     private void populateMessageList() {
         networkOkay = false;
-        Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
+        // Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
 
         // Either the field Phone Number or the spinner number.
         String theFormPhoneNumber = sendToPhoneNumber.getText().toString();

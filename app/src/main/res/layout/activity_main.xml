@@ -29,7 +29,7 @@
         android:layout_height="wrap_content">
 
         <!-- ==================================================== -->
-        <TextView
+        <!-- TextView
             android:id="@+id/labelToken"
             android:text="Send to:"
             android:layout_below="@+id/TwilioSid"
@@ -38,12 +38,12 @@
             android:layout_marginTop="@dimen/formMarginSize"
             android:layout_marginLeft="@dimen/activity_horizontal_marginBottom"
             android:textColor="#000000"
-            android:textSize="14sp"/>
+            android:textSize="14sp"/ -->
         <EditText
             android:id="@+id/formPhoneNumber"
             android:layout_width="260dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             android:textSize="@dimen/buttonTextSize"
             android:text=""/>
         <android.support.design.widget.FloatingActionButton
@@ -61,6 +61,7 @@
         <!--
         android:src="@drawable/ic_call_white_24px"
         app:srcCompat="@android:drawable/ic_input_add"
+        android:visibility="invisible"
         -->
 
         <!-- android:textStyle="italic" -->
@@ -87,5 +88,43 @@
         android:orientation="vertical">
         <include layout="@layout/content_main" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_gravity="top|right"
+        android:layout_marginTop="200dp"
+        android:orientation="vertical">
+        <!-- ==================================================== -->
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/action_contactlist_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_list_contacts"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/action_smslist_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_list_sms"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            />
+        <!-- android.support.design.widget.FloatingActionButton
+            android:id="@+id/action_lookup_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:src="@drawable/ic_action_lookup"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            / -->
+    </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

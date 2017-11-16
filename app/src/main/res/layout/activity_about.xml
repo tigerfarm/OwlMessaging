@@ -88,7 +88,7 @@
                     android:background="@color/colorPrimary"/>
 
                 <!-- =================================== -->
-                <include layout="@layout/content_setup" />
+                <!-- include layout="@layout/content_setup" / -->
 
                 <!-- Not imlemented, but should try:
                 https://stackoverflow.com/questions/6910703/android-active-link-of-url-in-textview

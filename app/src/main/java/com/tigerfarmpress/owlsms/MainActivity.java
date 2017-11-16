@@ -2,10 +2,12 @@ package com.tigerfarmpress.owlsms;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -61,17 +64,19 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean networkOkay = true;
 
-    // For contacts
+    // For contacts and recent messages
     private EditText formPhoneNumber;
     private static TextView labelContactName;
-    private ListView listView;
-    private ArrayList<String> StoreContacts ;
-    private ArrayAdapter<String> arrayAdapter ;
+    private ListView listView, listViewMsg;
+    private ArrayList<String> StoreContacts, StoreContactPhoneNumbers, StoreContactNames;
+    private ArrayList<String> StoreMessages;
+    private ArrayAdapter<String> arrayAdapterContacts;
+    private ArrayAdapter<String> arrayAdapterMsg;
     private Cursor cursor ;
     private String name, phonenumber ;
     private static final int RequestPermissionCode = 2;
 
-    private FloatingActionButton callActionFab;
+    private FloatingActionButton callActionFab, callActionSmsList, callActionContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,63 +107,54 @@ public class MainActivity extends AppCompatActivity {
         formPhoneNumber.setText(accountCredentials.getToPhoneNumber());
         callActionFab = (FloatingActionButton) findViewById(R.id.call_action_fab);
         callActionFab.setOnClickListener(callActionFabClickListener());
+        callActionSmsList = (FloatingActionButton) findViewById(R.id.action_smslist_fab);
+        callActionSmsList.setOnClickListener(callActionSmsListClickListener());
+        callActionContacts = (FloatingActionButton) findViewById(R.id.action_contactlist_fab);
+        callActionContacts.setOnClickListener(callActionContactsClickListener());
+
+        // Recent message list structures
+        StoreMessages = new ArrayList<String>();
 
         // ---------------------------------------------------------------------------------------------
-        // Load Contacts into ListView.
+        // Load Contacts
         StoreContacts = new ArrayList<String>();
+        StoreContactNames = new ArrayList<String>();
+        StoreContactPhoneNumbers = new ArrayList<String>();
         listView = (ListView)findViewById(R.id.listview1);
         EnableContactPermission();
-        LoadContacts();
+        // LoadContacts();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             // https://stackoverflow.com/questions/20032270/why-my-android-setonitemclicklistener-doesnt-work
             // This may fix: https://stackoverflow.com/questions/14332409/custom-listview-is-not-responding-to-the-click-event/14333069#14333069
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int itemPosition     = position;
-                String  itemValue    = (String) listView.getItemAtPosition(position);
-                // Snackbar.make(coordinatorLayout, "+ Position: "+itemPosition+" : " +itemValue, Snackbar.LENGTH_LONG).show();
-                // String toCall = itemValue.toString().trim();
-                // Snackbar.make(coordinatorLayout, "+ "+toCall+" "+toCall.indexOf("+")+1+" "+toCall.length(), Snackbar.LENGTH_LONG).show();
-                formPhoneNumber.setText( itemValue.substring(itemValue.lastIndexOf("+"), itemValue.trim().length()));
-                if ( itemValue.lastIndexOf("+") > 6) {
-                    labelContactName.setText( itemValue.substring(0, itemValue.lastIndexOf("+")-3));
+                int itemPosition = position;
+                String itemValue = (String) listView.getItemAtPosition(position);
+                String phoneNumber = itemValue.substring(itemValue.lastIndexOf("+"), itemValue.trim().length());
+                formPhoneNumber.setText( phoneNumber );
+                int i = StoreContactPhoneNumbers.indexOf(phoneNumber);
+                if (i>=0) {
+                    String theName = StoreContactNames.get(i);
+                    labelContactName.setText(theName.substring(theName.indexOf(":")+1, theName.length()));
+                } else {
+                    labelContactName.setText("");
                 }
             }
         });
 
+        // ---------------------------------------------------------------------------------------------
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                LoadContacts();
+                if (accountCredentials.getShowContacts()) {
+                    LoadContacts();
+                } else {
+                    populateMessageList();
+                }
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-
-        /* List of resently received messages:
-        messagesArrayAdapter = new MessagesArrayAdapter(this, android.R.layout.simple_list_item_1);
-        listView = (ListView) findViewById(R.id.listview1);
-        listView.setAdapter(messagesArrayAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-                // final String item = (String) parent.getItemAtPosition(position);
-                int itemPosition = position;
-                String itemValue = (String) listView.getItemAtPosition(position);
-                Snackbar.make(swipeRefreshLayout, "+ Position: " + itemPosition + " : " +itemValue, Snackbar.LENGTH_LONG).show();
-            }
-
-        });
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                populateMessageList();
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
-        */
-
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -170,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
+        LoadContacts();
+
         // Top bar list of account phone numbers:
         jsonAccPhoneNumbers = accountCredentials.getAccPhoneNumberList();
         if (jsonAccPhoneNumbers.isEmpty()) {
@@ -179,17 +177,114 @@ public class MainActivity extends AppCompatActivity {
             accountCredentials.setToPhoneNumber( "" );
         } else {
             if (loadAccPhoneNumberSpinner(theMenu, jsonAccPhoneNumbers) > 0) {
-                // populateMessageList();
+                populateMessageList();
             }
+        }
+
+        if (accountCredentials.getShowContacts()) {
+            // Snackbar.make(swipeRefreshLayout, "+ Show contacts.", Snackbar.LENGTH_LONG).show();
+            showContacts();
+        } else {
+            // Snackbar.make(swipeRefreshLayout, "+ Show SMS messages.", Snackbar.LENGTH_LONG).show();
+            showSmsList();
         }
 
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.menu_refresh) {
+            checkBeforeLeaving("refresh");
+            loadSpinnerAccPhoneNumbers();
+            LoadContacts();
+            return true;
+        }
+
+        if (!checkBeforeLeaving("")) {
+            // Something wrong, stay on this panel.
+            return true;
+        }
+        if (id == R.id.action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_lookup) {
+            doLookup();
+            return true;
+        } else if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    public boolean checkBeforeLeaving(String type) {
+
+        if (!networkOkay) {
+            Snackbar.make(swipeRefreshLayout, "- Network connect failed. Please wait and try reloading.", Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+        // -----------------------------------------
+        // This covers the case of no network access, and then when there is access,
+        // the user can reload/refresh the data.
+        String selectedTwilioNumber = "";
+        try {
+            selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        }
+        catch (NullPointerException e) {
+            Snackbar.make(swipeRefreshLayout, "+ No account phone numbers listed.", Snackbar.LENGTH_LONG).show();
+        }
+        if (!selectedTwilioNumber.isEmpty()) {
+            // Set the Twilio phone number for the next panel to use.
+            String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+            accountCredentials.setTwilioPhoneNumber( twilioNumber );
+        }
+        if (type.equalsIgnoreCase("refresh")) {
+            return true;
+        }
+
+        // -----------------------------------------
+        // Set the Appication Twilio Phone Number before going to another panel.
+        try {
+            selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        }
+        catch (NullPointerException e) {
+            Snackbar.make(swipeRefreshLayout, "- No account phone numbers.", Snackbar.LENGTH_LONG).show();
+            startActivity(new Intent(this, SettingsActivity.class));
+            return false;
+        }
+        if (selectedTwilioNumber.isEmpty()) {
+            Snackbar.make(swipeRefreshLayout, "- No account phone numbers.", Snackbar.LENGTH_LONG).show();
+            startActivity(new Intent(this, SettingsActivity.class));
+            return false;
+        }
+
+        String callPhoneNumber = formPhoneNumber.getText().toString();
+        String callContactName = labelContactName.getText().toString();
+        if (!callPhoneNumber.isEmpty()) {
+            accountCredentials.setToPhoneNumber(callPhoneNumber);
+            accountCredentials.setToContactName(callContactName);
+        }
+
+        return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
     private View.OnClickListener callActionFabClickListener() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkBeforeLeaving("")) {
+                    // Something wrong, stay on this panel.
+                    return;
+                }
                 if (!formPhoneNumber.getText().toString().isEmpty()) {
                     // hide keyboard
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -207,86 +302,41 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (!networkOkay) {
-            Snackbar.make(swipeRefreshLayout, "- Network connect failed. Please wait and try reloading.", Snackbar.LENGTH_LONG).show();
-            return true;
-        }
-
-        int id = item.getItemId();
-
-        // -----------------------------------------
-        // This covers the case of no network access, and then when there is access,
-        // the user can reload/refresh the data.
-        String selectedTwilioNumber = "";
-        try {
-            selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-        }
-        catch (NullPointerException e) {
-            Snackbar.make(swipeRefreshLayout, "+ No account phone numbers listed.", Snackbar.LENGTH_LONG).show();
-        }
-        if (!selectedTwilioNumber.isEmpty()) {
-            // Set the Twilio phone number for the next panel to use.
-            String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-            accountCredentials.setTwilioPhoneNumber( twilioNumber );
-        }
-        if (id == R.id.menu_refresh) {
-            loadSpinnerAccPhoneNumbers();
-            LoadContacts();
-            return true;
-        }
-
-        // -----------------------------------------
-        // Set the Appication Twilio Phone Number before going to another panel.
-        try {
-            selectedTwilioNumber = twilioNumberSpinner.getSelectedItem().toString();
-        }
-        catch (NullPointerException e) {
-            Snackbar.make(swipeRefreshLayout, "- No account phone numbers.", Snackbar.LENGTH_LONG).show();
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-        if (selectedTwilioNumber.isEmpty()) {
-            Snackbar.make(swipeRefreshLayout, "- No account phone numbers.", Snackbar.LENGTH_LONG).show();
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        }
-
-        String callPhoneNumber = formPhoneNumber.getText().toString();
-        String callContactName = labelContactName.getText().toString();
-        if (!callPhoneNumber.isEmpty()) {
-            accountCredentials.setToPhoneNumber(callPhoneNumber);
-            accountCredentials.setToContactName(callContactName);
-        }
-        if (id == R.id.action_sendsms) {
-            if (!callPhoneNumber.isEmpty()) {
-                Intent intent = new Intent(this, SendSmsActivity.class);
-                startActivity(intent);
+    private View.OnClickListener callActionSmsListClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSmsList();
             }
-            return true;
-        } else if (id == R.id.action_lookup) {
-            Intent intent = new Intent(this, LookupActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_about) {
-            Intent intent = new Intent(this, AboutActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        };
+    }
+    private View.OnClickListener callActionContactsClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showContacts();
+            }
+        };
+    }
+    public void showSmsList() {
+        callActionSmsList.hide();
+        accountCredentials.setShowContacts(false);
+        listView.setAdapter(arrayAdapterMsg);
+        callActionContacts.show();
+    }
+    public void showContacts() {
+        callActionContacts.hide();
+        accountCredentials.setShowContacts(true);
+        listView.setAdapter(arrayAdapterContacts);
+        callActionSmsList.show();
     }
 
     // ---------------------------------------------------------------------------------------------
 
     public void LoadContacts(){
         StoreContacts.clear();
+        StoreContactNames.clear();
+        StoreContactPhoneNumbers.clear();
         cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
         while (cursor.moveToNext()) {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
@@ -297,12 +347,16 @@ public class MainActivity extends AppCompatActivity {
                 // Don't add WhatsApp contacts ("com.whatsapp") because it duplicates the phone number.
                 // StoreContacts.add(name + " : " + phonenumber + " : " + theType);
                 StoreContacts.add(name + " : " + phonenumber);
+                StoreContactNames.add(phonenumber + ":" + name);
+                StoreContactPhoneNumbers.add(phonenumber);
             }
         }
         cursor.close();
         Collections.sort(StoreContacts);
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, StoreContacts);
-        listView.setAdapter(arrayAdapter);
+        arrayAdapterContacts = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, StoreContacts);
+        // listView.setAdapter(arrayAdapterContacts);
+        Collections.sort(StoreContactNames);
+        Collections.sort(StoreContactPhoneNumbers);
     }
 
     public void EnableContactPermission(){
@@ -357,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
                         } else if (loadAccPhoneNumberSpinner(theMenu, jsonResponse) > 0) {
                             jsonAccPhoneNumbers = jsonResponse;
                             accountCredentials.setAccPhoneNumberList(jsonResponse);
-                            // populateMessageList();
+                            populateMessageList();
                         }
                     }
                 });
@@ -421,5 +475,200 @@ public class MainActivity extends AppCompatActivity {
         // Snackbar.make(swipeRefreshLayout, "+ positionTwilioPhoneNumber" + positionTwilioPhoneNumber, Snackbar.LENGTH_LONG).show();
         return numSmsPhoneNumbers;
     }
+
+    // ---------------------------------------------------------------------------------------------
+    private void populateMessageList() {
+        networkOkay = false;
+        // Snackbar.make(swipeRefreshLayout, "+ Loading messages...", Snackbar.LENGTH_LONG).show();
+
+        // Set the Application Twilio Phone Number.
+        String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
+        accountCredentials.setTwilioPhoneNumber(twilioNumber);
+
+        twilioSms.setSmsRequestLogsTo(twilioNumber);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.getRequestUrl())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                Snackbar.make(swipeRefreshLayout, "- Error: failed to retrieve messages: populateMessageList", Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                networkOkay = true;
+                final String responseContent = response.body().string();
+                final JSONObject responseJson;
+                try {
+                    responseJson = new JSONObject(responseContent);
+                } catch (JSONException e) {
+                    Snackbar.make(swipeRefreshLayout,
+                            "- Error: failed to parse JSON response: populateMessageList",
+                            Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                if (response.code() == 200) {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println(responseContent);
+                            try {
+                                JSONArray messages = responseJson.getJSONArray("messages");
+                                StoreMessages.clear();
+                                int im = 0;
+                                for (int i = 0; i < messages.length(); i++) {
+                                    if (messages.getJSONObject(i).getString("status").equalsIgnoreCase("received")) {
+                                        String theData = "";
+                                        JSONObject messageJson = messages.getJSONObject(i);
+                                        try {
+                                            theData = messageJson.getString("body")
+                                                    + "\n" + twilioSms.localDateTime(messageJson.getString("date_sent")).substring(0,6)
+                                                    + ", From: " + messageJson.getString("from");
+                                            // + " to " + messageJson.getString("to")
+                                        } catch (JSONException e) {
+                                            Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: MessagesArrayAdapter", Snackbar.LENGTH_LONG).show();
+                                            System.out.println(e);
+                                        }
+                                        StoreMessages.add(theData);
+                                        im++;
+                                    }
+                                }
+                                if ( im == 0 ) {
+                                    Snackbar.make(swipeRefreshLayout, getString(R.string.NoMessages), Snackbar.LENGTH_LONG).show();
+                                    return;
+                                }
+                                arrayAdapterMsg = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, StoreMessages);
+                                if (!accountCredentials.getShowContacts()) {
+                                    listViewMsg = (ListView)findViewById(R.id.listview1);
+                                    listViewMsg.setAdapter(arrayAdapterMsg);
+                                }
+                            } catch (JSONException e) {
+                                Snackbar.make(swipeRefreshLayout, "-- Error: failed to parse JSON response: populateMessageList", Snackbar.LENGTH_LONG).show();
+                                return;
+                            }
+                        }
+                    });
+                } else {
+                    Snackbar.make(swipeRefreshLayout, "+ Logging into your Twilio account failed(" + response.code() + ").\n++ Go to Settings.", Snackbar.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    private void doLookup() {
+        if (!checkBeforeLeaving("")) {
+            return;
+        }
+        if (!formPhoneNumber.getText().toString().isEmpty()) {
+            // hide keyboard
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(formPhoneNumber.getWindowToken(), 0);
+            //
+            final String callPhoneNumber = formPhoneNumber.getText().toString();
+            // String callContactName = labelContactName.getText().toString();
+            if (!callPhoneNumber.isEmpty()) {
+                // -----------------------------------------------------
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setMessage("Confirm phone number information lookup for:\n      " + callPhoneNumber)
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                lookupResults( callPhoneNumber );
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Snackbar.make(swipeRefreshLayout, "+ Cancelled.", Snackbar.LENGTH_LONG).show();
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+                // -----------------------------------------------------
+            }
+        }
+    }
+
+    private void lookupResults( final String formPhoneNumber ) {
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(accountCredentials)
+                .build();
+        Request request = new Request.Builder()
+                .url(twilioSms.getLookup(formPhoneNumber))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                Snackbar.make(swipeRefreshLayout, "- Error: Failed to retrieve messages.", Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseContent = response.body().string();
+
+                final JSONObject responseJson;
+                try {
+                    responseJson = new JSONObject(responseContent);
+                } catch (JSONException e) {
+                    Snackbar.make(swipeRefreshLayout, "- Error 1: Failed to parse JSON response.", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (response.code() == 200) {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println(responseContent);
+                            String theData = "";
+                            try {
+                                theData = "\nCountry code: " + responseJson.getString("country_code")
+                                        + "\nLocal format: " + responseJson.getString("national_format")
+                                        + "\nCarrier: " + responseJson.getJSONObject("carrier").getString("name")
+                                        + "\nType of line: " + responseJson.getJSONObject("carrier").getString("type");
+                            } catch (JSONException e) {
+                                Snackbar.make(swipeRefreshLayout, "- Error 2: Failed to parse JSON response.", Snackbar.LENGTH_LONG).show();
+                            }
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                            builder.setMessage("Phone number information for:\n      " + formPhoneNumber + "\n" + theData)
+                                    .setCancelable(false)
+                                    .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            Snackbar.make(swipeRefreshLayout, "+ Lookup complete", Snackbar.LENGTH_LONG).show();
+                                        }
+                                    });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        }
+                    });
+                } else if (response.code() == 404) {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Snackbar.make(swipeRefreshLayout, "+ Phone number not found.", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                } else {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Snackbar.make(swipeRefreshLayout, "- Error: Received %s status code.", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
 }
