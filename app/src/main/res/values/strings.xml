@@ -26,7 +26,7 @@
     <!-- About Text Panel -->
     <string name="about_title">Owl SMS</string>
     <string name="about_intro">
-        This application makes requests directly to the Twilio services to send, receive, and manage messages; and retrieve the list of SMS capable phone numbers.
+        This application makes requests directly to the Twilio services to send, receive, and manage messages; and retrieve the account\'s list of SMS capable phone numbers.
         \n
     </string>
 
@@ -35,7 +35,7 @@
     </string>
     <string name="about_version">
         \nVersion: 2.0
-        \nRelease date: November 15, 2017
+        \nRelease date: November 18, 2017
         \n
         \nThis application is not a Twilio company application, even though it was developed by Twilio employees. There is a saying within the company, "Just draw the Owl." This is our drawing of an SMS application.
     </string>
