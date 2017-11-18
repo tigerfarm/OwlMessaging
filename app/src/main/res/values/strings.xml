@@ -55,32 +55,30 @@
         \nYou can use a free Twilio Trial account with Owl SMS, however, take note of the restrictions. For example, you can only send and receive messages, to and from, phone numbers you have pre-verified. For more information, search for \"How does Twilio\'s Free Trial work?\"
     </string>
     <string name="about_noresponse_title">
-        Remove the Automatic SMS Reply Messages
+        Remove the SMS Automatic Reply
     </string>
     <string name="about_noresponse">
-        \nBy default a Twilio phone number is configured with an automatic reply. You will want to stop the auto-reply.
+        \nBy default a Twilio phone number is configured with an automatic reply which you will want to stop.
     \n
-        \n1. Go to TwiML Bins in the Twilio Console:
-    \nhttps://www.twilio.com/console/runtime/twiml-bins
-        \n
-    \n2. Create a "no reply" TwiML Bin entry that will be used in the phone number\'s configuration.
-    \nClick the create icon (white plus sign in red circle).
-    \nSet, Friendly Name: NoSmsResponse
-    \nSet, TwiML:
-        \n
-    \n&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;
-        \n&lt;Response&gt;&lt;/Response&gt;
-    \n
-        \n3. Click Create.
-        \n
-    \n4. Go to managing phone numbers in the Twilio Console:
+    \n1. In the Twilio Console, go to managing phone numbers:
     \nhttps://www.twilio.com/console/phone-numbers/incoming
         \n
-    \n5. Click your phone number.
-    \nUnder Messaging, Configure with,
-    \nSet, A message comes in: TwiML, NoSmsResponse
+    \n2. Click your phone number.
+        \nNote: Messaging, A MESSAGE COMES IN, is set to: Webhook.
+        \nChange, Webhook to TwiML.
+        \nNow, to the right is a circle icon with a plus sign in the middle.
+        \nClick the icon.
+        \nIn the New TwiML Bin popup form, enter:
+        \nFriendly Name: NoSmsResponse
+        \nBelow, in the codebox, enter the following TwiML:
+        \n&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;
+        \n&lt;Response/&gt;
         \n
-    \n6. Click Save.
+        \nBelow the codebox, is the message, Valid TwiML.
+        \n
+        \n3. Click Create. The popup form disappears.
+        \n
+    \n4. Click Save.
     \n
         \nNow, when a message is sent to your Twilio phone number, there is no automatic reply.
     </string>

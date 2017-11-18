@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private String name, phonenumber ;
     private static final int RequestPermissionCode = 2;
 
-    private FloatingActionButton callActionFab, callActionSmsList, callActionContacts;
+    private FloatingActionButton callActionFab, callActionRefresh, callActionSmsList, callActionContacts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
         callActionFab.setOnClickListener(callActionFabClickListener());
         callActionSmsList = (FloatingActionButton) findViewById(R.id.action_smslist_fab);
         callActionSmsList.setOnClickListener(callActionSmsListClickListener());
+        callActionRefresh = (FloatingActionButton) findViewById(R.id.action_refresh);
+        callActionRefresh.setOnClickListener(callActionRefreshClickListener());
         callActionContacts = (FloatingActionButton) findViewById(R.id.action_contactlist_fab);
         callActionContacts.setOnClickListener(callActionContactsClickListener());
 
@@ -207,12 +209,12 @@ public class MainActivity extends AppCompatActivity {
             // Something wrong, stay on this panel.
             return true;
         }
-        if (id == R.id.action_about) {
+        if (id == R.id.action_lookup) {
+            doLookup();
+            return true;
+        } else if (id == R.id.action_about) {
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
-            return true;
-        } else if (id == R.id.action_lookup) {
-            doLookup();
             return true;
         } else if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
@@ -298,6 +300,19 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(MainActivity.this, SendSmsActivity.class);
                         startActivity(intent);
                     }
+                }
+            }
+        };
+    }
+    private View.OnClickListener callActionRefreshClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkBeforeLeaving("refresh");
+                loadSpinnerAccPhoneNumbers();
+                LoadContacts();
+                if (accountCredentials.getShowContacts()) {
+                    listView.setAdapter(arrayAdapterContacts);
                 }
             }
         };
@@ -409,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------------------------------
     private void loadSpinnerAccPhoneNumbers() {
         networkOkay = false;
-        Snackbar.make(swipeRefreshLayout, "+ Loading account phone numbers...", Snackbar.LENGTH_LONG).show();
+        // Snackbar.make(swipeRefreshLayout, "+ Loading account phone numbers...", Snackbar.LENGTH_LONG).show();
         twilioSms.setAccPhoneNumbers();
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)
@@ -508,7 +523,6 @@ public class MainActivity extends AppCompatActivity {
         // Set the Application Twilio Phone Number.
         String twilioNumber = twilioNumberSpinner.getSelectedItem().toString();
         accountCredentials.setTwilioPhoneNumber(twilioNumber);
-
         twilioSms.setSmsRequestLogsTo(twilioNumber);
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(accountCredentials)

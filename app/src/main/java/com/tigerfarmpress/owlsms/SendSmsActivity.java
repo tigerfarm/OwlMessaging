@@ -298,8 +298,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                         // textScrollBox.setText(responseStatus(myResponse));
                         Snackbar.make(swipeRefreshLayout, getString(R.string.MessagesSent), Snackbar.LENGTH_LONG).setDuration(3000).show();
                         // sleep(1000);
-                        populateMessageList();
                         textMessage.setText("");
+                        populateMessageList();
                     }
                 });
             }

@@ -1,5 +1,6 @@
 package com.tigerfarmpress.owlsms;
 
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,16 +30,18 @@ public class TwSms {
         return postParams;
     }
 
+    // --------------------------------------------------------------
+    // requestUrl is set by one of the lower methods in this section.
     private String requestUrl;
     public String getRequestUrl() {
         return requestUrl;
     }
 
     public void setSmsRequestLogs(String fromPhoneNumber, String toPhoneNumber) {
-        requestUrl = setSmsRequest + "?From="+fromPhoneNumber + "&To="+toPhoneNumber;
+        requestUrl = setSmsRequest + "?From="+URLEncoder.encode(fromPhoneNumber) + "&To=" + URLEncoder.encode(toPhoneNumber);
     }
     public void setSmsRequestLogsTo(String phoneNumber) {
-        requestUrl = setSmsRequest + "?To="+phoneNumber;
+        requestUrl = setSmsRequest + "?To="+URLEncoder.encode(phoneNumber);
     }
 
     public void setSmsSend(String phoneNumTo, String twilioNumber, String theMessage) {
