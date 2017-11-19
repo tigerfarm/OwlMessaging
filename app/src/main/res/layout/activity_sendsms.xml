@@ -33,15 +33,18 @@
             android:layout_width="@dimen/editPhoneNumberFieldWidth"
             android:layout_height="wrap_content"
             android:text=""/>
-        <Button
-            android:text="@string/sendsms_set"
-            android:id="@+id/setButton"
-            android:textSize="@dimen/buttonTextSize"
-            android:textColor="@color/buttonTextColor"
-            android:background="@color/buttonBackgroundColor"
-            android:layout_gravity="right"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/action_refresh"
+            android:src="@drawable/ic_action_refresh"
+            android:fillColor="#FFFFFF"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="@dimen/activity_horizontal_marginTop"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/activity_horizontal_marginBottom"
+            android:layout_marginLeft="@dimen/activity_horizontal_marginBottom"
+            />
         <TextView
             android:id="@+id/labelContactName"
             android:text="Send to this contact name."
@@ -85,7 +88,7 @@
             android:textColor="@color/buttonTextColor"
             android:background="@color/buttonBackgroundColor"
             android:layout_gravity="right"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content" />
     </FrameLayout>
 

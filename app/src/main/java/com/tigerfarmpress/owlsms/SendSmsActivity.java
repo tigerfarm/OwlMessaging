@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -59,7 +60,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private Menu theMenu;
     private Spinner sendToSpinner;
 
-    private Button sendButton, setButton;
+    private FloatingActionButton callActionRefresh, callActionContacts;
+    private Button sendButton;
     private EditText sendToPhoneNumber;
     private EditText textMessage;
 
@@ -84,8 +86,8 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
 
         // -----------------------
         // Send message form objects:
-        setButton = (Button) findViewById(R.id.setButton);
-        setButton.setOnClickListener(this);
+        callActionRefresh = (FloatingActionButton) findViewById(R.id.action_refresh);
+        callActionRefresh.setOnClickListener(callActionRefreshClickListener());
         sendButton = (Button) findViewById(R.id.sendButton);
         sendButton.setOnClickListener(this);
         sendToPhoneNumber = (EditText)findViewById(R.id.sendToPhoneNumber);
@@ -136,6 +138,20 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
         return true;
     }
 
+    private View.OnClickListener callActionRefreshClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(swipeRefreshLayout, "+ Refresh messages...", Snackbar.LENGTH_LONG).show();
+                try {
+                    populateMessageList();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
     @Override
     public void onClick(View view) {
 
@@ -174,14 +190,6 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     twilioSms.setSmsSend(theFormPhoneNumber, twilioNumber, textMessage.getText().toString());
                     sendSms();
                     // wait(1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.setButton:
-                try {
-                    // textString.setText("+ setButton, Send message to: " + toPhoneNumber);
-                    populateMessageList();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -598,7 +606,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     private String sortDateTime(String theGmtDate) {
         String theSortDateTime = "19800101:00:00:00"; // error default.
         //                                                        "26 Sep 2017 00:49:31"
-        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy hh:mm:ss");
+        SimpleDateFormat readDateFormatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
         // :Tue, 26 Sep 2017 00:49:31 +0000:
         //  012345678901234567890123456789
         int numDateStart = 5;
@@ -619,7 +627,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public String unescapeJavaString(String st) {
-        String theString = st.replace("\n", "\\n").replace("\r", "\\r");
+        String theString = st.replace("\n", "\\n").replace("\r", "\\r").replace("\"", "\\\"");
         return theString;
     }
 

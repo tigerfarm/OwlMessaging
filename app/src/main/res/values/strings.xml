@@ -87,21 +87,21 @@
     </string>
     <!-- Based on a sample from: https://www.bbb.org/greater-san-francisco/for-businesses/toolkits1/sample-privacy-policy/ -->
     <string name="about_privacy_policy">
-        This privacy notice discloses the privacy practices for the application, Owl SMS. This privacy notice applies solely to information used by the application, Owl SMS.
+        This privacy notice discloses the privacy practices used in the Owl SMS application. This privacy notice applies solely to information used by the Owl SMS application.
         \n
         \n--- Information Collection, Use, and Sharing ---
         \n
-        \nYour Google Contact information (Names, phone numbers, and phone number types) is read into the application\'s electronic working memory. Only one phone number is stored on the device at any time. The stored phone number is encrypted.
+        \nYour Google Contact information (Names, phone numbers, and phone number types) is read into the application\'s electronic working memory. Only one Google Contacts phone number, and the related name, is stored on the device at any time. The stored data is encrypted.
         \n
-        \nThe phone number you enter into Owl SMS, or one of your Google Contact phone numbers, and your entered SMS message is transmitted between Owl SMS and the Twilio services using HTTPS.
+        \nYou enter your Twilio account information (SID and auth token) into the application. The Twilio account information is used to retrieve your Twilio account phone numbers. Your Twilio account information is stored encrypted on the device. It is only used to give you access to the Twilio services to send and retreive SMS messages, and lookup phone number information using Twilio\'s Lookup API.
         \n
-        \nYou enter your Twilio account information (SID and auth token) into the application. Your Twilio account information is stored encrypted on the device. It is only used to give you access to Twilio services.
-        \n
-        \nYour Google Contacts, and Twilio account information, is only used in the application, and between the application and the Twilio online services. Your Google Contacts and Twilio account information is not shared by Owl SMS.
+        \nYour Google Contacts and Twilio account information is not shared by Owl SMS. Your Google Contacts and Twilio account information, are only used in the application, and between the application and the Twilio online services.
         \n
         \n--- Security ---
         \n
-        \nEncryption is used to protect information transmitted online between the applcation and the Twilio services (HTTPS). Information stored on the device is encrypted.
+        \nThe phone numbers you enter into Owl SMS, your Google Contact phone numbers, and your entered SMS messages, are transmitted between Owl SMS and the Twilio services using the encyrpted protocol, HTTPS.
+        \n
+        \nEncryption is used to protect information transmitted online between the applcation and the Twilio services (HTTPS). Information stored on the device is also encrypted.
         \n
     </string>
 

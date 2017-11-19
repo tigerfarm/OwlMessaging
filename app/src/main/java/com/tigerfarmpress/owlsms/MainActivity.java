@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
                 String itemValue = (String) listView.getItemAtPosition(position);
-                String phoneNumber = itemValue.substring(itemValue.lastIndexOf("+"), itemValue.trim().length());
+                String phoneNumber = itemValue.substring(itemValue.lastIndexOf("+"), itemValue.length());
                 formPhoneNumber.setText( phoneNumber );
                 int i = StoreContactPhoneNumbers.indexOf(phoneNumber);
                 if (i>=0) {
