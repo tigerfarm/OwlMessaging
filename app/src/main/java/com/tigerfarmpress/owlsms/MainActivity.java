@@ -309,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkBeforeLeaving("refresh");
+                Snackbar.make(swipeRefreshLayout, "+ Refresh information...", Snackbar.LENGTH_LONG).show();
                 loadSpinnerAccPhoneNumbers();
                 LoadContacts();
                 if (accountCredentials.getShowContacts()) {
