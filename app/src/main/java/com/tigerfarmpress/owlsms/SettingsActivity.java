@@ -68,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         showResults = (TextView)findViewById(R.id.showResults);
 
         // showResults.setText("+ Settings started.");
-        // Snackbar.make(swipeRefreshLayout, "+ Settings started.", Snackbar.LENGTH_LONG).show();
+        Snackbar.make(swipeRefreshLayout, "+ Settings started.", Snackbar.LENGTH_LONG).show();
 
         accountCredentials = new AccountCredentials(this);
         accountSid.setText(accountCredentials.getAccountSid());
@@ -140,14 +140,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     String theRequirementsMessage = "";
                     String theValue = accountSid.getText().toString();
                     if (theValue.length()!=34) {
-                        theRequirementsMessage = theRequirementsMessage + "\n++ " + getString(R.string.labelSid) + " length must be 34, but is " + theValue.length();
+                        theRequirementsMessage = theRequirementsMessage + "++ " + getString(R.string.labelSid) + " length must be 34, but is " + theValue.length();
                     }
                     theValue = accountToken.getText().toString();
                     if (theValue.length()!=32) {
                         theRequirementsMessage = theRequirementsMessage + "\n++ " + getString(R.string.labelToken) + " length must be 32, but is " + theValue.length();
                     }
                     if (!theRequirementsMessage.isEmpty()) {
-                        showResults.setText("+ Update: "  + theRequirementsMessage);
+                        showResults.setText(theRequirementsMessage);
                         return;
                     }
                     accountCredentials.setAccountSid( accountSid.getText().toString() );
@@ -194,7 +194,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     public void run() {
                         if (jsonResponse.contains("\"code\": 20003") || jsonResponse.contains("\"status\": 404")) {
                             showResults.setText("- Account SID and Auth token are invalid.");
-                            Snackbar.make(swipeRefreshLayout, "+ Logging into your Twilio account failed. \n++ Update account SID and Token.", Snackbar.LENGTH_LONG).setDuration(6000).show();
+                            Snackbar.make(swipeRefreshLayout, "+ Twilio account login failed.\n++ Update account SID and Token.", Snackbar.LENGTH_LONG).setDuration(6000).show();
                             /* showResults.setText("+ jsonResponse :" + jsonResponse + ":"
                                     + "\n SID :" + accountSid.getText().toString()  + ":"
                                     + "\n Token :" + accountToken.getText().toString() + ":"

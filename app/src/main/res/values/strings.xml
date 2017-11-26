@@ -104,6 +104,10 @@
         \nEncryption is used to protect information transmitted online between the applcation and the Twilio services (HTTPS). Information stored on the device is also encrypted.
         \n
     </string>
+    <string name="about_published_by">
+        Published by Stacy David, Tiger Farm Press
+        \nNovember 19, 2017, California, USA
+    </string>
 
     <!-- ======================================================================================= -->
     <!-- Strings related to General program messages -->

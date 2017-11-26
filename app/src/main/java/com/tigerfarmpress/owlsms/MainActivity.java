@@ -49,7 +49,7 @@ import okhttp3.Response;
 
 import static com.tigerfarmpress.owlsms.R.id.spinner;
 
-// To add OkHttp, add into app/src/build.gradle:
+// To add OkHttp, add into app/src/build.gradle Module:
 // dependencies { ... compile 'com.squareup.okhttp3:okhttp:3.4.1' ... }
 
 public class MainActivity extends AppCompatActivity {
@@ -199,9 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
         int id = item.getItemId();
         if (id == R.id.menu_refresh) {
-            checkBeforeLeaving("refresh");
-            loadSpinnerAccPhoneNumbers();
-            LoadContacts();
+            doRefresh();
             return true;
         }
 
@@ -308,13 +306,7 @@ public class MainActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkBeforeLeaving("refresh");
-                Snackbar.make(swipeRefreshLayout, "+ Refresh information...", Snackbar.LENGTH_LONG).show();
-                loadSpinnerAccPhoneNumbers();
-                LoadContacts();
-                if (accountCredentials.getShowContacts()) {
-                    listView.setAdapter(arrayAdapterContacts);
-                }
+                doRefresh();
             }
         };
     }
@@ -333,6 +325,15 @@ public class MainActivity extends AppCompatActivity {
                 showContacts();
             }
         };
+    }
+    public void doRefresh() {
+        checkBeforeLeaving("refresh");
+        Snackbar.make(swipeRefreshLayout, "+ Refresh information...", Snackbar.LENGTH_LONG).show();
+        loadSpinnerAccPhoneNumbers();
+        LoadContacts();
+        if (accountCredentials.getShowContacts()) {
+            listView.setAdapter(arrayAdapterContacts);
+        }
     }
     public void showSmsList() {
         callActionSmsList.hide();
