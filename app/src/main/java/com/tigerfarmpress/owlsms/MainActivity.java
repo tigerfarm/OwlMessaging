@@ -133,6 +133,12 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
                 String itemValue = (String) listView.getItemAtPosition(position);
+                if (accountCredentials.getShowContacts()) {
+                    String theValue = itemValue.substring(itemValue.lastIndexOf("+")+2, itemValue.length());
+                    formPhoneNumber.setText( itemValue.substring(itemValue.lastIndexOf("+"), itemValue.length()) );
+                    labelContactName.setText(itemValue.substring(0, itemValue.lastIndexOf("+")-1));
+                    return;
+                }
                 // Value is a phone number: From: +12223331234
                 // Value is a name:         From: Stacy David
                 String theValue = itemValue.substring(itemValue.lastIndexOf(":")+2, itemValue.length());
@@ -369,19 +375,22 @@ public class MainActivity extends AppCompatActivity {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NORMALIZED_NUMBER));
             String theType = cursor.getString(cursor.getColumnIndex(ContactsContract.RawContacts.ACCOUNT_TYPE));
+            //
             int phoneType = cursor.getInt(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
             String typeLabel;
             int typeMobile = ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE;
             switch (phoneType)
             {
+                /*
                 case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
                     typeLabel = "Home";
                     break;
-                case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
-                    typeLabel = "Mobile";
-                    break;
                 case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
                     typeLabel = "Work";
+                    break;
+                    */
+                case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+                    typeLabel = "Mobile";
                     break;
                 case ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM:
                     // For custom label, example: Work office or Work mobile
@@ -393,7 +402,8 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     typeLabel = "";
             }
-            if ((theType == null || theType.equalsIgnoreCase("com.google")) && phoneType == typeMobile) {
+            //
+            if ((theType == null || theType.equalsIgnoreCase("com.google")) && phoneType == typeMobile && phonenumber != null) {
                 // null is the value for the emulator.
                 // Don't add WhatsApp contacts ("com.whatsapp") because it duplicates the phone number.
                 ContactNamesNumbers.add(name + " " + phonenumber);
