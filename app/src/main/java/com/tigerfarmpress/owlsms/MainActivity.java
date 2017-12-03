@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText formPhoneNumber;
     private static TextView labelContactName;
     private ListView listView, listViewMsg;
-    private ArrayList<String> StoreContacts, StoreContactPhoneNumbers, StoreContactNames;
+    private ArrayList<String> ContactNamesNumbers, ContactNumbers, ContactNames, ContactNumbersNames;
     private ArrayList<String> StoreMessages;
     private ArrayAdapter<String> arrayAdapterContacts;
     private ArrayAdapter<String> arrayAdapterMsg;
@@ -119,9 +119,10 @@ public class MainActivity extends AppCompatActivity {
 
         // ---------------------------------------------------------------------------------------------
         // Load Contacts
-        StoreContacts = new ArrayList<String>();
-        StoreContactNames = new ArrayList<String>();
-        StoreContactPhoneNumbers = new ArrayList<String>();
+        ContactNamesNumbers = new ArrayList<String>();
+        ContactNumbersNames = new ArrayList<String>();
+        ContactNames = new ArrayList<String>();
+        ContactNumbers = new ArrayList<String>();
         listView = (ListView)findViewById(R.id.listview1);
         EnableContactPermission();
         // LoadContacts();
@@ -132,14 +133,23 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
                 String itemValue = (String) listView.getItemAtPosition(position);
-                String phoneNumber = itemValue.substring(itemValue.lastIndexOf("+"), itemValue.length());
-                formPhoneNumber.setText( phoneNumber );
-                int i = StoreContactPhoneNumbers.indexOf(phoneNumber);
-                if (i>=0) {
-                    String theName = StoreContactNames.get(i);
-                    labelContactName.setText(theName.substring(theName.indexOf(":")+1, theName.length()));
-                } else {
+                // Value is a phone number: From: +12223331234
+                // Value is a name:         From: Stacy David
+                String theValue = itemValue.substring(itemValue.lastIndexOf(":")+2, itemValue.length());
+                if (theValue.startsWith("+")) {
+                    // if the value is a phone number.
+                    formPhoneNumber.setText( theValue );
                     labelContactName.setText("");
+                    return;
+                }
+                // if the value is a name.
+                labelContactName.setText(theValue);
+                int i = ContactNames.indexOf(theValue);
+                if (i>=0) {
+                    String theNumber = ContactNamesNumbers.get(i);
+                    formPhoneNumber.setText(theNumber.substring(theNumber.lastIndexOf(" ")+1, theNumber.length()));
+                } else {
+                    formPhoneNumber.setText("");
                 }
             }
         });
@@ -351,9 +361,9 @@ public class MainActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------------------------------
 
     public void LoadContacts(){
-        StoreContacts.clear();
-        StoreContactNames.clear();
-        StoreContactPhoneNumbers.clear();
+        ContactNamesNumbers.clear();
+        ContactNumbersNames.clear();
+        ContactNumbers.clear();
         cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
         while (cursor.moveToNext()) {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
@@ -386,18 +396,20 @@ public class MainActivity extends AppCompatActivity {
             if ((theType == null || theType.equalsIgnoreCase("com.google")) && phoneType == typeMobile) {
                 // null is the value for the emulator.
                 // Don't add WhatsApp contacts ("com.whatsapp") because it duplicates the phone number.
-                StoreContacts.add(name + " " + phonenumber);
-                // StoreContacts.add(name + " : " + phonenumber);
-                StoreContactNames.add(phonenumber + ":" + name);
-                StoreContactPhoneNumbers.add(phonenumber);
+                ContactNamesNumbers.add(name + " " + phonenumber);
+                ContactNames.add(name);
+                ContactNumbersNames.add(phonenumber + ":" + name);
+                ContactNumbers.add(phonenumber);
             }
         }
         cursor.close();
-        Collections.sort(StoreContacts);
-        arrayAdapterContacts = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, StoreContacts);
-        // listView.setAdapter(arrayAdapterContacts);
-        Collections.sort(StoreContactNames);
-        Collections.sort(StoreContactPhoneNumbers);
+
+        Collections.sort(ContactNamesNumbers);
+        Collections.sort(ContactNames);
+        arrayAdapterContacts = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, ContactNamesNumbers);
+        //
+        Collections.sort(ContactNumbersNames);
+        Collections.sort(ContactNumbers);
     }
 
     public void EnableContactPermission(){
@@ -569,7 +581,9 @@ public class MainActivity extends AppCompatActivity {
                                         try {
                                             theData = messageJson.getString("body")
                                                     + "\n" + twilioSms.localDateTime(messageJson.getString("date_sent")).substring(0,6)
-                                                    + ", From: " + messageJson.getString("from");
+                                                    + ", From: "
+                                                    // + messageJson.getString("from") + " "
+                                                    + getNameFromNumber(messageJson.getString("from"));
                                             // + " to " + messageJson.getString("to")
                                         } catch (JSONException e) {
                                             Snackbar.make(swipeRefreshLayout, "- Error: failed to parse JSON response: MessagesArrayAdapter", Snackbar.LENGTH_LONG).show();
@@ -599,6 +613,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private String getNameFromNumber(String phoneNumber) {
+        String theName = phoneNumber;
+        int i = ContactNumbers.indexOf(phoneNumber);
+        if (i>=0) {
+            theName = ContactNumbersNames.get(i);
+            theName = theName.substring(theName.indexOf(":")+1, theName.length());
+        }
+        return theName;
     }
 
     // ---------------------------------------------------------------------------------------------

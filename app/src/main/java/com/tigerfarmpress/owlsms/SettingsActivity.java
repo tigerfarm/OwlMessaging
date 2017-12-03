@@ -67,8 +67,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         accountToken = (EditText)findViewById(R.id.accountToken);
         showResults = (TextView)findViewById(R.id.showResults);
 
-        // showResults.setText("+ Settings started.");
-        Snackbar.make(swipeRefreshLayout, "+ Settings started.", Snackbar.LENGTH_LONG).show();
+        // Snackbar.make(swipeRefreshLayout, "+ Settings started.", Snackbar.LENGTH_LONG).show();
 
         accountCredentials = new AccountCredentials(this);
         accountSid.setText(accountCredentials.getAccountSid());

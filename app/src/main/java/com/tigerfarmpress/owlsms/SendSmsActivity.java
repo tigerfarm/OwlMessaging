@@ -653,6 +653,7 @@ public class SendSmsActivity extends AppCompatActivity implements View.OnClickLi
                     row01.setGravity(Gravity.RIGHT);
                     row02.setGravity(Gravity.RIGHT);
                     row03.setGravity(Gravity.RIGHT);
+                    // row01.setText("To: " + labelContactName.getText());
                 }
                 row01.setText("From: " + messageJson.getString("from") + " To: " + messageJson.getString("to"));
                 String theStatus = messageJson.getString("status");
