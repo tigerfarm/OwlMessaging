@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
         ContactNamesNumbers.clear();
         ContactNumbersNames.clear();
         ContactNumbers.clear();
+        ContactNames.clear();
         cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null, null, null);
         while (cursor.moveToNext()) {
             name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
