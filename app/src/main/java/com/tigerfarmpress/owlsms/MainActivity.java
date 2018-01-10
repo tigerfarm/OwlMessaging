@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         ContactNames = new ArrayList<String>();
         ContactNumbers = new ArrayList<String>();
         listView = (ListView)findViewById(R.id.listview1);
-        EnableContactPermission();
         // LoadContacts();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             // https://stackoverflow.com/questions/20032270/why-my-android-setonitemclicklistener-doesnt-work
@@ -184,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
+        EnableContactPermission();  // Only required the first time Contacts are loaded.
         LoadContacts();
 
         // Top bar list of account phone numbers:
@@ -424,6 +424,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void EnableContactPermission(){
+
+        // https://developers.google.com/android/guides/permissions
+
         if ( ActivityCompat.shouldShowRequestPermissionRationale( MainActivity.this, Manifest.permission.READ_CONTACTS) ) {
             Snackbar.make(swipeRefreshLayout, "+ CONTACTS permission allows us to Access CONTACTS app.", Snackbar.LENGTH_LONG).show();
         } else {

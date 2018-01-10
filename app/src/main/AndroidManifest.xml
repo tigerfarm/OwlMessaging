@@ -59,6 +59,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tigerfarmpress.owlsms.MainActivity" />
         </activity>
+
     </application>
 
 </manifest>
