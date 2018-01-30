@@ -1,9 +1,14 @@
 package com.tigerfarmpress.owlsms;
 
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -47,6 +52,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
+    private static final int STORAGE_PERMISSION_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +65,11 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+
+        if (!checkPermissionForWriteStorage()) {
+            Snackbar.make(swipeRefreshLayout, "+ Request Permission For Storage.", Snackbar.LENGTH_LONG).show();
+            requestPermissionForStorage();
+        }
 
         // -----------------------
         // Send message form objects:
@@ -106,6 +118,29 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             spinnerGmtOffset.setSelection( thePosition );
         } else {
             spinnerGmtOffset.setSelection( 0 ); // default initialization
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    private boolean checkPermissionForWriteStorage() {
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+    private void requestPermissionForStorage() {
+        Snackbar.make(swipeRefreshLayout, "+ requestPermissionForStorage", Snackbar.LENGTH_LONG).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            Snackbar.make(swipeRefreshLayout, "External file storage permissions: please allow in your application settings.", Snackbar.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE && grantResults.length > 0) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Snackbar.make(swipeRefreshLayout, "+ Permission Canceled, your application cannot access STORAGE.", Snackbar.LENGTH_LONG).show();
+            } else {
+                // Snackbar.make(coordinatorLayout, "+ Permission Granted, Now your application can access CONTACTS.", Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 

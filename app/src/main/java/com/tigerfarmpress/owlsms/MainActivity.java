@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -74,15 +75,33 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> arrayAdapterMsg;
     private Cursor cursor ;
     private String name, phonenumber ;
-    private static final int RequestPermissionCode = 2;
 
     private FloatingActionButton callActionFab, callActionRefresh, callActionSmsList, callActionContacts;
+
+    private static final int SNACKBAR_DURATION = 4000;
+    private static final int CONTACTS_PERMISSION_REQUEST_CODE = 1;
+    private static final int INTERNET_PERMISSION_REQUEST_CODE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (accountCredentials.getShowContacts()) {
+                    LoadContacts();
+                } else {
+                    populateMessageList();
+                }
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         // startActivity(new Intent(this, SettingsActivity.class));
         accountCredentials = new AccountCredentials(this);
         if (!accountCredentials.existAccountSid()) {
@@ -95,12 +114,10 @@ public class MainActivity extends AppCompatActivity {
         // Snackbar.make(swipeRefreshLayout, "+ getAccountSid: " + accountCredentials.getAccountSid(), Snackbar.LENGTH_LONG).show();
         // Snackbar.make(swipeRefreshLayout, "+ ." + accountCredentials.getAccountSid(), Snackbar.LENGTH_LONG).show();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         // Use when working on specific panel.
         // startActivity(new Intent(this, SettingsActivity.class));
 
+        // ---------------------------------------------------------------------------------------------
         labelContactName = (TextView)findViewById(R.id.labelContactName);
         formPhoneNumber = (EditText)findViewById(R.id.formPhoneNumber);
         labelContactName.setText(accountCredentials.getToContactName());
@@ -124,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
         ContactNames = new ArrayList<String>();
         ContactNumbers = new ArrayList<String>();
         listView = (ListView)findViewById(R.id.listview1);
-        // LoadContacts();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             // https://stackoverflow.com/questions/20032270/why-my-android-setonitemclicklistener-doesnt-work
             // This may fix: https://stackoverflow.com/questions/14332409/custom-listview-is-not-responding-to-the-click-event/14333069#14333069
@@ -159,20 +175,67 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // ---------------------------------------------------------------------------------------------
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (accountCredentials.getShowContacts()) {
-                    LoadContacts();
-                } else {
-                    populateMessageList();
-                }
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        });
     }
+
+    // ---------------------------------------------------------------------------------------------
+    // Stacy, step 1: Check for permission:
+    // Documentation: https://developer.android.com/training/permissions/requesting.html
+
+    private boolean checkPermissionForContacts() {
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
+    }
+    private boolean checkPermissionForWriteStorage() {
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+    private boolean checkPermissionForInternet() {
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
+    }
+
+    // ----------------------------------
+    // Stacy, step 2: Request permission.
+
+    private void requestPermissionForContacts() {
+        // Snackbar.make(swipeRefreshLayout, "+ requestPermissionForContacts", SNACKBAR_DURATION).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
+            Snackbar.make(swipeRefreshLayout, "Read contacts permissions: please allow in your application settings.", SNACKBAR_DURATION).show();
+        } else {
+            ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.READ_CONTACTS}, CONTACTS_PERMISSION_REQUEST_CODE);
+        }
+    }
+    private void requestPermissionForInternet() {
+        // Snackbar.make(swipeRefreshLayout, "+ requestPermissionForInternet", SNACKBAR_DURATION).show();
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.INTERNET)) {
+            Snackbar.make(swipeRefreshLayout, "Internet access permissions: please allow in your application settings.", SNACKBAR_DURATION).show();
+        } else {
+            ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.INTERNET}, INTERNET_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    // ----------------------------------
+    // Stacy, step 3: Act on the user giving or denying, the permission.
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        // Contacts permissions
+        if (requestCode == CONTACTS_PERMISSION_REQUEST_CODE && grantResults.length > 0) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Snackbar.make(swipeRefreshLayout, "+ Permission Canceled, your application cannot access CONTACTS.", SNACKBAR_DURATION).show();
+            } else {
+                // Snackbar.make(coordinatorLayout, "+ Permission Granted, Now your application can access CONTACTS.", Snackbar.LENGTH_LONG).show();
+            }
+        }
+        // Internet permissions
+        if (requestCode == INTERNET_PERMISSION_REQUEST_CODE && grantResults.length > 0) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                Snackbar.make(swipeRefreshLayout, "+ Permission Canceled, your application cannot access the INTERNET.", SNACKBAR_DURATION).show();
+            } else {
+                // Snackbar.make(coordinatorLayout, "+ Permission Granted, Now your application can access CONTACTS.", Snackbar.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
 
     // ---------------------------------------------------------------------------------------------
     @Override
@@ -183,7 +246,11 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        EnableContactPermission();  // Only required the first time Contacts are loaded.
+        if (!checkPermissionForContacts()) {
+            Snackbar.make(swipeRefreshLayout, "+ Request Permission For Contacts.", Snackbar.LENGTH_LONG).show();
+            requestPermissionForContacts();
+            return false;
+        }
         LoadContacts();
 
         // Top bar list of account phone numbers:
@@ -423,34 +490,16 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(ContactNumbers);
     }
 
-    public void EnableContactPermission(){
-
-        // https://developers.google.com/android/guides/permissions
-
-        if ( ActivityCompat.shouldShowRequestPermissionRationale( MainActivity.this, Manifest.permission.READ_CONTACTS) ) {
-            Snackbar.make(swipeRefreshLayout, "+ CONTACTS permission allows us to Access CONTACTS app.", Snackbar.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions( MainActivity.this, new String[] {
-                    Manifest.permission.READ_CONTACTS}, RequestPermissionCode );
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        // Check if contacts access permissions are granted
-        if (requestCode == RequestPermissionCode && permissions.length > 0) {
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                Snackbar.make(swipeRefreshLayout, "+ Permission Canceled, your application cannot access CONTACTS.", Snackbar.LENGTH_LONG).show();
-            } else {
-                // Snackbar.make(coordinatorLayout, "+ Permission Granted, Now your application can access CONTACTS.", Snackbar.LENGTH_LONG).show();
-            }
-        }
-
-    }
-
     // ---------------------------------------------------------------------------------------------
     private void loadSpinnerAccPhoneNumbers() {
+
+        // Before the first OkHttpClient call.
+        if (!checkPermissionForInternet()) {
+            Snackbar.make(swipeRefreshLayout, "+ Request Permission For Internet.", Snackbar.LENGTH_LONG).show();
+            requestPermissionForInternet();
+            return;
+        }
+
         networkOkay = false;
         // Snackbar.make(swipeRefreshLayout, "+ Loading account phone numbers...", Snackbar.LENGTH_LONG).show();
         twilioSms.setAccPhoneNumbers();
